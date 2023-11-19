@@ -1,0 +1,16 @@
+[
+    {
+        "modid": "curseclient",
+        "name": "CurseClient",
+        "description": "best cheat client",
+        "version": "${version}",
+        "mcversion": "${mcversion}",
+        "url": "",
+        "updateUrl": "",
+        "authorList": [],
+        "credits": "",
+        "logoFile": "",
+        "screenshots": [],
+        "dependencies": []
+    }
+]

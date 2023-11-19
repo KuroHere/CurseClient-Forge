@@ -1,0 +1,172 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url = 'https://repo.spongepowered.org/maven/' }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:4.+'
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion"
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+version project.modVersion
+group project.modGroup
+
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+    options.encoding = 'UTF-8'
+}
+
+compileKotlin.kotlinOptions {
+    freeCompilerArgs += '-Xlambdas=indy'
+    freeCompilerArgs += '-opt-in=kotlin.RequiresOptIn'
+    freeCompilerArgs += '-opt-in=kotlin.contracts.ExperimentalContracts'
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://repo.spongepowered.org/maven/' }
+    maven { url = 'https://impactdevelopment.github.io/maven/' }
+    maven { url = 'https://jitpack.io' }
+}
+
+minecraft {
+    mappings channel: "$mappingsChannel", version: "$mappingsVersion"
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            property 'fml.coreMods.load', 'com.curseclient.CurseCoreMod'
+            property 'mixin.env.disableRefMap', 'true'
+
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+        }
+    }
+}
+
+configurations {
+    jarLibs
+    all {
+        resolutionStrategy {
+            force 'org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209'
+        }
+    }
+}
+
+dependencies {
+
+    implementation 'org.jetbrains:annotations:24.0.0'
+    minecraft ("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
+
+    jarLibs('org.spongepowered:mixin:0.8.5') {
+        exclude module: 'commons-io'
+        exclude module: 'gson'
+        exclude module: 'guava'
+    }
+
+    annotationProcessor('org.spongepowered:mixin:0.8.5:processor') {
+        exclude module: 'gson'
+    }
+
+    jarLibs 'org.reflections:reflections:0.9.12'
+    jarLibs("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion") {
+        exclude module: 'kotlin-stdlib-common'
+        exclude module: 'annotations'
+    }
+    jarLibs("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion") {
+        exclude module: 'kotlin-stdlib'
+    }
+    jarLibs('org.jetbrains.kotlin:kotlin-reflect:1.7.21')
+    jarLibs("com.github.Wolfsurge:animationsystem:1.1")
+    jarLibs("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutinesVersion") {
+        exclude module: 'kotlin-stdlib-jdk8'
+        exclude module: 'kotlin-stdlib-common'
+    }
+    compileOnly ("org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion")
+    compileOnly ('org.jetbrains:annotations:23.0.0')
+
+    compileOnly 'com.github.litarvan:OpenAuth:1.1.2'
+    jarLibs group: 'org.slick2d', name:'slick2d-core', version:'1.0.1'
+    implementation 'com.github.cabaletta:baritone:1.2.14'
+    jarLibs 'cabaletta:baritone-api:1.2'
+
+    implementation configurations.jarLibs
+}
+
+mixin {
+    defaultObfuscationEnv 'searge'
+    sourceSets {
+        main {
+            ext.refMap = 'mixins.curseclient.refmap.json'
+        }
+    }
+}
+
+processResources {
+    exclude '**/rawimagefiles'
+
+    from(sourceSets.main.resources.srcDirs) {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        include 'mcmod.info'
+        expand version: version, 'mcversion': minecraftVersion
+    }
+}
+
+shadowJar {
+    archiveFileName = "curseclient-${modVersion}.jar"
+
+    manifest.attributes(
+            'Manifest-Version': 1.0,
+            'MixinConfigs': 'mixins.curseclient.json',
+            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            'FMLCorePluginContainsFMLMod': 'true',
+            'FMLCorePlugin': 'com.curseclient.CurseCoreMod',
+            'ForceLoadAsMod': 'true'
+    )
+
+    archiveClassifier.set('')
+    exclude '**/module-info.class',
+            'DebugProbesKt.bin',
+            'META-INF/proguard/**',
+            'META-INF/versions/**',
+            'META-INF/**.RSA',
+            'META-INF/com.android.tools/**',
+            'META-INF/*.kotlin_module',
+            'kotlin/**/*.kotlin_metadata',
+            'kotlin/**/*.kotlin_builtins',
+            'META-INF/*.version'
+
+    minimize {
+        exclude(dependency('cabaletta:baritone-api:.*'))
+        exclude(dependency('org.spongepowered:mixin:.*'))
+    }
+
+    configurations = [project.configurations.jarLibs]
+    relocate 'kotlin', 'shadow.kotlin'
+    relocate 'kotlinx', 'shadow.kotlinx'
+    finalizedBy 'reobfShadowJar'
+}
+
+reobf {
+    shadowJar {}
+    jar {
+        enabled = false
+    }
+}
+
+artifacts {
+    shadowJar
+}
+
