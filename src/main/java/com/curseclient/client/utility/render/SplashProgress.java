@@ -2,6 +2,8 @@ package com.curseclient.client.utility.render;
 
 import com.curseclient.client.module.modules.client.HUD;
 import com.curseclient.client.utility.render.font.UnicodeFontRenderer;
+import com.curseclient.client.utility.render.shader.RectBuilder;
+import com.curseclient.client.utility.render.vector.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -79,12 +81,10 @@ public class SplashProgress {
         }
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
         if(sfr == null){
-            sfr = UnicodeFontRenderer.getFontOnPC("Arial", 20);
+            sfr = UnicodeFontRenderer.getFontOnPC("default-normal", 20);
         }
         double nProgress = (double)PROGRESS;
         double calc = (nProgress/MAX) * sr.getScaledWidth();
-
-        //Gui.drawRect(0, sr.getScaledHeight() -35, sr.getScaledWidth(), sr.getScaledHeight(), new Color(0,0,0,50).getRGB());
 
         GlStateManager.resetColor();
         resetTextureState();
@@ -96,23 +96,40 @@ public class SplashProgress {
         GlStateManager.resetColor();
         resetTextureState();
 
-        RenderUtils2D.INSTANCE.drawRoundedRect(
+        RenderUtils2D.INSTANCE.drawBlurredRect(
+            new Vec2d(20, sr.getScaledHeight() - 70),
+            new Vec2d(sr.getScaledWidth() - 20,
+                sr.getScaledHeight() - 90),
             10,
-            sr.getScaledHeight() - 10,
-            (int) calc - 10,
-            sr.getScaledHeight() - 20,
-            5, HUD.INSTANCE.getColor(-1, 150).getRGB()
+            Color.WHITE
         );
 
         RenderUtils2D.INSTANCE.drawRoundedRect(
-            10,
-            sr.getScaledHeight() - 10,
-            sr.getScaledWidth() - 10,
-            sr.getScaledHeight() - 20,
-            5,
-            new Color(15,15,15,50).getRGB()
+            20,
+            sr.getScaledHeight() - 70,
+            (int) calc - 20,
+            sr.getScaledHeight() - 90,
+            9,
+            new Color(255, 255, 255, 250).getRGB()
         );
 
+        RenderUtils2D.INSTANCE.drawRoundedOutline(
+            20,
+            sr.getScaledHeight() - 70,
+            sr.getScaledWidth() - 20,
+            sr.getScaledHeight() - 90,
+            9,
+            new Color(255,255,255,255).getRGB()
+        );
+
+        RenderUtils2D.INSTANCE.drawRoundedRect(
+            20,
+            sr.getScaledHeight() - 70,
+            sr.getScaledWidth() - 20,
+            sr.getScaledHeight() - 90,
+            9,
+            new Color(255,255,255,80).getRGB()
+        );
     }
 
     private static void resetTextureState() {

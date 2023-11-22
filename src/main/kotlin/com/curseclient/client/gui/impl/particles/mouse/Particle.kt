@@ -1,6 +1,5 @@
 package com.curseclient.client.gui.impl.particles.mouse
 
-import com.curseclient.client.utility.math.MathUtils
 import com.curseclient.client.utility.render.animation.SimpleAnimation
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
@@ -9,6 +8,7 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
 
+// Tôi phải công nhận rằng tôi ghét điều này....
 class Particle(private var x: Double, private var y: Double) {
 
     private val rand = Random
@@ -18,8 +18,10 @@ class Particle(private var x: Double, private var y: Double) {
     private var lastTick: Long = System.currentTimeMillis()
     private val particles: MutableList<Pair<Double, Double>> = ArrayList()
     private val smallParticles: MutableList<Triple<Double, Double, Long>> = ArrayList()
+    private val lightTrail: MutableList<Pair<Double, Double>> = ArrayList()
     private var smallParticlesAnimationStart: Long = 0
 
+    private val MAX_TRAIL_LENGTH = 50
     private var prevX: Double = x
     private var prevY: Double = y
 
@@ -59,11 +61,16 @@ class Particle(private var x: Double, private var y: Double) {
             particles[i] = Pair(pos.first + (offsetX * animation.value), pos.second + (offsetY * animation.value))
         }
 
+        lightTrail.add(Pair(x, y))
+        if (lightTrail.size > MAX_TRAIL_LENGTH) {
+            lightTrail.removeAt(0)
+        }
+
         updateCoordinates(x + 1, y + 1)
     }
 
     fun isMoving(): Boolean {
-        val movementThreshold = 1.0 // Adjust the threshold based on your needs
+        val movementThreshold = 1.0 // Điều chỉnh ngưỡng dựa trên nhu cầu của bạn
         return abs(x - prevX) > movementThreshold || abs(y - prevY) > movementThreshold
     }
 
@@ -150,4 +157,8 @@ class Particle(private var x: Double, private var y: Double) {
 
     val isDead: Boolean
         get() = dead
+
+    fun clear() {
+        lightTrail.clear()
+    }
 }

@@ -2,8 +2,8 @@ package com.curseclient.mixin.world;
 
 import com.curseclient.CurseClient;
 import com.curseclient.client.event.EventBus;
+import com.curseclient.client.event.events.render.CanRenderInLayerEvent;
 import com.curseclient.client.module.modules.visual.WallHack;
-import com.curseclient.client.events.CanRenderInLayerEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

@@ -21,11 +21,13 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.entity.Entity
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.MathHelper
+import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
@@ -43,6 +45,7 @@ object RenderUtils2D {
     private val blurCache = HashMap<BlurData, Int>()
     private val mc = Minecraft.getMinecraft()
     private var zLevel = 0f
+    private val frustrum = Frustum()
 
     /**
      * Starts scissoring a rect
@@ -151,6 +154,19 @@ object RenderUtils2D {
         GlStateUtils.resetColour()
         GlStateUtils.matrix(false)
     }
+
+    fun isInViewFrustrum(entity: Entity): Boolean {
+        return isInViewFrustrum(entity.getEntityBoundingBox()) || entity.ignoreFrustumCheck
+    }
+
+    private fun isInViewFrustrum(bb: AxisAlignedBB): Boolean {
+        val current: Entity? = mc.renderViewEntity
+        if (current != null) {
+            frustrum.setPosition(current.posX, current.posY, current.posZ)
+        }
+        return frustrum.isBoundingBoxInFrustum(bb)
+    }
+
 
     /**
      * Translates, scales, and rotates around a location
@@ -569,6 +585,69 @@ object RenderUtils2D {
 
     fun drawRoundedRect(paramXStart: Float, paramYStart: Float, paramXEnd: Float, paramYEnd: Float, radius: Float, color: Int) {
         drawRoundedRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color, true)
+    }
+
+    fun drawRoundedOutline(paramXStart: Float, paramYStart: Float, paramXEnd: Float, paramYEnd: Float, radius: Float, color: Int) {
+        var paramXStart = paramXStart
+        var paramYStart = paramYStart
+        var paramXEnd = paramXEnd
+        var paramYEnd = paramYEnd
+        val alpha = (color shr 24 and 0xFF) / 255.0f
+        val red = (color shr 16 and 0xFF) / 255.0f
+        val green = (color shr 8 and 0xFF) / 255.0f
+        val blue = (color and 0xFF) / 255.0f
+        var z = 0f
+        if (paramXStart > paramXEnd) {
+            z = paramXStart
+            paramXStart = paramXEnd
+            paramXEnd = z
+        }
+        if (paramYStart > paramYEnd) {
+            z = paramYStart
+            paramYStart = paramYEnd
+            paramYEnd = z
+        }
+        val x1 = (paramXStart + radius).toDouble()
+        val y1 = (paramYStart + radius).toDouble()
+        val x2 = (paramXEnd - radius).toDouble()
+        val y2 = (paramYEnd - radius).toDouble()
+
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+        glLineWidth(1f)
+        glColor4f(red, green, blue, alpha)
+        glBegin(GL_LINE_LOOP)
+
+        val degree = Math.PI / 180
+        var i = 0.0
+
+        // Draw the rounded corners
+        while (i <= 90) {
+            glVertex2d(x2 + sin(i * degree) * radius, y2 + cos(i * degree) * radius)
+            i += 1.0
+        }
+
+        while (i <= 180) {
+            glVertex2d(x2 + sin(i * degree) * radius, y1 + cos(i * degree) * radius)
+            i += 1.0
+        }
+
+        while (i <= 270) {
+            glVertex2d(x1 + sin(i * degree) * radius, y1 + cos(i * degree) * radius)
+            i += 1.0
+        }
+
+        while (i <= 360) {
+            glVertex2d(x1 + sin(i * degree) * radius, y2 + cos(i * degree) * radius)
+            i += 1.0
+        }
+
+        glEnd()
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glDisable(GL_LINE_SMOOTH)
     }
 
     fun drawRoundedRect(paramXStart: Float, paramYStart: Float, paramXEnd: Float, paramYEnd: Float, radius: Float, color: Int, popPush: Boolean) {

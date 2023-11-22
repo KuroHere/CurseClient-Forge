@@ -14,7 +14,7 @@ object Reach : Module(
     Category.PLAYER
 ) {
 
-    private val amount by setting("Amount", 0.5, 0.1, 5.0, 0.1)
+    val amount by setting("Amount", 0.5, 0.1, 5.0, 0.1)
 
     init {
         safeListener<TickEvent.ClientTickEvent> {

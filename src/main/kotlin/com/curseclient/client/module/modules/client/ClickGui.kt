@@ -24,12 +24,13 @@ object ClickGui : Module(
     private val page by setting("Page", Page.General)
 
     // General
-    val scale by setting("Scale", 1.0, 0.5, 1.5, 0.01, { page == Page.General })
+    val scale by setting("Scale", 1.1, 0.5, 1.5, 0.01, { page == Page.General })
     val width by setting("Panel Width", 110.0, 100.0, 140.0, 1.0, { page == Page.General })
-    val panelRound by setting("Panel Radius", 6.0, 0.0, 10.0, 0.1, { page == Page.General })
+    val panelRound by setting("Panel Radius", 4.0, 0.0, 10.0, 0.1, { page == Page.General })
     val height by setting("Button Height", 16.0, 12.0, 20.0, 0.5, { page == Page.General })
-    val buttonRound by setting("Button Radius", 5.0, 0.0, 10.0, 0.1, { page == Page.General })
-    val space by setting("Space", 4.5, 3.0, 8.0, 0.1, { page == Page.General })
+    val buttonRound by setting("Button Radius", 2.5, 0.0, 10.0, 0.1, { page == Page.General })
+    val outlineWidth by setting("Outline Width", 1.0, 0.0, 3.0, 0.1, { page == Page.General })
+    val space by setting("Space", 5.0, 3.0, 8.0, 0.1, { page == Page.General })
     val sorting by setting("Sorting", SortingMode.Alphabetical, { page == Page.General })
     val reverse by setting("Reverse", false, { page == Page.General })
 
@@ -52,8 +53,11 @@ object ClickGui : Module(
     val buttonColor1 by setting("Color 1", Color(30, 190, 240), { page == Page.Colors && listOf(ColorMode.Static, ColorMode.Vertical, ColorMode.Horizontal).contains(colorMode) })
     val buttonColor2 by setting("Color 2", Color(170, 30, 215), { page == Page.Colors && listOf(ColorMode.Vertical, ColorMode.Horizontal).contains(colorMode) })
 
+    val pulse by setting("Pulse Color", false, { page == Page.Colors && listOf(ColorMode.Static, ColorMode.Vertical, ColorMode.Horizontal).contains(colorMode)})
+
     val backgroundColor by setting("Background Color", Color(20, 20, 20), { page == Page.Colors })
     val disabledColor by setting("Disabled Color", Color(255, 255, 255, 30), { page == Page.Colors })
+
     val buttonAlpha by setting("Button Alpha", 0.7, 0.05, 1.0, 0.01, { page == Page.Colors })
     val settingsBrightness by setting("Settings Brightness", 0.75, 0.0, 1.0, 0.01, { page == Page.Colors })
 

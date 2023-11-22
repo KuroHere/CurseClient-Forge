@@ -9,10 +9,13 @@ import com.curseclient.client.module.modules.client.MenuShader;
 import com.curseclient.client.utility.render.ClickCircle;
 import com.curseclient.client.utility.render.ParticleUtils;
 import com.curseclient.client.utility.render.animation.EaseUtils;
+import com.curseclient.client.utility.render.font.FontRenderer;
+import com.curseclient.client.utility.render.font.Fonts;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -24,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -110,7 +114,6 @@ public abstract class MixinGuiScreen {
             }
         }
         GL11.glPushMatrix();
-
     }
 
     @Inject(method = "mouseClicked(III)V", at = @At(value = "HEAD"))

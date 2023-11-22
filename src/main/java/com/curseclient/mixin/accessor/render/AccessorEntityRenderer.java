@@ -8,6 +8,8 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(EntityRenderer.class)
 public interface AccessorEntityRenderer {
 
+    @Invoker("setupCameraTransform")
+    void invokeSetupCameraTransform(float partialTicks, int pass);
     @Invoker void invokeRenderHand(float partialTicks, int pass);
 
     @Accessor boolean getLightmapUpdateNeeded();

@@ -16,6 +16,7 @@ import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
+import com.curseclient.client.utility.render.shader.RectBuilder
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.abs
@@ -50,8 +51,8 @@ class DoubleSlider(val setting: DoubleSetting, gui: AbstractGui, baseButton: Mod
         val startX = pos.x + ClickGui.space
         val endX = pos.x + width - ClickGui.space
 
-        val sliderStartX = pos.x
-        val sliderEndX = pos.x + width
+        val sliderStartX = pos.x + 4
+        val sliderEndX = pos.x + width - 4
 
         val mouseProgress = (gui.mouse.x - sliderStartX) / (sliderEndX - sliderStartX)
 
@@ -64,35 +65,24 @@ class DoubleSlider(val setting: DoubleSetting, gui: AbstractGui, baseButton: Mod
             setting.listeners.forEach { it() }
         }
 
-        val centerY = pos.y + height / 2.0
+        val centerY = pos.y + height / 2.0 - 4
 
         val renderProgressTo = clamp((setting.value - setting.min) / (setting.max - setting.min), 0.0, 1.0)
         renderProgress = lerp(renderProgress, renderProgressTo, GLUtils.deltaTimeDouble() * 3.0)
 
-        val sliderBegin = Vec2d(sliderStartX, centerY)
-        val sliderEnd = Vec2d(lerp(sliderStartX, sliderEndX, renderProgress), centerY)
-        val sliderFull = Vec2d(sliderEndX, centerY)
+        val sliderBegin = Vec2d(sliderStartX, centerY + 7)
+        val sliderEnd = Vec2d(lerp(sliderStartX, sliderEndX, renderProgress), centerY + 9)
+        val sliderFull = Vec2d(sliderEndX, centerY + 9)
 
         if (typing) {
             val text = "${setting.name}: $typed"
             fr.drawString(text, Vec2d(startX, centerY), scale = ClickGui.settingFontSize)
             return
         } else {
-            if (sliding) {
-                RenderUtils2D.drawLine(
-                    sliderBegin,
-                    sliderFull,
-                    2.0f,
-                    Color(90, 90, 90)
-                )
-
-                RenderUtils2D.drawLine(
-                    sliderBegin,
-                    sliderEnd,
-                    2.0f,
-                    Color.WHITE
-                )
-            }
+            //if (sliding) {
+            RectBuilder(sliderBegin, sliderFull).color(Color(150, 150, 150, 110)).radius(2.3).draw()
+            RectBuilder(sliderBegin, sliderEnd).color(Color(210, 210, 210)).radius(2.3).draw()
+            RectBuilder(sliderEnd.minus(3.0, 3.0), sliderEnd.plus(1.0, 1.0)).color(Color(210, 210, 210)).radius(1.8).draw()
 
             val text1 = setting.name
             val text2 = formattedName

@@ -1,13 +1,11 @@
 package com.curseclient.client.utility.render
 
-import com.curseclient.client.module.modules.client.ClickGui
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.interpolateFloat
 import com.curseclient.client.utility.math.MathUtils.interpolateInt
 import com.curseclient.client.utility.math.MathUtils.lerp
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.glColor4f
-import sun.plugin2.util.ColorUtil
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.max
@@ -18,11 +16,50 @@ object ColorUtils {
 
     const val ONE_THIRD = 1.0f / 3.0f
     const val TWO_THIRD = 2.0f / 3.0f
-    var counter1 = intArrayOf(1)
 
-    fun getRandomColor(): Color {
-        return Color(Color.HSBtoRGB(Math.random().toFloat(), (.5 + Math.random() / 2).toFloat(), (.5 + Math.random() / 2f).toFloat()))
+    fun mixColors(color1: Color, color2: Color, percent: Double): Color {
+        val inverse_percent = 1.0 - percent
+        val redPart = (color1.red * percent + color2.red * inverse_percent).toInt()
+        val greenPart = (color1.green * percent + color2.green * inverse_percent).toInt()
+        val bluePart = (color1.blue * percent + color2.blue * inverse_percent).toInt()
+        return Color(redPart, greenPart, bluePart)
     }
+
+    fun blendColors(fractions: FloatArray?, colors: Array<Color>?, progress: Float): Color {
+        requireNotNull(fractions) { "Fractions can't be null" }
+        requireNotNull(colors) { "Colours can't be null" }
+
+        if (fractions.size == colors.size) {
+            val fractionBlack = getFraction(fractions, progress)
+            val range = floatArrayOf(fractions[fractionBlack[0]], fractions[fractionBlack[1]])
+            val colorRange = arrayOf(colors[fractionBlack[0]], colors[fractionBlack[1]])
+            val max = range[1] - range[0]
+            val value = progress - range[0]
+            val weight = value / max
+            return blend(colorRange[0], colorRange[1], 1.0f - weight)
+        } else {
+            throw IllegalArgumentException("Fractions and colours must have an equal number of elements")
+        }
+    }
+
+    private fun blend(c1: Color, c2: Color, ratio: Float): Color {
+        val r = (c1.red * ratio + c2.red * (1 - ratio)).toInt()
+        val g = (c1.green * ratio + c2.green * (1 - ratio)).toInt()
+        val b = (c1.blue * ratio + c2.blue * (1 - ratio)).toInt()
+        val a = (c1.alpha * ratio + c2.alpha * (1 - ratio)).toInt()
+        return Color(r, g, b, a)
+    }
+
+    private fun getFraction(fractions: FloatArray, progress: Float): IntArray {
+        var start = 0
+        var end = 1
+        while (end < fractions.size && progress > fractions[end]) {
+            start = end
+            end++
+        }
+        return intArrayOf(start, end)
+    }
+
 
     fun changeAlpha(origColor: Int, userInputedAlpha: Int): Int {
         var origColor = origColor

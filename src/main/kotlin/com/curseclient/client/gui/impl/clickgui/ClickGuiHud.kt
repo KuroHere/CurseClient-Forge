@@ -19,7 +19,7 @@ class ClickGuiHud : AbstractGui() {
 
     override fun onRegister() =
         Category.values().forEachIndexed { index, category ->
-            val panel = CategoryPanel(Vec2d(3.0 + index.toDouble() * (ClickGui.width + 3.0), 5.0), 0.0, 0.0, this, category)
+            val panel = CategoryPanel(Vec2d(3.0 + index.toDouble() * (ClickGui.width + 3.0), 5.0), 0.0, 0.0, 0, this, category)
             panel.onRegister()
             panels.add(panel)
 

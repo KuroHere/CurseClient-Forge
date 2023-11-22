@@ -4,6 +4,7 @@ import com.curseclient.CurseClient
 import com.curseclient.client.Client
 import com.curseclient.client.gui.impl.maingui.elements.GeneralButton
 import com.curseclient.client.gui.impl.maingui.elements.MusicButton
+import com.curseclient.client.gui.impl.particles.mouse.OsuLightTrail
 import com.curseclient.client.gui.impl.particles.mouse.ParticleManager
 import com.curseclient.client.manager.managers.SongManager
 import com.curseclient.client.module.modules.client.HUD
@@ -16,9 +17,9 @@ import com.curseclient.client.utility.render.font.FontUtils.getHeight
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.shader.GradientUtil
+import com.curseclient.client.utility.render.shader.RoundedUtil
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.curseclient.client.utility.songs.Song.Companion.song_name
-import com.curseclient.client.utility.render.shader.RoundedUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -35,6 +36,7 @@ class MainGui: GuiScreen() {
     private val songManager = SongManager // Create SongManager instance
     private var scaledResolution: ScaledResolution? = null
     private val particleMang: ParticleManager = ParticleManager()
+    private val trailMang: OsuLightTrail = OsuLightTrail()
     override fun initGui() {
 
         this.playMusic()
@@ -112,9 +114,12 @@ class MainGui: GuiScreen() {
         GL11.glPopMatrix()
         GL11.glDisable(GL11.GL_BLEND)
 
-        particleMang.addParticle(mouseX.toDouble(), mouseY.toDouble())
-        particleMang.renderParticles(mouseX, mouseY)
+        trailMang.addToTrail(mouseX.toDouble(), mouseY.toDouble())
+        trailMang.renderTrail()
 
+        // Text Particle
+        //particleMang.addParticle(mouseX.toDouble(), mouseY.toDouble())
+        //particleMang.renderParticles(mouseX, mouseY)
     }
 
     private fun musicElement() {
@@ -171,8 +176,13 @@ class MainGui: GuiScreen() {
         val cheat = "Best 1.12.2 cheat"
         val version = "Version ${Client.VERSION} Beta"
 
+        // Dont know why I'm doing that ?
+        val love = "Made by KuroHere with an abundance of love ♥."
+        val firstPartOfLove = love.substring(0, 43) // "Made by KuroHere with an abundance of love"
+        val secondPartOfLove = love.substring(43)   // "♥"
+
         // Draw gradient, logo, cheat, version, line, and shadow
-        drawTextWithGradient(fr, x, logo, cheat, version, fontColor1, fontColor2)
+        drawTextWithGradient(fr, x, logo, cheat, version, firstPartOfLove, secondPartOfLove, fontColor1, fontColor2)
         drawLineAndShadow(fr, x, logo, fontColor1, fontColor2)
 
         val creditInfo = "Copyright Mojang AB. Do not distribute!"
@@ -188,13 +198,20 @@ class MainGui: GuiScreen() {
             color = Color.WHITE, scale = 0.6)
     }
 
-    private fun drawTextWithGradient(fr: Fonts, x: Int, logo: String, cheat: String, version: String, fontColor1: Color, fontColor2: Color) {
+    private fun drawTextWithGradient(fr: Fonts, x: Int, logo: String, cheat: String, version: String, love1: String, love2: String, fontColor1: Color, fontColor2: Color) {
         resetColor()
         GradientUtil.applyGradientHorizontal(x.toFloat(), 30f, x + fr.getStringWidth(logo, 8.1).toFloat() + fr.getStringWidth(version, 1.1).toFloat(), 30f + fr.getHeight(8.1).toFloat(), 1f, fontColor1, fontColor2) {
             RoundedUtil.setAlphaLimit(0f)
             fr.drawString(logo, Vec2d(x - 67, 67), false, color = Color.WHITE, scale = 8.1)
             fr.drawString(version, Vec2d(fr.getStringWidth(logo, 8.1).toInt() + x - 72, 37),
                 shadow = false, color = Color.WHITE, scale = 1.1)
+        }
+        fr.drawString(love1, Vec2d((width.toFloat() / 2.0f - fr.getStringWidth(love1, 0.7) / 2), height.toDouble() - fr.getHeight(0.7)), color =  Color(255, 255, 255, 100), scale = 0.7)
+        resetColor()
+        // I Hate x y z width height, so it just a two gradient color mix together and make pink color...
+        GradientUtil.applyGradientCornerLR((width.toFloat() / 2.0f + fr.getStringWidth(love1, 0.7) / 2).toFloat(), 0f, (width.toFloat() / 2.0f + fr.getStringWidth(love1, 0.7)).toFloat(), (height - fr.getHeight(0.7)).toFloat(), 1f, Color.RED, Color.white) {
+            RoundedUtil.setAlphaLimit(0f)
+            fr.drawString(love2, Vec2d((width.toFloat() / 2.0f + fr.getStringWidth(love1, 0.7) / 2), height.toDouble() - fr.getHeight(0.7)), color = Color(255, 255, 255, 100), scale = 0.7)
         }
         fr.drawString(cheat, Vec2d(fr.getStringWidth(logo, 7.6).toInt() + x - 153, 107),
             shadow = false, color = Color.WHITE, scale = 1.6)

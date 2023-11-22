@@ -3,14 +3,14 @@ package com.curseclient
 import baritone.api.utils.Helper.mc
 import com.curseclient.client.Client
 import com.curseclient.client.Loader
+import com.curseclient.client.extension.Thingy
+import com.curseclient.client.extension.tracker.Tracker
 import com.curseclient.client.manager.managers.ModuleManager
 import com.curseclient.client.manager.managers.SongManager
 import com.curseclient.client.utility.SoundUtils
 import com.curseclient.client.utility.render.IconUtils
-import com.curseclient.client.utility.render.text.TitleUtils
-import com.curseclient.client.extension.Thingy
-import com.curseclient.client.extension.tracker.Tracker
 import com.curseclient.client.utility.render.SplashProgress
+import com.curseclient.client.utility.render.text.TitleUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.crash.CrashReport
 import net.minecraft.util.Util
@@ -41,7 +41,7 @@ class CurseClient {
         lateinit var directory: File
         const val DEPENDENCIES = "required-after:forge@[14.23.5.2860,);"
         const val DIR = "CurseClient"
-        const val Curse = "ℭ"
+        var initTime: Long = 0
         val LOG: Logger = LogManager.getLogger(Client.NAME)
         var instance: CurseClient? = null
         lateinit var songManager: SongManager
@@ -52,6 +52,7 @@ class CurseClient {
 
     @Mod.EventHandler
     fun preInit(event: FMLPreInitializationEvent) {
+        initTime = System.currentTimeMillis();
 
         LOG.info("Pre init started")
         val t = System.currentTimeMillis()
@@ -64,6 +65,7 @@ class CurseClient {
         Loader.onPreLoad()
 
         LOG.info("Pre init completed, took: ${(System.currentTimeMillis() - t)}ms")
+        initTime = System.currentTimeMillis();
     }
 
     fun getDirectory(): File {

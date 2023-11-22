@@ -3,6 +3,7 @@ package com.curseclient.mixin.render;
 import com.curseclient.client.event.EventBus;
 import com.curseclient.client.event.events.render.RenderEntityEvent;
 import com.curseclient.client.event.events.render.ShouldSetupTerrainEvent;
+import com.curseclient.client.events.EventRenderSky;
 import com.curseclient.client.module.modules.client.PerformancePlus;
 import com.curseclient.client.module.modules.visual.SelectionHighlight;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -20,6 +21,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(RenderGlobal.class)
 public class MixinRenderGlobal {
 
+    @Inject(method = "renderSky(FI)V", at = @At("HEAD"), cancellable = true)
+    private void renderSkyMixin(float partialTicks, int pass, CallbackInfo ci) {
+        boolean cancelled = renderSkyHook(); // Gọi sự kiện renderSkyHook()
+
+        if (cancelled) {
+            ci.cancel(); // Huỷ việc gọi hàm gốc nếu sự kiện đã bị huỷ
+        }
+    }
+
+    private static boolean renderSkyHook() {
+        final EventRenderSky event = new EventRenderSky();
+        EventBus.INSTANCE.post(event);
+
+        return event.isCancelled();
+    }
     @Inject(method = "renderEntities", at = @At("HEAD"))
     public void renderEntitiesHead(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo ci) {
         RenderEntityEvent.setRenderingEntities(true);

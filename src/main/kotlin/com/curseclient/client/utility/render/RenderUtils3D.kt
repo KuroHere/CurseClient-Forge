@@ -1,5 +1,6 @@
 package com.curseclient.client.utility.render
 
+import com.curseclient.CurseClient
 import com.curseclient.client.event.SafeClientEvent
 import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.utility.extension.mixins.renderPosX
@@ -21,6 +22,8 @@ import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL32
 import java.awt.Color
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 object RenderUtils3D {

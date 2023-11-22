@@ -1,16 +1,12 @@
 package com.curseclient.client.module.modules.visual
 
 import com.curseclient.client.core.block.block
-import com.curseclient.client.event.events.render.Render3DEvent
-import com.curseclient.client.event.events.render.ComputeVisibilityEvent
-import com.curseclient.client.event.events.render.RenderPutColorMultiplierEvent
-import com.curseclient.client.event.events.render.ShouldSetupTerrainEvent
+import com.curseclient.client.event.events.render.*
 import com.curseclient.client.event.events.world.SetOpaqueCubeEvent
 import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.setting.setting
-import com.curseclient.client.events.CanRenderInLayerEvent
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
@@ -162,7 +158,7 @@ object WallHack: Module(
         }
 
         safeListener<CanRenderInLayerEvent> { event ->
-            if (!containsBlock(event.block)) event.blockRenderLayer = BlockRenderLayer.TRANSLUCENT
+            if (!containsBlock(event.gettingBlock())) event.blockRenderLayer = BlockRenderLayer.TRANSLUCENT
         }
 
 

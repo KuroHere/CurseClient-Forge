@@ -81,11 +81,11 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
 
         val c1 = if (ClickGui.colorMode == ClickGui.ColorMode.Client)
             HUD.getColor(index)
-        else ClickGui.buttonColor1
+        else if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
 
         val c2 = when(ClickGui.colorMode) {
             ClickGui.ColorMode.Client -> HUD.getColor(index + 1)
-            ClickGui.ColorMode.Static -> ClickGui.buttonColor1
+            ClickGui.ColorMode.Static -> if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
             else -> ClickGui.buttonColor2
         }
 

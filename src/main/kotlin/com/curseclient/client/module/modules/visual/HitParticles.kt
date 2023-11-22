@@ -2,6 +2,7 @@ package com.curseclient.client.module.modules.visual
 
 import baritone.api.utils.Helper
 import com.curseclient.client.event.events.AttackEvent
+import com.curseclient.client.event.events.EventUpdate
 import com.curseclient.client.event.events.render.Render3DEvent
 import com.curseclient.client.event.listener.Nameable
 import com.curseclient.client.event.listener.safeListener
@@ -20,10 +21,10 @@ import com.curseclient.client.utility.render.RenderUtils3D
 import com.curseclient.client.utility.render.graphic.GLUtils.draw
 import com.curseclient.client.utility.render.graphic.GLUtils.matrix
 import com.curseclient.client.utility.render.graphic.GLUtils.renderGL
-import com.curseclient.client.events.EventUpdate
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Blocks
 import net.minecraft.util.EnumParticleTypes
@@ -94,7 +95,7 @@ object HitParticles : Module(
                         Block.getStateId(Blocks.REDSTONE_BLOCK.defaultState))
                 }
             }
-            if (it.entity !is EntityEnderCrystal && sound && blood) {
+            if (it.entity !is EntityEnderCrystal && it.entity !is EntityDragon && sound && blood) {
                 var bloodSound = ""
                 when (MathUtils.random(1f, 3f).toInt()) {
                     1 -> bloodSound = "blood1.wav"

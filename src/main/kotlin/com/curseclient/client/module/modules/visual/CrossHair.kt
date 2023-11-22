@@ -1,9 +1,9 @@
 package com.curseclient.client.module.modules.visual
 
 import baritone.api.utils.Helper
+import com.curseclient.client.event.events.EventUpdate
 import com.curseclient.client.event.events.render.Render2DEvent
 import com.curseclient.client.event.listener.safeListener
-import com.curseclient.client.events.EventUpdate
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.setting.setting
@@ -50,12 +50,13 @@ object CrossHair : Module(
 
     init {
         safeListener<EventUpdate> {
-            if ((Helper.mc.objectMouseOver != null) and (Helper.mc.objectMouseOver.entityHit != null)) {
-                if (Helper.mc.objectMouseOver.entityHit is EntityLivingBase) {
-                    target = Helper.mc.objectMouseOver.entityHit as EntityLivingBase
+            if ((mc.objectMouseOver != null) and (mc.objectMouseOver.entityHit != null)) {
+                if (mc.objectMouseOver.entityHit is EntityLivingBase) {
+                    target = mc.objectMouseOver.entityHit as EntityLivingBase
                 }
             }
         }
+
         safeListener<Render2DEvent> {
             val sr = ScaledResolution(this.mc)
             
@@ -66,9 +67,8 @@ object CrossHair : Module(
             val width: Float = width.toFloat()
             val fill_color = Color(color.r, color.g, color.b)
             val outline_color = Color(outlineColor.r, outlineColor.g, outlineColor.b)
-            val target = target/* ?: RaycastUtils.raycastEntity(Reach.hitReach.toDouble()) {
-            it is EntityLivingBase
-        } as EntityLivingBase? */
+            val target = target /*?: RayCastUtils.raycastEntity(Reach.amount.toDouble()) {
+            it is EntityLivingBase } as EntityLivingBase? */
             if (hitMarkerValue && target != null && target.hurtTime > 0) {
                 GL11.glPushMatrix()
                 GlStateManager.enableBlend()
@@ -98,7 +98,6 @@ object CrossHair : Module(
                 GL11.glPopMatrix()
             }
 
-            
             if (crossHair && outline) {
                 moving_locate = if (isMoving() && gapMode === GapMode.Dynamic) {
                     gapSize.toFloat()

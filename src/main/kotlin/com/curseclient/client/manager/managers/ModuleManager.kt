@@ -8,6 +8,7 @@ import com.curseclient.client.module.Module
 import com.curseclient.client.module.modules.client.*
 import com.curseclient.client.module.modules.combat.*
 import com.curseclient.client.module.modules.hud.*
+import com.curseclient.client.module.modules.hud.TargetHUD.TargetHUD
 import com.curseclient.client.module.modules.hud.graph.FpsGraph
 import com.curseclient.client.module.modules.hud.graph.MovementGraph
 import com.curseclient.client.module.modules.hud.modulelist.ModuleList
@@ -82,7 +83,6 @@ object ModuleManager: Manager("ModuleManager") {
             DeathSounds,
             Surround,
             HoleFiller,
-            AntiWeather,
 
             //movement
             ElytraFlight,
@@ -107,6 +107,8 @@ object ModuleManager: Manager("ModuleManager") {
             TargetStrafe,
 
             //player
+            PenisESP,
+            TwoDESP,
             AntiHunger,
             AntiRotate,
             AntiServerSlot,
@@ -124,6 +126,7 @@ object ModuleManager: Manager("ModuleManager") {
             Timer,
 
             //visual
+            CustomSky,
             PerspectiveMod,
             CustomModel,
             Ambience,

@@ -14,6 +14,7 @@ import com.curseclient.client.utility.math.MathUtils.toInt
 import com.curseclient.client.utility.player.Rotations.getRotationsByMode
 import com.curseclient.client.utility.player.RotationsMode
 import com.curseclient.client.utility.player.TargetingUtils
+import com.curseclient.client.utility.render.RenderUtils3D
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.CPacketEntityAction

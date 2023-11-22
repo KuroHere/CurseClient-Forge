@@ -12,6 +12,7 @@ import com.curseclient.client.utility.extension.transformIf
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.math.MathUtils.toInt
+import com.curseclient.client.utility.render.ColorUtils
 import com.curseclient.client.utility.render.ColorUtils.setAlphaD
 import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.HoverUtils
@@ -23,18 +24,17 @@ import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
+import java.awt.Color
 import kotlin.math.max
 import kotlin.math.sign
 
-class CategoryPanel(pos: Vec2d, width: Double, height: Double, gui: AbstractGui, val category: Category) : DraggableElement(pos, width, height, gui) {
+class CategoryPanel(pos: Vec2d, width: Double, height: Double, var index: Int, gui: AbstractGui, val category: Category) : DraggableElement(pos, width, height, gui) {
 
     private lateinit var icon:String
 
     override fun onRegister() {
         modules.addAll(ModuleManager.getModules().filter { it.category == category }.map { ModuleButton(it, 0, true, gui as com.curseclient.client.gui.impl.clickgui.ClickGuiHud, this) })
         modules.forEach { it.onRegister() }
-
-
     }
     override fun onGuiCloseAttempt() {}
 
@@ -94,10 +94,20 @@ class CategoryPanel(pos: Vec2d, width: Double, height: Double, gui: AbstractGui,
 
         val radius = ClickGui.panelRound
 
-        RectBuilder(pos, pos.plus(width, height + windowHeight)).color(ClickGui.backgroundColor).radius(radius).draw()
+        val c1 = if (ClickGui.colorMode == ClickGui.ColorMode.Client)
+            HUD.getColor(index)
+        else if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
+
+        val c2 = when(ClickGui.colorMode) {
+            ClickGui.ColorMode.Client -> HUD.getColor(index + 1)
+            ClickGui.ColorMode.Static -> if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
+            else -> ClickGui.buttonColor2
+        }
+
+        RectBuilder(pos, pos.plus(width, height + windowHeight)).outlineColor(c1, c2, c1, c2).width(ClickGui.outlineWidth).color(ClickGui.backgroundColor).radius(radius).draw()
 
         val textPos = pos.plus(width / 2.0 - Fonts.DEFAULT_BOLD.getStringWidth(category.displayName, ClickGui.titleFontSize) / 2.0 - 5, height / 2.0)
-        Fonts.DEFAULT_BOLD.drawString(category.displayName, textPos, scale = ClickGui.titleFontSize, color = HUD.getColor(-1))
+        Fonts.DEFAULT_BOLD.drawString(category.displayName, textPos, scale = ClickGui.titleFontSize, color = c2)
 
         val p1 = pos.plus(0.0, height)
         val p2 = pos.plus(width, height + windowHeight)
@@ -119,7 +129,7 @@ class CategoryPanel(pos: Vec2d, width: Double, height: Double, gui: AbstractGui,
 
         val textWidth = Fonts.DEFAULT_BOLD.getStringWidth(category.name + " ") / 2f
         val iconPos = pos.plus(width / 2 + textWidth, (height / 2.0) + 3)
-        Fonts.BonIcon.drawString(icon, iconPos, scale = ClickGui.titleFontSize, color = HUD.getColor(-1))
+        Fonts.BonIcon.drawString(icon, iconPos, scale = ClickGui.titleFontSize, color = c2)
 
         toggleScissor(true)
         scissor(p1, p2.minus(0.0, radius), gui.currentScale * 2.0) {
@@ -132,7 +142,7 @@ class CategoryPanel(pos: Vec2d, width: Double, height: Double, gui: AbstractGui,
 
         val dragText = "•••"
         val dragTextPos = pos.plus(width / 2.0 - Fonts.DEFAULT_BOLD.getStringWidth(dragText) * 0.5, height + windowHeight - radius)
-        Fonts.DEFAULT_BOLD.drawString(dragText, dragTextPos, color = HUD.getColor(-1).setAlphaD(windowHeight / targetWindowHeight))
+        Fonts.DEFAULT_BOLD.drawString(dragText, dragTextPos, color = c2.setAlphaD(windowHeight / targetWindowHeight))
     }
 
     private fun scroll() {

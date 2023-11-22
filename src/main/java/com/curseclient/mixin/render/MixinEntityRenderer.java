@@ -2,6 +2,7 @@ package com.curseclient.mixin.render;
 
 import com.curseclient.client.event.EventBus;
 import com.curseclient.client.event.events.render.Render2DEvent;
+import com.curseclient.client.events.EventRenderSky;
 import com.curseclient.client.manager.managers.ModuleManager;
 import com.curseclient.client.module.modules.client.PerformancePlus;
 import com.curseclient.client.module.modules.player.NoEntityTrace;
@@ -40,6 +41,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.awt.*;
 import java.util.ArrayList;

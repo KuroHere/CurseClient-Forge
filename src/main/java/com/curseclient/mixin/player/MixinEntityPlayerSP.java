@@ -1,12 +1,12 @@
 package com.curseclient.mixin.player;
 
 import com.curseclient.client.event.EventBus;
+import com.curseclient.client.event.events.EventUpdate;
 import com.curseclient.client.event.events.MoveEvent;
 import com.curseclient.client.event.events.PushOutOfBlocksEvent;
 import com.curseclient.client.manager.managers.PacketManager;
 import com.curseclient.client.module.modules.player.FreeCam;
 import com.curseclient.client.utility.Wrapper;
-import com.curseclient.client.events.EventUpdate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.MoverType;

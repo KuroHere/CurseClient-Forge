@@ -12,7 +12,7 @@ import com.curseclient.client.utility.render.ColorUtils.r
 import java.awt.Color
 
 object HitColour : Module(
-    "HitColour",
+    "DamageTint",
     "Change the colour entities are rendered in when hit",
     Category.VISUAL
 ) {

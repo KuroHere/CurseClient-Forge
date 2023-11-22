@@ -12,12 +12,12 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
+import java.awt.Color
 import kotlin.collections.ArrayList
 
 class ParticleManager {
     private val particles: MutableList<Particle> = ArrayList()
     private var lastParticleTime: Long = System.currentTimeMillis()
-
     private val particleAlpha: AnimationFlag = AnimationFlag { time, prev, current ->
         AnimationUtils.animate(current, prev, 1.0, time)
     }

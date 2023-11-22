@@ -15,6 +15,18 @@ open class Timer {
         return System.currentTimeMillis() - time >= ms
     }
 
+    fun getCurrentMS(): Long {
+        return System.nanoTime() / 1000000L
+    }
+
+    fun getElapsedTime(): Long {
+        return System.currentTimeMillis() - lastMS
+    }
+
+    fun hasReached(milliseconds: Long): Boolean {
+        return getCurrentMS() - lastMS >= milliseconds
+    }
+
     fun getTime(): Long {
         return System.currentTimeMillis() - lastMS
     }

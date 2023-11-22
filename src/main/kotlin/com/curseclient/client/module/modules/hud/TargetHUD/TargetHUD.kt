@@ -1,5 +1,8 @@
-package com.curseclient.client.module.modules.hud
+package com.curseclient.client.module.modules.hud.TargetHUD
 
+import baritone.api.utils.Helper
+import com.curseclient.client.event.events.EventUpdate
+import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.module.DraggableHudModule
 import com.curseclient.client.module.HudCategory
 import com.curseclient.client.module.modules.client.HUD
@@ -7,21 +10,21 @@ import com.curseclient.client.module.modules.client.HudEditor
 import com.curseclient.client.module.modules.combat.CrystalAura
 import com.curseclient.client.module.modules.combat.KillAura
 import com.curseclient.client.setting.setting
-import com.curseclient.client.utility.render.animation.EaseUtils.ease
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.math.MathUtils.roundToPlaces
 import com.curseclient.client.utility.math.MathUtils.toIntSign
-import com.curseclient.client.utility.render.animation.NewEaseType
-import com.curseclient.client.utility.render.vector.Vec2d
 import com.curseclient.client.utility.render.ColorUtils.setAlphaD
-import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.RenderUtils2D
+import com.curseclient.client.utility.render.animation.EaseUtils.ease
+import com.curseclient.client.utility.render.animation.NewEaseType
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getHeight
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
+import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.shader.RectBuilder
+import com.curseclient.client.utility.render.vector.Vec2d
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -43,6 +46,17 @@ object TargetHUD : DraggableHudModule(
 
     private var info = TargetInfo.BLANK
     private var healthProgress = 0.0
+    private var target: EntityLivingBase? = null
+
+    init {
+        safeListener<EventUpdate> {
+            if ((Helper.mc.objectMouseOver != null) and (Helper.mc.objectMouseOver.entityHit != null)) {
+                if (Helper.mc.objectMouseOver.entityHit is EntityLivingBase) {
+                    target = Helper.mc.objectMouseOver.entityHit as EntityLivingBase
+                }
+            }
+        }
+    }
 
     override fun onRender() {
         update()
@@ -137,6 +151,7 @@ object TargetHUD : DraggableHudModule(
         val fr = Fonts.DEFAULT_BOLD
         val textPos = Vec2d(healthBgPos1.x, hTextPos.y - 3.0 - fr.getHeight() * 0.5)
         fr.drawString(info.name, textPos, false, fontColor)
+
     }
 
     private fun update() {
