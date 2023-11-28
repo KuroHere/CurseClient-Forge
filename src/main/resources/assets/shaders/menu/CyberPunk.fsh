@@ -5,7 +5,7 @@ precision mediump float;
 #endif
 
 
-#extension GL_OES_standard_derivatives : enable
+//#extension GL_OES_standard_derivatives : enable
 
 uniform float time;
 uniform vec2 resolution;
@@ -14,7 +14,7 @@ float iTime;
 //#define FAST_DESCENT
 
 #ifdef FAST_DESCENT
-const vec3 cameraDir = normalize(vec3(-2.0, -1.0, -4.0));
+vec3 cameraDir = normalize(vec3(-2.0, -1.0, -4.0));
 const float cameraDist = 5.0;
 const float speed = 3.0;
 const float zoom = 2.5;
@@ -34,7 +34,7 @@ const vec3 lightColorB = vec3(1.0, 0.6, 0.3);
 const vec3 signColorA = vec3(0.0, 0.0, 1.5);
 const vec3 signColorB = vec3(3.0, 3.0, 3.0);
 #else
-const vec3 cameraDir = normalize(vec3(-2.0, -1.0, -2.0));
+vec3 cameraDir = normalize(vec3(-2.0, -1.0, -2.0));
 const float cameraDist = 9.0;
 const float speed = 1.0;
 const float zoom = 3.5;

@@ -16,7 +16,6 @@ import com.curseclient.client.utility.extension.mixins.timer
 import com.curseclient.client.utility.render.ColorUtils
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.mixin.accessor.render.AccessorEntityRenderer
-import com.sun.org.apache.regexp.internal.RE
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.EntityRenderer
