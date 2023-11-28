@@ -32,6 +32,7 @@ object HUD : Module(
     enabledByDefault = true
 ) {
 
+    val everyRectBuilderGlow by setting("EveryRectBuilderGlow", false)
     val page by setting("Page", Page.Client)
 
     //Client
@@ -42,7 +43,6 @@ object HUD : Module(
     //Game
 
     val containerBackground by setting("Container-Background", false, visible = { page == Page.Game })
-    val containerButton by setting("Container-Button", Button.TopLeft, visible = { page == Page.Game })
     val guiButtonStyle by setting("Button-Style", ButtonStyle.Minecraft, visible = { page == Page.Game })
     val particles by setting("Particle ", false, visible = { page == Page.Game })
 

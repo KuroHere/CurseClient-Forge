@@ -1,18 +1,28 @@
 package com.curseclient.client.utility.render.shader
 
+import com.curseclient.client.module.modules.client.ClickGui
+import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.utility.math.Quad
+import com.curseclient.client.utility.render.ColorUtils.glColor
+import com.curseclient.client.utility.render.RenderUtils2D
+import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.vector.Vec2d
+import com.jhlabs.image.GaussianFilter
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.texture.TextureUtil
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
+import java.awt.image.BufferedImage
+import kotlin.math.max
 import kotlin.math.min
 
 class RectBuilder(val pos1: Vec2d, val pos2: Vec2d) {
     private var colorIn = Quad<Color>(Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE)
     private var colorOut = Quad<Color>(Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE)
 
+    private var blurRadius = 0.0f
     private var roundRadius = 0.0f
     private var outlineWidth = 0.0f
 
@@ -50,6 +60,11 @@ class RectBuilder(val pos1: Vec2d, val pos2: Vec2d) {
     fun radius(value: Double) = this.apply { roundRadius = value.toFloat() }
 
     fun width(value: Double) = this.apply { outlineWidth = value.toFloat() }
+
+    // Don't know why I'm doing that...
+    fun drawBlurredShadow(xIn: Float, yIn: Float, widthIn: Float, heightIn: Float, blurRadiusIn: Int, colorIn: Color) {
+        RenderUtils2D.drawBlurredShadow(xIn, yIn, widthIn, heightIn, blurRadiusIn, colorIn)
+    }
 
     companion object {
         private val sizeUniform by lazy { Shaders.rectShader.getUniform("size") }
@@ -94,6 +109,10 @@ class RectBuilder(val pos1: Vec2d, val pos2: Vec2d) {
         val scale = sr.scaleFactor.toFloat()
         val radius = min(roundRadius, min(width, height) / 2.0f)
 
+        //This one too ...
+        if (HUD.isEnabled() && HUD.everyRectBuilderGlow && ClickGui.colorMode != ClickGui.ColorMode.Shader)
+        drawBlurredShadow(x, y, width, height, 10, colorIn.first)
+
         GlStateManager.resetColor()
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -124,6 +143,7 @@ class RectBuilder(val pos1: Vec2d, val pos2: Vec2d) {
         }
         glEnable(GL_ALPHA_TEST)
         GlStateManager.disableBlend()
+
 
         return this
     }

@@ -100,6 +100,5 @@ class WingModel : ModelBase(), LayerRenderer<AbstractClientPlayer> {
         p_177141_7_: Float,
         scale: Float
     ) {
-        // TODO Auto-generated method stub
     }
 }

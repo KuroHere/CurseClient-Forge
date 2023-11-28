@@ -51,6 +51,7 @@ class ClickCircle(var x: Float, var y: Float, private var seconds: Int, var radi
         val f2 = (color shr 8 and 0xFF) / 255.0f
         val f3 = (color and 0xFF) / 255.0f
         GL11.glDisable(2929)
+        GL11.glPushMatrix()
         GL11.glEnable(3042)
         GL11.glDisable(3553)
         GL11.glBlendFunc(770, 771)
@@ -75,6 +76,7 @@ class ClickCircle(var x: Float, var y: Float, private var seconds: Int, var radi
         GL11.glScalef(2.0f, 2.0f, 2.0f)
         GL11.glEnable(3553)
         GL11.glDisable(3042)
+        GL11.glPopMatrix()
         GL11.glEnable(2929)
         GL11.glDisable(2848)
         GL11.glHint(3154, 4352)

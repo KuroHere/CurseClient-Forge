@@ -35,6 +35,14 @@ open class Timer {
         return System.currentTimeMillis() - lastMS > time
     }
 
+    fun hasTimeElapsed(time: Long, reset: Boolean): Boolean {
+        if (System.currentTimeMillis() - lastMS > time) {
+            if (reset) reset()
+            return true
+        }
+        return false
+    }
+
     fun setTime(time: Long) {
         lastMS = time
     }

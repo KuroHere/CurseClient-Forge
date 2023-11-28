@@ -42,14 +42,17 @@ object DeadEffect : Module(
 
 
     private fun smite(entity: Entity) {
-        if (range != 0.0 && entity.getDistance(mc.player) > range) return
+        val player = mc.player ?: return  // Check if mc.player is null, if so, return early
+
+        if (range != 0.0 && entity.getDistance(player) > range) return
+
         mainThread {
             if (fire) mc.effectRenderer.emitParticleAtEntity(entity, EnumParticleTypes.LAVA)
-            // Has to be on main thread
+            // Has to be on the main thread
             if (thunder) mc.world.spawnEntity(EntityLightningBolt(mc.world, entity.posX, entity.posY, entity.posZ, true))
         }
 
-        if (thunder) mc.world.run {
+        if (thunder) mc.world?.run {
             playSound(entity.position.up(5), ENTITY_LIGHTNING_THUNDER, MASTER, 10000f, 0.8f + Random.nextFloat() * 0.2f, false)
             playSound(entity.position.up(5), ENTITY_LIGHTNING_IMPACT, MASTER, 2f, 0.5f + Random.nextFloat() * 0.2f, false)
         }

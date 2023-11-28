@@ -26,7 +26,7 @@ import java.awt.Color
 
 object Watermark: DraggableHudModule(
     "Watermark",
-    "meow",
+    "Yes watermark (Not done yet)",
     HudCategory.HUD,
 ) {
     private val mode by setting("Mode", W_Mode.Modern)
@@ -34,6 +34,7 @@ object Watermark: DraggableHudModule(
     // Text
     private val textScale by setting("TextSize", 2.0, 1.5, 3.5, 0.1, visible = { mode == W_Mode.Text })
     private val version by setting("Version", true, visible = { mode == W_Mode.Text })
+    private val shadow by setting("Shadow", true, visible = { mode == W_Mode.Text})
     private val clientName by setting("CustomWatermark", "Curse", visible = { mode == W_Mode.Text })
 
     // Modern
@@ -123,7 +124,6 @@ object Watermark: DraggableHudModule(
     }
 
     private fun renderText(pos1: Vec2d, pos2: Vec2d, c1: Color, c2: Color) {
-
         val xVal = pos1.x + 6f
         val yVal = pos1.y + 6f
         val versionWidth = FontRenderer.getStringWidth(Client.VERSION, Fonts.DEFAULT, textScale.toFloat())
@@ -133,13 +133,15 @@ object Watermark: DraggableHudModule(
         } else {
             FontRenderer.getStringWidth(Client.NAME, Fonts.DEFAULT, textScale.toFloat())
         }
-
+        if (shadow) {
+            FontRenderer.drawString(clientName, xVal.toFloat(), yVal.toFloat(), true, Color.WHITE, textScale.toFloat(), Fonts.DEFAULT_BOLD)
+            if (version) {
+                FontRenderer.drawString(Client.VERSION, versionX.toFloat(), yVal.toFloat(), true, Color.WHITE, (if (textScale - 2f < 1) 1.5 else textScale / 2).toFloat(), Fonts.DEFAULT_BOLD)
+            }
+        }
         resetColor()
         GradientUtil.applyGradientHorizontal(xVal.toFloat(), yVal.toFloat(), width.toFloat(), 20F, 1F, c1, c2) {
             setAlphaLimit(0f)
-            val firstPart = Client.NAME.substring(0, 5) // "Curse"
-            val secondPart = Client.NAME.substring(5)   // "Client"
-
             FontRenderer.drawString(clientName, xVal.toFloat(), yVal.toFloat(), false, Color.WHITE, textScale.toFloat(), Fonts.DEFAULT_BOLD)
             if (version) {
                 FontRenderer.drawString(Client.VERSION, versionX.toFloat(), yVal.toFloat(), false, Color.WHITE, (if (textScale - 2f < 1) 1.5 else textScale / 2).toFloat(), Fonts.DEFAULT_BOLD)

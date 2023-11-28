@@ -23,9 +23,9 @@ import org.lwjgl.opengl.GL11.*
 import kotlin.math.cos
 import kotlin.math.sin
 
-object ChinaHat : Module(
-    "ChinaHat",
-    "China hat over your had",
+object ConicalHat : Module(
+    "ConicalHat",
+    "Conical from south east asia over your head",
     Category.VISUAL
 ) {
     private val self by setting("Self", true)

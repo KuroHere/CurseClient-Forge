@@ -1,4 +1,5 @@
 import baritone.api.utils.Helper
+import com.curseclient.CurseClient
 import com.curseclient.client.event.events.render.Render2DEvent
 import com.curseclient.client.event.events.render.Render3DEvent
 import com.curseclient.client.event.listener.safeListener
@@ -192,9 +193,16 @@ object GlowESP : Module(
 
     private fun renderEntities(ticks: Float) {
         entities.forEach { entity ->
-            renderNameTags = false
-            mc.renderManager.renderEntityStatic(entity, ticks, false)
-            renderNameTags = true
+            if (entity != null) {
+                try {
+                    renderNameTags = false
+                    mc.renderManager.renderEntityStatic(entity, ticks, false)
+                    renderNameTags = true
+                } catch (e: Exception) {
+                    CurseClient.LOG.debug("Crash rồi nhớ gửi crash log cho Kuro_Here nhé")
+                    e.printStackTrace()
+                }
+            }
         }
     }
 

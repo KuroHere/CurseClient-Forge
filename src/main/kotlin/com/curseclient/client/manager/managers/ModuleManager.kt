@@ -8,6 +8,7 @@ import com.curseclient.client.module.Module
 import com.curseclient.client.module.modules.client.*
 import com.curseclient.client.module.modules.combat.*
 import com.curseclient.client.module.modules.hud.*
+import com.curseclient.client.module.modules.hud.Status.Status
 import com.curseclient.client.module.modules.hud.TargetHUD.TargetHUD
 import com.curseclient.client.module.modules.hud.graph.FpsGraph
 import com.curseclient.client.module.modules.hud.graph.MovementGraph
@@ -25,6 +26,8 @@ object ModuleManager: Manager("ModuleManager") {
     fun getHudModules(): ArrayList<HudModule> {
         return arrayListOf(
             //hud
+            NewOverlay,
+            Status,
             Compass,
             MovementGraph,
             FpsGraph,
@@ -37,9 +40,7 @@ object ModuleManager: Manager("ModuleManager") {
             TargetHUD,
             Watermark,
         )
-
     }
-
 
     fun getModules(): ArrayList<Module> {
         return arrayListOf(
@@ -146,7 +147,7 @@ object ModuleManager: Manager("ModuleManager") {
             ViewLock,
             Chams,
             BlockESP,
-            ChinaHat,
+            ConicalHat,
             CrystalRenderer,
             CustomFov,
             ESP,

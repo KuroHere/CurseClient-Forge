@@ -68,6 +68,7 @@ configurations {
 dependencies {
 
     implementation 'org.jetbrains:annotations:24.0.0'
+    implementation 'org.projectlombok:lombok:1.18.28'
     minecraft ("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
 
     jarLibs('org.spongepowered:mixin:0.8.5') {

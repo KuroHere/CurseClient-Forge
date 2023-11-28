@@ -58,9 +58,6 @@ object MenuShader : Module(
     }
 
     override fun onEnable() {
-        if (type == ShaderType.City) {
-            NotificationUtils.notify("MenuShader", "Not recommend using this", NotificationType.INFO, descriptionColor = Color.ORANGE)
-        }
         NotificationUtils.notify("MenuShader", "Restart ur client when change shader", NotificationType.INFO, descriptionColor = Color.RED)
 
     }

@@ -11,5 +11,5 @@ enum class Category(val displayName: String) {
 }
 
 enum class HudCategory(val displayName: String) {
-    HUD("Hud")
+    HUD("Hud Editor")
 }

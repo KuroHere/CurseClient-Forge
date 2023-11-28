@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.curseclient.client.extension.Thingy.deltaTime;
+import static com.curseclient.client.utility.DeltaTime.deltaTime;
 import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.PLAYER_LIST;
 
 @Mixin(value = GuiIngameForge.class, remap = false)

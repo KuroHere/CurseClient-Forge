@@ -7,6 +7,7 @@ import com.curseclient.client.module.HudCategory
 import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.setting.setting
 import com.curseclient.client.utility.NotificationInfo
+import com.curseclient.client.utility.SoundUtils
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.player.ChatUtils
@@ -33,6 +34,8 @@ object Notifications : DraggableHudModule(
 ) {
     private val mode by setting("Mode", Mode.Transparent)
     private val widthSetting by setting("Width", 110.0, 80.0, 150.0, 1.0)
+    private val sound by setting("Sound", true)
+    private val volume by setting("Volume", 0.5, 0.1, 2.0, 0.1, visible = { sound })
     //private val heightSetting by setting("Height", 20.0, 14.0, 30.0, 1.0)
 
     val notificationList = ArrayList<Notification>()
@@ -74,6 +77,8 @@ object Notifications : DraggableHudModule(
 
         fun spawn() {
             notificationList.add(this)
+            if (sound)
+                SoundUtils.playSound(volume) { "pop.wav" }
         }
 
         fun draw(position: Vec2d) {

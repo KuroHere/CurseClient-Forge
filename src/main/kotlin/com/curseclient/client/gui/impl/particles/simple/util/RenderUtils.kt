@@ -1,6 +1,5 @@
 package com.curseclient.client.gui.impl.particles.simple.util
 
-import com.curseclient.client.utility.render.RenderTessellator.begin
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -120,7 +119,7 @@ object RenderUtils {
     }
 
 
-    fun polygon(x: Double, y: Double, sideLength: Double, amountOfSides: Double, filled: Boolean, color: Color?) {
+    private fun polygon(x: Double, y: Double, sideLength: Double, amountOfSides: Double, filled: Boolean, color: Color?) {
         var sideLength = sideLength
         sideLength /= 2
         start()

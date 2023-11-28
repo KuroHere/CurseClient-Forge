@@ -31,8 +31,8 @@ object FpsGraph: DraggableHudModule(
 
     //The amount of delay(ms) between updates.
     val delay by setting("Delay", 500.0f, 0.0f, 2500.0f, 100.0f)
-    val cWidth by setting("width", 80.0, 60.0, 120.0, 5.0)
-    val cHeight by setting("width", 30.0, 10.0, 50.0, 5.0)
+    val cWidth by setting("Width", 80.0, 60.0, 120.0, 5.0)
+    val cHeight by setting("Height", 30.0, 10.0, 50.0, 5.0)
     private val fpsNodes: ArrayList<FpsNode> = ArrayList<FpsNode>()
     private val timer: Timer = Timer()
 
@@ -61,12 +61,12 @@ object FpsGraph: DraggableHudModule(
             val pos2 = Vec2d(pos.x + this.getWidth(), pos.y + this.getHeight())
 
             // shadow
-            RenderUtils2D.drawBlurredRect(Vec2d(pos.x - 4, pos.y - 10), pos2.plus(4.0, 4.0), 15, c1.darker().darker())
+            RenderUtils2D.drawBlurredRect(Vec2d(pos.x - 4, pos.y - 10), pos2.plus(4.0, 4.0), 10, c1.darker().darker())
 
             // border
 
             //RectBuilder(Vec2d(pos.x - 4, pos.y - 7), pos2.plus(4.0, 4.0)).outlineColor(c2.brighter(), c2.brighter(), c1.brighter(), c1.brighter()).width(0.5).radius(3.5).draw()
-            RectBuilder(Vec2d(pos.x - 4, pos.y - 10), pos2.plus(4.0, 4.0)).color(c1, c2, c1, c2).radius(3.5).draw()
+            RectBuilder(pos1.minus(4.0, 10.0), pos2.plus(4.0, 4.0)).color(c1, c2, c1, c2).radius(3.5).draw()
             RectBuilder(pos1, pos2).color(c1.darker().darker(), c2.darker().darker(), c2.darker(), c1.darker()).radius(3.2).draw()
 
             FontRenderer.drawString("Fps Graph", pos.x.toFloat() + 1, pos.y.toFloat() - 10, true, Color.WHITE, 0.9f, Fonts.DEFAULT_BOLD)

@@ -85,24 +85,28 @@ object HitParticles : Module(
                 val particle = HitParticle(pos, particles.count())
                 particles.add(particle)
             }
-            if (it.entity !is EntityEnderCrystal && blood) {
-                for (i in 0 until multiplier.toInt()) {
-                    mc.world.spawnParticle(
-                        EnumParticleTypes.BLOCK_CRACK,
-                        target!!.posX,
-                        target!!.posY + target!!.height - 0.75,
-                        target!!.posZ, 0.0, 0.0, 0.0,
-                        Block.getStateId(Blocks.REDSTONE_BLOCK.defaultState))
+
+            target?.let {
+                if (it !is EntityEnderCrystal && mode == Mode.Blood && blood) {
+                    for (i in 0 until multiplier.toInt()) {
+                        it.world.spawnParticle(
+                            EnumParticleTypes.BLOCK_CRACK,
+                            it.posX,
+                            it.posY + it.height - 0.75,
+                            it.posZ, 0.0, 0.0, 0.0,
+                            Block.getStateId(Blocks.REDSTONE_BLOCK.defaultState)
+                        )
+                    }
+                    if (sound) {
+                        var bloodSound = ""
+                        when (MathUtils.random(1f, 3f).toInt()) {
+                            1 -> bloodSound = "blood1.wav"
+                            2 -> bloodSound = "blood2.wav"
+                            3 -> bloodSound = "blood3.wav"
+                        }
+                        SoundUtils.playSound { bloodSound }
+                    }
                 }
-            }
-            if (it.entity !is EntityEnderCrystal && it.entity !is EntityDragon && sound && blood) {
-                var bloodSound = ""
-                when (MathUtils.random(1f, 3f).toInt()) {
-                    1 -> bloodSound = "blood1.wav"
-                    2 -> bloodSound = "blood2.wav"
-                    3 -> bloodSound = "blood3.wav"
-                }
-                SoundUtils.playSound { bloodSound }
             }
         }
 

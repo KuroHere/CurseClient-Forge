@@ -12,7 +12,7 @@ import net.minecraft.entity.item.EntityEnderCrystal
 
 object HitSound: Module(
     "HitSound",
-    "UWU nyaaaa~ sounds.",
+    "sus sounds. ⁝ idea from thunder",
     Category.MISC
 ) {
     private val mode by setting("Sound", Mode.MOAN)

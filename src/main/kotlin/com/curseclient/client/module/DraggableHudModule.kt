@@ -16,15 +16,12 @@ import com.curseclient.client.utility.render.DockingH
 import com.curseclient.client.utility.render.DockingV
 import com.curseclient.client.utility.render.HoverUtils.isHovered
 import com.curseclient.client.utility.render.Screen
-import com.curseclient.client.utility.render.animation.Easing
 import com.curseclient.client.utility.render.animation.SimpleAnimation
 import com.curseclient.client.utility.render.font.BonIcon
 import com.curseclient.client.utility.render.font.FontUtils.drawString
-import com.curseclient.client.utility.render.font.FontUtils.getHeight
 import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
-import net.minecraft.client.gui.GuiChat
 import java.awt.Color
 
 abstract class DraggableHudModule(

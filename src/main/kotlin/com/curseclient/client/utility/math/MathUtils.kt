@@ -8,6 +8,8 @@ import com.curseclient.client.utility.render.vector.Vec2d
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.Vec3d
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.*
@@ -27,6 +29,32 @@ object MathUtils {
         return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble()).toInt()
     }
 
+    fun roundToHalf(d: Double): Double {
+        return Math.round(d * 2) / 2.0
+    }
+
+    fun round(num: Double, increment: Double): Double {
+        var bd = BigDecimal(num)
+        bd = bd.setScale(increment.toInt(), RoundingMode.HALF_UP)
+        return bd.toDouble()
+    }
+
+    fun round(value: Double, places: Int): Double {
+        require(!(places < 0))
+        var bd = BigDecimal(value)
+        bd = bd.setScale(places, RoundingMode.HALF_UP)
+        return bd.toDouble()
+    }
+
+    fun round(value: String?, places: Int): String {
+        if (places < 0) {
+            throw IllegalArgumentException()
+        }
+        var bd = BigDecimal(value)
+        bd = bd.stripTrailingZeros()
+        bd = bd.setScale(places, RoundingMode.HALF_UP)
+        return bd.toString()
+    }
 
     fun random(min: Double, max: Double): Double {
         return ThreadLocalRandom.current().nextDouble() * (max - min) + min

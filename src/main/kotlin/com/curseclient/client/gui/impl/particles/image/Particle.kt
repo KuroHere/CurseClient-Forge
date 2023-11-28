@@ -6,11 +6,12 @@ import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.utility.render.RenderUtils2D.drawImage
 import com.curseclient.client.utility.render.animation.AnimationUtils
 import com.curseclient.client.utility.render.animation.Direction
-import com.curseclient.client.extension.Thingy
+import com.curseclient.client.module.modules.client.ClickGui
 import com.curseclient.client.utility.render.animation.Animation
 import com.curseclient.client.utility.render.animation.DecelerateAnimation
 import com.curseclient.client.utility.render.shader.RoundedUtil.color
 import com.curseclient.client.utility.render.shader.RoundedUtil.setAlphaLimit
+import com.curseclient.client.utility.DeltaTime
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
@@ -46,8 +47,12 @@ class Particle(private val sr: ScaledResolution, private val particleImage: Part
         rotateAnimation.direction =
             if (fadeInAnimation!!.finished(Direction.FORWARDS)) Direction.FORWARDS else Direction.BACKWARDS
 
-        val rainbow = HUD.getColor(1, 255.0)
-        xScale = AnimationUtils.animate(50.0f, xScale, 0.0125f * Thingy.deltaTime)
+        val rainbow = when(ClickGui.colorMode) {
+            ClickGui.ColorMode.Client -> HUD.getColor(0 + 1)
+            ClickGui.ColorMode.Static -> ClickGui.buttonColor1
+            else -> ClickGui.buttonColor2
+        }
+        xScale = AnimationUtils.animate(50.0f, xScale, 0.0125f * DeltaTime.deltaTime)
         val rescaled = xScale / 100f
         val imgWidth = particleImage.dimensions.first / 4f
         val imgHeight = particleImage.dimensions.second / 4f

@@ -12,6 +12,8 @@ import com.curseclient.client.utility.render.graphic.GlStateUtils
 import com.curseclient.client.utility.render.graphic.drawBuffer
 import com.curseclient.client.utility.render.graphic.pos
 import com.curseclient.client.utility.render.graphic.withVertexFormat
+import com.curseclient.client.utility.render.shader.GradientShader.finish
+import com.curseclient.client.utility.render.shader.GradientShader.setup
 import com.curseclient.client.utility.render.texture.MipmapTexture
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.jhlabs.image.GaussianFilter
@@ -42,10 +44,19 @@ import kotlin.math.sin
 
 object RenderUtils2D {
 
+    private val blank = ResourceLocation("textures/blank.png")
     private val blurCache = HashMap<BlurData, Int>()
     private val mc = Minecraft.getMinecraft()
     private var zLevel = 0f
     private val frustrum = Frustum()
+
+    fun bind(resourceLocation: ResourceLocation) {
+        mc.textureManager.bindTexture(resourceLocation)
+    }
+
+    fun bindBlank() {
+        bind(blank)
+    }
 
     /**
      * Starts scissoring a rect
@@ -154,6 +165,174 @@ object RenderUtils2D {
         GlStateUtils.resetColour()
         GlStateUtils.matrix(false)
     }
+
+    fun rectGuiTex(x: Float, y: Float, width: Float, height: Float, color: Color?) {
+        setup()
+        bindBlank()
+        glPushMatrix()
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glColor(color!!)
+        glBegin(GL_QUADS)
+        glTexCoord2f(0.0f, 0.0f)
+        glVertex2f(x, y)
+        glTexCoord2f(0.0f, 1.0f)
+        glVertex2f(x, height)
+        glTexCoord2f(1.0f, 1.0f)
+        glVertex2f(width, height)
+        glTexCoord2f(1.0f, 0.0f)
+        glVertex2f(width, y)
+        glEnd()
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glPopMatrix()
+        finish()
+    }
+
+    fun rectGuiTex(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Color?) {
+        setup()
+        bindBlank()
+        glPushMatrix()
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glColor(color!!)
+        glBegin(GL_POLYGON)
+
+        val x1 = x.toDouble()
+        val y1 = y.toDouble()
+        val x2 = (x + width).toDouble()
+        val y2 = (y + height).toDouble()
+
+        val degree = Math.PI / 180
+
+        // Draw the rounded corners
+        for (i in 0..90) {
+            glVertex2d(x2 - radius + sin(i * degree) * radius, y2 - radius + cos(i * degree) * radius)
+        }
+
+        for (i in 90..180) {
+            glVertex2d(x2 - radius + sin(i * degree) * radius, y1 + radius + cos(i * degree) * radius)
+        }
+
+        for (i in 180..270) {
+            glVertex2d(x1 + radius + sin(i * degree) * radius, y1 + radius + cos(i * degree) * radius)
+        }
+
+        for (i in 270..360) {
+            glVertex2d(x1 + radius + sin(i * degree) * radius, y2 - radius + cos(i * degree) * radius)
+        }
+
+        glEnd()
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glPopMatrix()
+        finish()
+    }
+
+    fun roundedOutlineGuiTex(x: Float, y: Float, width: Float, height: Float, radius: Float, lineWidth: Float, color: Color?) {
+        setup()
+        bindBlank()
+        glPushMatrix()
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glColor(color!!)
+        glLineWidth(lineWidth) // Đặt độ dày của đường viền
+
+        val x1 = x.toDouble()
+        val y1 = y.toDouble()
+        val x2 = (x + width).toDouble()
+        val y2 = (y + height).toDouble()
+
+        val degree = Math.PI / 180
+        val segments = 100 // Số lượng đoạn để làm mịn góc bo tròn
+
+        glBegin(GL_LINE_LOOP)
+
+        // Draw the rounded corners (outline)
+        for (i in 0..segments) {
+            val angle = (i * 90.0 / segments).toDouble()
+
+            glVertex2d(x2 - radius + sin(angle * degree) * radius, y2 - radius + cos(angle * degree) * radius)
+        }
+
+        for (i in 0..segments) {
+            val angle = ((i + segments) * 90.0 / segments).toDouble()
+
+            glVertex2d(x2 - radius + sin(angle * degree) * radius, y1 + radius + cos(angle * degree) * radius)
+        }
+
+        for (i in 0..segments) {
+            val angle = ((i + 2 * segments) * 90.0 / segments).toDouble()
+
+            glVertex2d(x1 + radius + sin(angle * degree) * radius, y1 + radius + cos(angle * degree) * radius)
+        }
+
+        for (i in 0..segments) {
+            val angle = ((i + 3 * segments) * 90.0 / segments).toDouble()
+
+            glVertex2d(x1 + radius + sin(angle * degree) * radius, y2 - radius + cos(angle * degree) * radius)
+        }
+
+        glEnd()
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glPopMatrix()
+        finish()
+    }
+
+    fun rectGuiTexSmooth(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Color?) {
+        setup()
+        bindBlank()
+        glPushMatrix()
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glColor(color!!)
+        glBegin(GL_POLYGON)
+
+        val x1 = x.toDouble()
+        val y1 = y.toDouble()
+        val x2 = (x + width).toDouble()
+        val y2 = (y + height).toDouble()
+
+        val degree = Math.PI / 180
+
+        // Draw the smooth rounded corners
+        val segments = 100 // Số lượng đoạn để làm mịn góc bo tròn
+        for (i in 0..segments) {
+            val angle = (i * 90.0 / segments).toDouble()
+
+            glVertex2d(x2 - radius + sin(angle * degree) * radius, y2 - radius + cos(angle * degree) * radius)
+        }
+
+        for (i in 0..segments) {
+            val angle = ((i + segments) * 90.0 / segments).toDouble()
+
+            glVertex2d(x2 - radius + sin(angle * degree) * radius, y1 + radius + cos(angle * degree) * radius)
+        }
+
+        for (i in 0..segments) {
+            val angle = ((i + 2 * segments) * 90.0 / segments).toDouble()
+
+            glVertex2d(x1 + radius + sin(angle * degree) * radius, y1 + radius + cos(angle * degree) * radius)
+        }
+
+        for (i in 0..segments) {
+            val angle = ((i + 3 * segments) * 90.0 / segments).toDouble()
+
+            glVertex2d(x1 + radius + sin(angle * degree) * radius, y2 - radius + cos(angle * degree) * radius)
+        }
+
+        glEnd()
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glPopMatrix()
+        finish()
+    }
+
 
     fun isInViewFrustrum(entity: Entity): Boolean {
         return isInViewFrustrum(entity.getEntityBoundingBox()) || entity.ignoreFrustumCheck

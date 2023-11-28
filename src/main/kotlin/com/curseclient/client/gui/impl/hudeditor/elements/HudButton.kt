@@ -22,6 +22,7 @@ import com.curseclient.client.utility.math.MathUtils.toIntSign
 import com.curseclient.client.utility.render.ColorUtils
 import com.curseclient.client.utility.render.ColorUtils.multAlpha
 import com.curseclient.client.utility.render.ColorUtils.setAlpha
+import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.ScissorUtils.scissor
 import com.curseclient.client.utility.render.animation.EaseUtils.ease
 import com.curseclient.client.utility.render.animation.NewEaseType
@@ -100,16 +101,32 @@ class HudButton(val module: HudModule, var index: Int, var subOpen: Boolean, gui
         val buttonColor1 = ColorUtils.lerp(disabled, c1, p).multAlpha(a)
         val buttonColor2 = ColorUtils.lerp(disabled, c2, p).multAlpha(a)
 
-        RectBuilder(p1, p2).apply {
-            if (ClickGui.colorMode == ClickGui.ColorMode.Horizontal)
-                colorH(buttonColor1, buttonColor2)
+        if (ClickGui.colorMode == ClickGui.ColorMode.Shader) {
+            if (module.isEnabled())
+                RenderUtils2D.rectGuiTexSmooth(
+                    pos.x.toFloat() + 0.5f,
+                    pos.y.toFloat() + 1,
+                    width.toFloat() - 0.5f,
+                    (height + renderHeight - 1).toFloat(),
+                    ClickGui.buttonRound.toFloat(), // too ugly
+                    Color.WHITE)
             else
-                colorV(buttonColor1, buttonColor2)
+                RectBuilder(p1, p2).apply {
+                    color(disabled)
+                    radius(ClickGui.buttonRound)
+                    draw()
 
-            radius(ClickGui.buttonRound)
-            draw()
+                }
+        } else
+            RectBuilder(p1, p2).apply {
+                if (ClickGui.colorMode == ClickGui.ColorMode.Horizontal)
+                    colorH(buttonColor1, buttonColor2)
+                else
+                    colorV(buttonColor1, buttonColor2)
+                radius(ClickGui.buttonRound)
+                draw()
 
-        }
+            }
 
         val textPos = pos.plus(ClickGui.space + hoverProgress.ease(NewEaseType.OutBack) * 2.0, height / 2.0)
         fr.drawString(module.name, textPos, scale = ClickGui.fontSize)

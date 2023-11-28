@@ -2,6 +2,8 @@ package com.curseclient.client.gui.impl.clickgui.elements
 
 import com.curseclient.client.gui.api.elements.InteractiveElement
 import com.curseclient.client.gui.api.other.MouseAction
+import com.curseclient.client.gui.impl.altmanager.AltGui.drawBackground
+import com.curseclient.client.gui.impl.clickgui.ClickGuiHud
 import com.curseclient.client.gui.impl.clickgui.elements.settings.SettingButton
 import com.curseclient.client.gui.impl.clickgui.elements.settings.impl.*
 import com.curseclient.client.module.Module
@@ -16,6 +18,7 @@ import com.curseclient.client.utility.math.MathUtils.toIntSign
 import com.curseclient.client.utility.render.ColorUtils
 import com.curseclient.client.utility.render.ColorUtils.multAlpha
 import com.curseclient.client.utility.render.ColorUtils.setAlpha
+import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.ScissorUtils.scissor
 import com.curseclient.client.utility.render.animation.EaseUtils.ease
 import com.curseclient.client.utility.render.animation.NewEaseType
@@ -31,8 +34,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 
-class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui: com.curseclient.client.gui.impl.clickgui.ClickGuiHud, private val basePanel: CategoryPanel) : InteractiveElement(
+class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui: ClickGuiHud, private val basePanel: CategoryPanel) : InteractiveElement(
     Vec2d.ZERO, 0.0, 0.0, gui) {
+
     override fun onRegister() {
         settings.add(BindButton(module, gui, this))
         settings.addAll(module.settings.mapNotNull { it.toGuiButton() })
@@ -83,7 +87,7 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
             HUD.getColor(index)
         else if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
 
-        val c2 = when(ClickGui.colorMode) {
+        val c2 = when (ClickGui.colorMode) {
             ClickGui.ColorMode.Client -> HUD.getColor(index + 1)
             ClickGui.ColorMode.Static -> if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
             else -> ClickGui.buttonColor2
@@ -95,26 +99,53 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
         val buttonColor1 = ColorUtils.lerp(disabled, c1, p).multAlpha(a)
         val buttonColor2 = ColorUtils.lerp(disabled, c2, p).multAlpha(a)
 
-        RectBuilder(p1, p2).apply {
-            if (ClickGui.colorMode == ClickGui.ColorMode.Horizontal)
-                colorH(buttonColor1, buttonColor2)
+        if (ClickGui.colorMode == ClickGui.ColorMode.Shader) {
+            if (module.isEnabled())
+            RenderUtils2D.rectGuiTexSmooth(
+                pos.x.toFloat() + 0.5f,
+                pos.y.toFloat() + 1,
+                width.toFloat() - 0.5f,
+                (height + renderHeight - 1).toFloat(),
+                ClickGui.buttonRound.toFloat(), // too ugly
+                Color.WHITE)
             else
-                colorV(buttonColor1, buttonColor2)
-            radius(ClickGui.buttonRound)
-            draw()
+                RectBuilder(p1, p2).apply {
+                color(disabled)
+                radius(ClickGui.buttonRound)
+                draw()
 
-        }
+            }
+        } else
+            RectBuilder(p1, p2).apply {
+                if (ClickGui.colorMode == ClickGui.ColorMode.Horizontal)
+                    colorH(buttonColor1, buttonColor2)
+                else
+                    colorV(buttonColor1, buttonColor2)
+                radius(ClickGui.buttonRound)
+                draw()
+
+            }
 
         val textPos = pos.plus(ClickGui.space + hoverProgress.ease(NewEaseType.OutBack) * 2.0, height / 2.0)
         fr.drawString(module.name, textPos, scale = ClickGui.fontSize)
 
         detail()
 
+        val hoveredModule = (gui as ClickGuiHud).panels.flatMap { it.modules }.firstOrNull { it.isHovered(gui.mouse) }
+        val descriptionDisplay = gui.descriptionDisplay
+
+        if (hoveredModule != null && descriptionDisplay != null) {
+            descriptionDisplay.setDescription(hoveredModule.module.description)
+            descriptionDisplay.setLocation(Vec2d(gui.mouse.x, gui.mouse.y))
+            descriptionDisplay.setDraw(true)
+
+        } else { descriptionDisplay?.setDraw(false) }
+
         if (renderHeight < 1.0) return
 
         val sp1 = pos.minus(1.0)
         val sp2 = pos.plus(width, height + renderHeight).plus(1.0)
-        val ss = (gui as com.curseclient.client.gui.impl.clickgui.ClickGuiHud).currentScale * 2.0
+        val ss = (gui as ClickGuiHud).currentScale * 2.0
 
         scissor(Vec2d(sp1.x, max(sp1.y, basePanel.yRange.first)), Vec2d(sp2.x, min(sp2.y, basePanel.yRange.second)), ss) {
             drawSettings()
@@ -181,7 +212,7 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
                 if (extended) {
                     extended = false
                 } else {
-                    (gui as com.curseclient.client.gui.impl.clickgui.ClickGuiHud).panels.forEach {
+                    (gui as ClickGuiHud).panels.forEach {
                         it.modules.forEach { module ->
                             if (module.extended) {
                                 module.extended = false
@@ -194,6 +225,8 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
                 settings.forEach { if (extended) it.onSettingsOpen() else it.onSettingsClose() }
             }
         }
+
+
     }
 
     override fun onKey(typedChar: Char, key: Int) {

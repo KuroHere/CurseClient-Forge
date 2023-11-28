@@ -53,7 +53,6 @@ class CurseClient {
     @Mod.EventHandler
     fun preInit(event: FMLPreInitializationEvent) {
         initTime = System.currentTimeMillis();
-
         LOG.info("Pre init started")
         val t = System.currentTimeMillis()
 
@@ -77,13 +76,14 @@ class CurseClient {
         try {
             LOG.info("Init started")
             val t = System.currentTimeMillis()
-            SplashProgress.setProgress(1, "KuroHere - Initializing CurseClient...");
-            songManager = SongManager
-            SplashProgress.setProgress(2, "Initializing sounds...");
-            moduleManager = ModuleManager
-            SplashProgress.setProgress(3, "Initializing Module...");
+            SplashProgress.setProgress(1, "KuroHere - Initializing CurseClient...")
             hwidManager = Thingy()
-            SplashProgress.setProgress(4, "Initializing HWID List...");
+            SplashProgress.setProgress(2, "Initializing HWID List...");
+            songManager = SongManager
+            SplashProgress.setProgress(3, "Initializing sounds...");
+            moduleManager = ModuleManager
+            SplashProgress.setProgress(4, "Initializing Module...");
+
             SoundUtils.playSound(.9) { "opening.wav" }
             Loader.onLoad()
             LOG.info("Init completed, took: ${(System.currentTimeMillis() - t)}ms")

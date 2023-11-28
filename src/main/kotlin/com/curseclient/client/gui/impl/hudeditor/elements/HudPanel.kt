@@ -15,11 +15,14 @@ import com.curseclient.client.utility.extension.transformIf
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.math.MathUtils.toInt
+import com.curseclient.client.utility.render.ColorUtils
 import com.curseclient.client.utility.render.ColorUtils.setAlphaD
 import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.HoverUtils
+import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.ScissorUtils.scissor
 import com.curseclient.client.utility.render.ScissorUtils.toggleScissor
+import com.curseclient.client.utility.render.font.BonIcon
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
@@ -30,7 +33,16 @@ import java.awt.Color
 import kotlin.math.max
 import kotlin.math.sign
 
-class HudPanel(pos: Vec2d, width: Double, height: Double, gui: AbstractGui, val hudCategory: HudCategory) : DraggableElement(pos, width, height, gui) {
+class HudPanel(
+    pos: Vec2d,
+    width: Double,
+    height: Double,
+    var index: Int,
+    gui: AbstractGui,
+    val hudCategory: HudCategory
+) : DraggableElement(pos, width, height, gui) {
+
+    private lateinit var icon:String
 
     override fun onRegister() {
         modules.addAll(ModuleManager.getHudModules().filter { it.hudCategory == hudCategory }.map { HudButton(it, 0, true, gui as HudEditorGui, this) })
@@ -82,11 +94,6 @@ class HudPanel(pos: Vec2d, width: Double, height: Double, gui: AbstractGui, val 
 
     override fun onRender() {
         super.onRender()
-        val sr = ScaledResolution(mc)
-
-        RectBuilder(Vec2d(sr.scaledWidth / 2, sr.scaledHeight), Vec2d((sr.scaledWidth / 2 + 0.5).toInt(), 0)).outlineColor(Color.WHITE).draw()
-        RectBuilder(Vec2d(sr.scaledWidth, sr.scaledHeight / 2), Vec2d(0, (sr.scaledHeight / 2 + 0.5).toInt())).outlineColor(Color.WHITE).draw()
-
         if (isDraggingHeight)
             targetWindowHeight = max(gui.mouse.y - dragPos, 100.0)
 
@@ -100,10 +107,38 @@ class HudPanel(pos: Vec2d, width: Double, height: Double, gui: AbstractGui, val 
 
         val radius = ClickGui.panelRound
 
-        RectBuilder(pos, pos.plus(width, height + windowHeight)).color(ClickGui.backgroundColor).radius(radius).draw()
+        val c1 = if (ClickGui.colorMode == ClickGui.ColorMode.Client)
+            HUD.getColor(index)
+        else if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
 
-        val textPos = pos.plus(width / 2.0 - Fonts.DEFAULT_BOLD.getStringWidth(hudCategory.displayName, ClickGui.titleFontSize) / 2.0 - 5, height / 2.0)
-        Fonts.DEFAULT_BOLD.drawString(hudCategory.displayName, textPos, scale = ClickGui.titleFontSize, color = HUD.getColor(-1))
+        val c2 = when(ClickGui.colorMode) {
+            ClickGui.ColorMode.Client -> HUD.getColor(index + 1)
+            ClickGui.ColorMode.Static -> if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
+            else -> ClickGui.buttonColor2
+        }
+
+        RectBuilder(pos, pos.plus(width, height + windowHeight)).apply {
+            // too ugly
+            /*if (ClickGui.colorMode == ClickGui.ColorMode.Shader) {
+                RenderUtils2D.roundedOutlineGuiTex(
+                    pos.x.toFloat(),
+                    pos.y.toFloat(),
+                    (width).toFloat(),
+                    (height + windowHeight).toFloat(),
+                    ClickGui.panelRound.toFloat(),
+                    ClickGui.outlineWidth.toFloat(),
+                    Color.WHITE
+                )
+            } else {*/
+            outlineColor(c1, c2, c1, c2)
+            width(ClickGui.outlineWidth)
+            color(ClickGui.backgroundColor)
+            radius(radius)
+            draw()
+        }
+
+        val textPos = pos.plus(width / 2.0 - Fonts.DEFAULT_BOLD.getStringWidth(hudCategory.displayName, ClickGui.titleFontSize) / 2.0, height / 2.0)
+        Fonts.DEFAULT_BOLD.drawString(hudCategory.displayName, textPos, scale = ClickGui.titleFontSize, color = if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2)
 
         val p1 = pos.plus(0.0, height)
         val p2 = pos.plus(width, height + windowHeight)
@@ -114,19 +149,35 @@ class HudPanel(pos: Vec2d, width: Double, height: Double, gui: AbstractGui, val 
         panelFocused = (gui as HudEditorGui).isPanelFocused(this)
         draggingHovered = HoverUtils.isHovered(gui.mouse, pos.plus(0.0, height + windowHeight - radius), pos.plus(width, height + windowHeight + radius)) && extended
 
+        when (hudCategory.displayName) {
+            "Hud Editor" -> icon = BonIcon.TUNE
+        }
+
+        val textWidth = Fonts.DEFAULT_BOLD.getStringWidth(icon) + 8
+        val iconPos = pos.plus(width - textWidth, (height / 2.0) + 3)
+        RenderUtils2D.drawBlurredShadow((pos.x + width - textWidth).toFloat(), pos.y.toFloat() + 3, textWidth.toFloat(), ((height / 2.0) + 3).toFloat(), 20, if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2)
+        Fonts.BonIcon.drawString(icon, iconPos, scale = ClickGui.titleFontSize, color = if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2)
+
+
         toggleScissor(true)
         scissor(p1, p2.minus(0.0, radius), gui.currentScale * 2.0) {
             modules.forEach {
                 if (!checkCulling(it.pos, it.pos.plus(it.width, it.getButtonHeight()), p1, p2)) return@forEach
                 it.onRender()
             }
+            RenderUtils2D.drawBlurredShadow(
+                pos.x.toFloat(),
+                pos.y.toFloat(),
+                (width).toFloat(),
+                15f,
+                10, Color.BLACK
+            )
         }
         toggleScissor(false)
 
-        val dragText = "..."
+        val dragText = "•••"
         val dragTextPos = pos.plus(width / 2.0 - Fonts.DEFAULT_BOLD.getStringWidth(dragText) * 0.5, height + windowHeight - radius)
-        Fonts.DEFAULT_BOLD.drawString(dragText, dragTextPos, color = HUD.getColor(-1).setAlphaD(windowHeight / targetWindowHeight))
-
+        Fonts.DEFAULT_BOLD.drawString(dragText, dragTextPos, color = (if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2).setAlphaD(windowHeight / targetWindowHeight))
     }
 
     private fun scroll() {
@@ -160,9 +211,9 @@ class HudPanel(pos: Vec2d, width: Double, height: Double, gui: AbstractGui, val 
 
     private fun checkCulling(pos1: Vec2d, pos2: Vec2d, from: Vec2d, to: Vec2d) =
         ((pos1.y in from.y..to.y) ||
-        (pos2.y in from.y..to.y) ||
-        (from.y in pos1.y..pos2.y) ||
-        (to.y in pos1.y..pos2.y)) && windowHeight > 1.0
+            (pos2.y in from.y..to.y) ||
+            (from.y in pos1.y..pos2.y) ||
+            (to.y in pos1.y..pos2.y)) && windowHeight > 1.0
 
     override fun onMouseAction(action: MouseAction, button: Int) {
         super.onMouseAction(action, button)

@@ -30,7 +30,6 @@ abstract class AbstractGui : GuiScreen(), IGuiElement {
     override fun onMouseAction(action: MouseAction, button: Int) {}
     override fun onKey(typedChar: Char, key: Int) {}
 
-
     final override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
         mouse = getMousePos(Vec2d(mouseX, mouseY))
@@ -86,4 +85,6 @@ abstract class AbstractGui : GuiScreen(), IGuiElement {
 
         return Vec2d(Screen.width * x / scale, Screen.height * y / scale)
     }
+
+
 }

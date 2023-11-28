@@ -12,8 +12,6 @@ import com.curseclient.client.utility.render.ColorUtils.r
 import com.curseclient.client.utility.threads.runAsync
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.awt.Color
-import kotlin.random.Random
-import kotlin.random.nextInt
 
 object ClickGui : Module(
     "ClickGui",
@@ -25,12 +23,12 @@ object ClickGui : Module(
 
     // General
     val scale by setting("Scale", 1.1, 0.5, 1.5, 0.01, { page == Page.General })
-    val width by setting("Panel Width", 110.0, 100.0, 140.0, 1.0, { page == Page.General })
-    val panelRound by setting("Panel Radius", 4.0, 0.0, 10.0, 0.1, { page == Page.General })
-    val height by setting("Button Height", 16.0, 12.0, 20.0, 0.5, { page == Page.General })
-    val buttonRound by setting("Button Radius", 2.5, 0.0, 10.0, 0.1, { page == Page.General })
-    val outlineWidth by setting("Outline Width", 1.0, 0.0, 3.0, 0.1, { page == Page.General })
-    val space by setting("Space", 5.0, 3.0, 8.0, 0.1, { page == Page.General })
+    val width by setting("Panel Width", 100.0, 100.0, 140.0, 1.0, { page == Page.General })
+    val panelRound by setting("Panel Radius", 2.7, 0.0, 10.0, 0.1, { page == Page.General })
+    val height by setting("Button Height", 15.0, 12.0, 20.0, 0.5, { page == Page.General })
+    val buttonRound by setting("Button Radius", 1.4, 0.0, 10.0, 0.1, { page == Page.General })
+    val outlineWidth by setting("Outline Width", 0.0, 0.0, 3.0, 0.1, { page == Page.General })
+    val space by setting("Space", 4.5, 3.0, 8.0, 0.1, { page == Page.General })
     val sorting by setting("Sorting", SortingMode.Alphabetical, { page == Page.General })
     val reverse by setting("Reverse", false, { page == Page.General })
 
@@ -50,12 +48,18 @@ object ClickGui : Module(
 
     // Colors
     val colorMode by setting("Color Mode", ColorMode.Client, { page == Page.Colors })
-    val buttonColor1 by setting("Color 1", Color(30, 190, 240), { page == Page.Colors && listOf(ColorMode.Static, ColorMode.Vertical, ColorMode.Horizontal).contains(colorMode) })
-    val buttonColor2 by setting("Color 2", Color(170, 30, 215), { page == Page.Colors && listOf(ColorMode.Vertical, ColorMode.Horizontal).contains(colorMode) })
+    val buttonColor1 by setting("Color 1", Color(30, 190, 240), { page == Page.Colors && listOf(ColorMode.Static, ColorMode.Vertical, ColorMode.Horizontal, ColorMode.Shader).contains(colorMode) })
+    val buttonColor2 by setting("Color 2", Color(170, 30, 215), { page == Page.Colors && listOf(ColorMode.Vertical, ColorMode.Horizontal, ColorMode.Shader).contains(colorMode) })
+
+    val buttonColor3 by setting("Color 3", Color(200, 80, 150), { page == Page.Colors && listOf(ColorMode.Shader).contains(colorMode) })
+    val buttonColor4 by setting("Color 4", Color(50, 80, 215), { page == Page.Colors && listOf(ColorMode.Shader).contains(colorMode) })
+    val step by setting("Step", 0.3, 0.01, 2.0, 0.01, { page == Page.Colors && listOf(ColorMode.Shader).contains(colorMode) })
+    val speed by setting("Speed", 1.0, 0.1, 5.0, 0.1, { page == Page.Colors && listOf(ColorMode.Shader).contains(colorMode) })
 
     val pulse by setting("Pulse Color", false, { page == Page.Colors && listOf(ColorMode.Static, ColorMode.Vertical, ColorMode.Horizontal).contains(colorMode)})
 
     val backgroundColor by setting("Background Color", Color(20, 20, 20), { page == Page.Colors })
+    val backgroundShader by setting("Shader Background", false, { page == Page.Colors })
     val disabledColor by setting("Disabled Color", Color(255, 255, 255, 30), { page == Page.Colors })
 
     val buttonAlpha by setting("Button Alpha", 0.7, 0.05, 1.0, 0.01, { page == Page.Colors })
@@ -78,11 +82,6 @@ object ClickGui : Module(
 
     }
 
-    enum class Bind {
-        Near,
-        far
-    }
-
     enum class Details {
         Characters,
         Bind,
@@ -98,7 +97,8 @@ object ClickGui : Module(
         Client,
         Static,
         Vertical,
-        Horizontal
+        Horizontal,
+        Shader
     }
 
     init {
@@ -124,4 +124,14 @@ object ClickGui : Module(
             DataManager.saveConfig()
         }
     }
+
+    fun getGradient(): Array<Color> {
+        return arrayOf<Color>(
+            Color(buttonColor1.red, buttonColor1.green, buttonColor1.blue),
+            Color(buttonColor2.red, buttonColor2.green, buttonColor3.blue),
+            Color(buttonColor3.red, buttonColor3.green, buttonColor4.blue),
+            Color(buttonColor4.red, buttonColor4.green, buttonColor4.blue)
+        )
+    }
+
 }

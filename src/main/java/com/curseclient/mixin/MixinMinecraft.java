@@ -2,12 +2,11 @@ package com.curseclient.mixin;
 
 import com.curseclient.client.event.EventBus;
 import com.curseclient.client.module.modules.client.MenuShader;
-import com.curseclient.client.module.modules.visual.PerspectiveMod;
 import com.curseclient.client.utility.render.IconUtils;
 import com.curseclient.client.utility.threads.MainThreadExecutor;
 import com.curseclient.client.events.RootEvent;
-import com.curseclient.client.extension.Thingy;
 import com.curseclient.client.utility.render.SplashProgress;
+import com.curseclient.client.utility.DeltaTime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.settings.GameSettings;
@@ -17,7 +16,6 @@ import org.lwjgl.opengl.Display;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -28,7 +26,6 @@ public class MixinMinecraft {
 
     @Shadow
     public GameSettings gameSettings;
-
 
     @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
     private void onSetWindowIconPre(CallbackInfo ci) {
@@ -49,7 +46,7 @@ public class MixinMinecraft {
         final int deltaTime = (int) (currentTime - lastFrame);
         lastFrame = currentTime;
 
-        Thingy.deltaTime = deltaTime;
+        DeltaTime.deltaTime = deltaTime;
     }
 
     public long getTime() {

@@ -12,8 +12,15 @@ import com.curseclient.client.utility.render.ColorUtils.g
 import com.curseclient.client.utility.render.ColorUtils.r
 import com.curseclient.client.utility.render.shader.RoundedUtil.color
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.Entity
+import net.minecraft.entity.item.EntityEnderCrystal
+import net.minecraft.entity.item.EntityItem
+import net.minecraft.entity.monster.EntityMob
+import net.minecraft.entity.passive.EntityAnimal
+import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.ArrayList
 import kotlin.math.sin
 
 
@@ -24,6 +31,12 @@ object SimsESP: Module(
 ) {
 
     private val color by setting("Color", Color(0, 255, 0))
+    private val players by setting("Players", true)
+    private val items by setting("Items", true)
+    private val hostiles by setting("Hostiles", false)
+    private val animals by setting("Animals", false)
+
+    private val entities = ArrayList<Entity>()
 
     init {
         safeListener<Render3DEvent> {
@@ -41,17 +54,30 @@ object SimsESP: Module(
             GL11.glFrontFace(GL11.GL_CW)
             var i = 0
             //        GlStateManager.disableCull();
-            for (en in Helper.mc.world.playerEntities) {
-                if (en.isInvisible) continue
-                if (en === Helper.mc.player) continue
+            for (entity in mc.world.loadedEntityList) {
+                entities.clear()
+                if (entity.isInvisible) continue
+                if (entity == mc.player && mc.gameSettings.thirdPersonView == 0) continue
+                if (entity is EntityItem && items) {
+                    entities.add(entity)
+                }
+                if (entity is EntityAnimal && animals) {
+                    entities.add(entity)
+                }
+                if (entity is EntityPlayer && players) {
+                    entities.add(entity)
+                }
+                if (entity is EntityMob && hostiles) {
+                    entities.add(entity)
+                }
                 i++
                 var color = Color(color.r, color.g, color.b)
-                if (en.hurtTime > 0) color = Color.RED
+                if (entity.hurtResistantTime > 0) color = Color.RED
                 GL11.glBegin(GL11.GL_TRIANGLE_STRIP)
                 color(color.rgb)
-                val x = en.lastTickPosX + (en.posX - en.lastTickPosX) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosX
-                val y = en.lastTickPosY + (en.posY - en.lastTickPosY) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosY + en.getEyeHeight() + .4 + sin((System.currentTimeMillis() % 1000000 / 333f + i).toDouble()) / 10
-                val z = en.lastTickPosZ + (en.posZ - en.lastTickPosZ) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosZ
+                val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosX
+                val y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosY + entity.getEyeHeight() + .4 + sin((System.currentTimeMillis() % 1000000 / 333f + i).toDouble()) / 10
+                val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosZ
                 color(color.darker().darker().rgb)
                 GL11.glVertex3d(x, y, z)
                 GL11.glVertex3d(x - 0.1, y + 0.3, z - 0.1)

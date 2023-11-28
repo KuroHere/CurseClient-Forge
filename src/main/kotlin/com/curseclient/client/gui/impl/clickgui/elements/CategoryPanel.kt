@@ -3,6 +3,8 @@ package com.curseclient.client.gui.impl.clickgui.elements
 import com.curseclient.client.gui.api.AbstractGui
 import com.curseclient.client.gui.api.elements.DraggableElement
 import com.curseclient.client.gui.api.other.MouseAction
+import com.curseclient.client.gui.impl.altmanager.AltGui
+import com.curseclient.client.gui.impl.clickgui.ClickGuiHud
 import com.curseclient.client.manager.managers.ModuleManager
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.HudCategory
@@ -16,6 +18,7 @@ import com.curseclient.client.utility.render.ColorUtils
 import com.curseclient.client.utility.render.ColorUtils.setAlphaD
 import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.HoverUtils
+import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.ScissorUtils.scissor
 import com.curseclient.client.utility.render.ScissorUtils.toggleScissor
 import com.curseclient.client.utility.render.font.BonIcon
@@ -24,20 +27,28 @@ import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
+import net.minecraft.client.renderer.GlStateManager
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.sign
 
-class CategoryPanel(pos: Vec2d, width: Double, height: Double, var index: Int, gui: AbstractGui, val category: Category) : DraggableElement(pos, width, height, gui) {
+class CategoryPanel(
+    pos: Vec2d,
+    width: Double,
+    height: Double,
+    var index: Int,
+    gui: AbstractGui,
+    val category: Category
+) : DraggableElement(pos, width, height, gui) {
 
     private lateinit var icon:String
 
     override fun onRegister() {
-        modules.addAll(ModuleManager.getModules().filter { it.category == category }.map { ModuleButton(it, 0, true, gui as com.curseclient.client.gui.impl.clickgui.ClickGuiHud, this) })
+        modules.addAll(ModuleManager.getModules().filter { it.category == category }.map { ModuleButton(it, 0, true, gui as ClickGuiHud, this) })
         modules.forEach { it.onRegister() }
     }
     override fun onGuiCloseAttempt() {}
-
     override fun onGuiOpen() = super.onGuiOpen().also {
         isDraggingHeight = false
         modules.forEach { it.onGuiOpen() }
@@ -46,7 +57,6 @@ class CategoryPanel(pos: Vec2d, width: Double, height: Double, var index: Int, g
     override fun onGuiClose() = super.onGuiClose().also { modules.forEach { it.onGuiClose() } }
 
     val modules = ArrayList<ModuleButton>()
-
     var yRange = 0.0 to 0.0; private set
 
     private var scrollSpeed = 0.0
@@ -103,11 +113,24 @@ class CategoryPanel(pos: Vec2d, width: Double, height: Double, var index: Int, g
             ClickGui.ColorMode.Static -> if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
             else -> ClickGui.buttonColor2
         }
-
-        RectBuilder(pos, pos.plus(width, height + windowHeight)).outlineColor(c1, c2, c1, c2).width(ClickGui.outlineWidth).color(ClickGui.backgroundColor).radius(radius).draw()
+        RectBuilder(pos, pos.plus(width, height + windowHeight)).apply {
+            drawBlurredShadow(pos.x.toFloat(),
+                pos.y.toFloat(),
+                width.toFloat(),
+                (height + windowHeight).toFloat(),
+                10,
+                if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.BLACK
+                else c1.darker().darker()
+            )
+            outlineColor(c1, c2, c1, c2)
+            width(ClickGui.outlineWidth)
+            color(ClickGui.backgroundColor)
+            radius(radius)
+            draw()
+        }
 
         val textPos = pos.plus(width / 2.0 - Fonts.DEFAULT_BOLD.getStringWidth(category.displayName, ClickGui.titleFontSize) / 2.0 - 5, height / 2.0)
-        Fonts.DEFAULT_BOLD.drawString(category.displayName, textPos, scale = ClickGui.titleFontSize, color = c2)
+        Fonts.DEFAULT_BOLD.drawString(category.displayName, textPos, scale = ClickGui.titleFontSize, color = if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2)
 
         val p1 = pos.plus(0.0, height)
         val p2 = pos.plus(width, height + windowHeight)
@@ -115,7 +138,7 @@ class CategoryPanel(pos: Vec2d, width: Double, height: Double, var index: Int, g
         yRange = (pos.y + height) to (pos.y + height + max(0.0, windowHeight - radius))
         modulesHovered = HoverUtils.isHovered(gui.mouse, p1, p2) && extended
         panelHovered = modulesHovered || hovered
-        panelFocused = (gui as com.curseclient.client.gui.impl.clickgui.ClickGuiHud).isPanelFocused(this)
+        panelFocused = (gui as ClickGuiHud).isPanelFocused(this)
         draggingHovered = HoverUtils.isHovered(gui.mouse, pos.plus(0.0, height + windowHeight - radius), pos.plus(width, height + windowHeight + radius)) && extended
 
         when (category.displayName) {
@@ -129,20 +152,40 @@ class CategoryPanel(pos: Vec2d, width: Double, height: Double, var index: Int, g
 
         val textWidth = Fonts.DEFAULT_BOLD.getStringWidth(category.name + " ") / 2f
         val iconPos = pos.plus(width / 2 + textWidth, (height / 2.0) + 3)
-        Fonts.BonIcon.drawString(icon, iconPos, scale = ClickGui.titleFontSize, color = c2)
+        Fonts.BonIcon.drawString(icon, iconPos, scale = ClickGui.titleFontSize, color = if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2)
 
         toggleScissor(true)
         scissor(p1, p2.minus(0.0, radius), gui.currentScale * 2.0) {
+            if (ClickGui.backgroundShader)
+                bgShader()
             modules.forEach {
                 if (!checkCulling(it.pos, it.pos.plus(it.width, it.getButtonHeight()), p1, p2)) return@forEach
                 it.onRender()
             }
         }
+        RenderUtils2D.drawBlurredShadow(
+            pos.x.toFloat(),
+            pos.y.toFloat(),
+            (width).toFloat(),
+            15f,
+            10, Color.BLACK
+        )
         toggleScissor(false)
 
         val dragText = "•••"
         val dragTextPos = pos.plus(width / 2.0 - Fonts.DEFAULT_BOLD.getStringWidth(dragText) * 0.5, height + windowHeight - radius)
-        Fonts.DEFAULT_BOLD.drawString(dragText, dragTextPos, color = c2.setAlphaD(windowHeight / targetWindowHeight))
+        Fonts.DEFAULT_BOLD.drawString(dragText, dragTextPos, color = (if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2).setAlphaD(windowHeight / targetWindowHeight))
+    }
+
+    // Chỉ là vô tình thấy nó thú vị nên add vào
+    private fun bgShader() {
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0)
+        AltGui.drawBackground(0)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+
     }
 
     private fun scroll() {

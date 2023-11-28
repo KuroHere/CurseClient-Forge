@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
+import java.util.Objects;
 
 @Mixin(GuiContainer.class)
 public abstract class MixinGuiContainer extends MixinGuiScreen {
@@ -30,46 +31,31 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
 
     @Shadow private int dragSplittingButton;
     @Shadow private int dragSplittingRemnant;
-
-    private GuiButton stealButton, chestStealerButton, invManagerButton, killAuraButton;
-
     private float progress = 0F;
 
     private long lastMS = 0L;
 
     @Inject(method = "initGui", at = @At("HEAD"), cancellable = true)
     public void injectInitGui(CallbackInfo callbackInfo){
-        GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-        final HUD hud = (HUD) CurseClient.Companion.getModuleManager().getModuleByName("HUD");
-
-        int firstY = 0;
-
-        if (guiScreen instanceof GuiChest) {
-            switch (hud.getContainerButton().name()) {
-                case "TopLeft":
-                    buttonList.add(stealButton = new GuiButton(1234123, 5, 5 + firstY, 140, 20, "Steal this chest"));
-                    break;
-                case "TopRight":
-                    buttonList.add(stealButton = new GuiButton(1234123, width - 145, 5 + firstY, 140, 20, "Steal this chest"));
-                    break;
-            }
-        }
-
         lastMS = System.currentTimeMillis();
         progress = 0F;
     }
 
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     private void drawScreenHead(CallbackInfo callbackInfo) {
-        final Animations animMod = (Animations) CurseClient.Companion.getModuleManager().getModuleByName("Animations");
+        final Animations animMod = (Animations) Objects.requireNonNull(CurseClient.Companion.getModuleManager()).getModuleByName("Animations");
         final HUD hud = (HUD) CurseClient.Companion.getModuleManager().getModuleByName("HUD");
         final Minecraft mc = Minecraft.getMinecraft();
 
         if (progress >= 1F) progress = 1F;
-        else progress = (float) (System.currentTimeMillis() - lastMS) / (float) animMod.getAnimTimeValue();
+        else {
+            assert animMod != null;
+            progress = (float) (System.currentTimeMillis() - lastMS) / (float) animMod.getAnimTimeValue();
+        }
 
         double trueAnim = EaseUtils.easeOutQuart(progress);
 
+        assert hud != null;
         if (hud.getContainerBackground()
             && (!(mc.currentScreen instanceof GuiChest)
             || !ChestStealer.INSTANCE.isEnabled()))
@@ -114,7 +100,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
 
     @Inject(method = "drawScreen", at = @At("RETURN"))
     public void drawScreenReturn(CallbackInfo callbackInfo) {
-        final Animations animMod = (Animations) CurseClient.Companion.getModuleManager().getModuleByName("Animations");
+        final Animations animMod = (Animations) Objects.requireNonNull(CurseClient.Companion.getModuleManager()).getModuleByName("Animations");
         final Minecraft mc = Minecraft.getMinecraft();
         if (animMod != null && animMod.isEnabled() && !(mc.currentScreen instanceof GuiChest))
             GL11.glPopMatrix();

@@ -10,6 +10,7 @@ import com.curseclient.client.module.modules.client.HudEditor
 import com.curseclient.client.module.modules.combat.CrystalAura
 import com.curseclient.client.module.modules.combat.KillAura
 import com.curseclient.client.setting.setting
+import com.curseclient.client.utility.extension.Timer
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.math.MathUtils.roundToPlaces
@@ -26,12 +27,16 @@ import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
 import net.minecraft.client.entity.AbstractClientPlayer
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
+import javax.vecmath.Vector2d
+import javax.vecmath.Vector4d
 import kotlin.math.max
+
 
 object TargetHUD : DraggableHudModule(
     "TargetHUD",
@@ -42,7 +47,13 @@ object TargetHUD : DraggableHudModule(
     private val heightSetting by setting("Height", 35.0, 25.0, 40.0, 1.0)
     private val animationSpeed by setting("Animation Speed", 1.0, 0.1, 10.0, 0.05)
 
+    val particles: MutableList<Particles> = ArrayList()
+    private val timer: Timer = Timer()
+    private var sentParticles = false
+
     private var progress = 0.0
+
+    var position = Vector2d(0.0, 0.0)
 
     private var info = TargetInfo.BLANK
     private var healthProgress = 0.0
@@ -70,7 +81,34 @@ object TargetHUD : DraggableHudModule(
         val pos1 = Vec2d(-getWidth() * 0.5, -getHeight() * 0.5)
         val pos2 = Vec2d(getWidth() * 0.5, getHeight() * 0.5)
 
+        //drawParticle(pos1, pos2)
         drawTargetHud(pos1, pos2)
+    }
+    private fun drawParticle(pos1: Vec2d, pos2: Vec2d) {
+        for (p in particles) {
+            //If tracking then the x value changes so we want to make it track the target aswell
+            p.x = pos1.x + 20
+            p.y = pos1.y + 20
+            GlStateManager.color(1f, 1f, 1f, 1f)
+            if (p.opacity > 4) p.render2D()
+        }
+
+        if (timer.hasTimeElapsed(1000 / 60, true)) {
+            for (p in particles) {
+                p.updatePosition()
+                if (p.opacity < 1) particles.remove(p)
+            }
+        }
+        val target = target
+        if (target != null && target.hurtTime == 9 && !sentParticles) {
+            for (i in 0..15) {
+                val particle = Particles()
+                particle.init((pos1.x + 20).toFloat(), (pos1.y + 20).toFloat(), (((Math.random() - 0.5) * 2 * 1.4).toFloat()), (((Math.random() - 0.5) * 2 * 1.4).toFloat()), ((Math.random() * 4).toFloat()), if (i % 2 == 0) HUD.getColor(0) else HUD.getColor(10))
+                particles.add(particle)
+            }
+            sentParticles = true
+        }
+        if (target != null && target.hurtTime == 8) { sentParticles = false }
     }
 
     private fun drawTargetHud(pos1: Vec2d, pos2: Vec2d) {

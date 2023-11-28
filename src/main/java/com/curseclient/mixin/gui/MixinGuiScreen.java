@@ -2,26 +2,20 @@ package com.curseclient.mixin.gui;
 
 import com.curseclient.client.manager.managers.ModuleManager;
 import com.curseclient.client.manager.managers.ScreenManager;
-import com.curseclient.client.module.modules.client.ClickGui;
 import com.curseclient.client.module.modules.client.GuiClickCircle;
 import com.curseclient.client.module.modules.client.HUD;
 import com.curseclient.client.module.modules.client.MenuShader;
 import com.curseclient.client.utility.render.ClickCircle;
 import com.curseclient.client.utility.render.ParticleUtils;
-import com.curseclient.client.utility.render.animation.EaseUtils;
-import com.curseclient.client.utility.render.font.FontRenderer;
-import com.curseclient.client.utility.render.font.Fonts;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -46,7 +40,6 @@ public abstract class MixinGuiScreen {
 
     @Shadow
     public int height;
-
 
     @Shadow
     public abstract void drawBackground(int tint);

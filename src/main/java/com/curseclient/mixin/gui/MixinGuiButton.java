@@ -7,7 +7,7 @@ import com.curseclient.client.utility.render.RenderUtils2D;
 import com.curseclient.client.utility.render.animation.AnimationUtils;
 import com.curseclient.client.utility.render.font.FontRenderer;
 import com.curseclient.client.utility.render.font.Fonts;
-import com.curseclient.client.extension.Thingy;
+import com.curseclient.client.utility.DeltaTime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
@@ -58,7 +58,6 @@ public abstract class MixinGuiButton extends Gui {
     @Final
     protected static ResourceLocation BUTTON_TEXTURES;
 
-    private float bright = 0F;
     private float moveX = 0F;
     private float cut;
     private float alpha;
@@ -73,7 +72,7 @@ public abstract class MixinGuiButton extends Gui {
             hovered = (mouseX >= this.x && mouseY >= this.y &&
                 mouseX < this.x + this.width && mouseY < this.y + this.height);
 
-            final int delta = Thingy.deltaTime;
+            final int delta = DeltaTime.deltaTime;
             final float speedDelta = 0.01F * delta;
 
             final HUD hud = (HUD) ModuleManager.INSTANCE.getModuleByName("HUD");

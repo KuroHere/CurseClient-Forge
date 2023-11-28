@@ -18,8 +18,8 @@ internal class Particle(x: Int, y: Int) {
     var x: Float
     var y: Float
     val size: Float
-    private val ySpeed = Random().nextInt(5).toFloat()
-    private val xSpeed = Random().nextInt(5).toFloat()
+    private val ySpeed = Random().nextFloat() * 0.01f
+    private val xSpeed = Random().nextFloat() * 0.01f
     var height = 0
     var width = 0
 
@@ -64,19 +64,23 @@ internal class Particle(x: Int, y: Int) {
     fun fall() {
         val mc = Minecraft.getMinecraft()
         val scaledResolution = ScaledResolution(mc)
-        y = y + ySpeed
-        x = x + xSpeed
-        if (y > mc.displayHeight) y = 1f
-        if (x > mc.displayWidth) x = 1f
-        if (x < 1) x = scaledResolution.scaledWidth.toFloat()
-        if (y < 1) y = scaledResolution.scaledHeight.toFloat()
+        y -= ySpeed
+        x += xSpeed
+        if (y > scaledResolution.scaledHeight)
+            y -= 1f
+        //if (x > scaledResolution.scaledWidth)
+        //    x += 1f
+        if (x < 1)
+            x += scaledResolution.scaledWidth.toFloat()
+        if (y < 1)
+            y = scaledResolution.scaledHeight.toFloat()
     }
 
     fun fall2() {
         val mc = Minecraft.getMinecraft()
         val scaledResolution = ScaledResolution(mc)
-        y = y + ySpeed
-        x = x + xSpeed
+        y += ySpeed
+        x += xSpeed
         if (x > mc.displayWidth) x = 1f
         y -= 1f
         if (x < 1) x = scaledResolution.scaledWidth.toFloat()

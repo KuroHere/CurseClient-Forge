@@ -5,6 +5,7 @@ import com.curseclient.client.gui.impl.maingui.MainGui
 import com.curseclient.client.gui.impl.maingui.MainGuiElement
 import com.curseclient.client.manager.managers.SongManager
 import com.curseclient.client.utility.math.MathUtils
+import com.curseclient.client.utility.render.ColorUtils.setAlpha
 import com.curseclient.client.utility.render.animation.EaseUtils
 import com.curseclient.client.utility.render.font.BonIcon
 import com.curseclient.client.utility.render.font.FontUtils.drawString
@@ -70,7 +71,7 @@ class MusicButton(
                 y
             ),
             true,
-            Color.WHITE,
+            if (isHovered) Color(30, 213, 95).setAlpha((150 + (0.2 * (getHoverProgress() * 2))).toInt()) else Color.WHITE,
             scale = hoverScale
         )
     }

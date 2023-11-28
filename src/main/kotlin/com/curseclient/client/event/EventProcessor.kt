@@ -7,13 +7,15 @@ import com.curseclient.client.event.events.render.ResolutionUpdateEvent
 import com.curseclient.client.event.listener.runSafe
 import com.curseclient.client.gui.impl.maingui.MainGui
 import com.curseclient.client.manager.managers.ESPManager
+import com.curseclient.client.module.modules.hud.Status.Status
 import com.curseclient.client.utility.math.FPSCounter
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiDisconnected
 import net.minecraft.client.gui.GuiMainMenu
+import net.minecraft.client.gui.GuiMultiplayer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.SPacketEntityStatus
 import net.minecraftforge.client.event.*
-import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
 import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent
@@ -26,7 +28,6 @@ import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
 import org.lwjgl.input.Keyboard
-import scala.collection.mutable.Subscriber
 
 
 internal object EventProcessor {
@@ -42,6 +43,12 @@ internal object EventProcessor {
             prevWidth = mc.displayWidth
             prevHeight = mc.displayHeight
             EventBus.post(ResolutionUpdateEvent(mc.displayWidth, mc.displayHeight))
+        }
+
+        if (Status.endTime.toInt() == -1 && ((!mc.isSingleplayer && mc.currentServerData == null) || mc.currentScreen is GuiMainMenu || mc.currentScreen is GuiMultiplayer || mc.currentScreen is GuiDisconnected)) {
+            Status.endTime = System.currentTimeMillis();
+        } else if (Status.endTime.toInt() != -1 && (mc.isSingleplayer || mc.currentServerData != null)) {
+            Status.reset();
         }
     }
 
