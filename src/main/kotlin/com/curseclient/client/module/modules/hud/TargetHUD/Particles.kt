@@ -2,6 +2,7 @@ package com.curseclient.client.module.modules.hud.TargetHUD
 
 import com.curseclient.client.utility.render.ColorUtils
 import com.curseclient.client.utility.render.shader.RoundedUtil
+import sun.plugin2.util.ColorUtil
 import java.awt.Color
 
 
