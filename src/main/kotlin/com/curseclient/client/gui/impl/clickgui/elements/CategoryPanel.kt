@@ -7,7 +7,6 @@ import com.curseclient.client.gui.impl.altmanager.AltGui
 import com.curseclient.client.gui.impl.clickgui.ClickGuiHud
 import com.curseclient.client.manager.managers.ModuleManager
 import com.curseclient.client.module.Category
-import com.curseclient.client.module.HudCategory
 import com.curseclient.client.module.modules.client.ClickGui
 import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.utility.extension.transformIf
@@ -114,7 +113,7 @@ class CategoryPanel(
             else -> ClickGui.buttonColor2
         }
         RectBuilder(pos, pos.plus(width, height + windowHeight)).apply {
-            drawBlurredShadow(pos.x.toFloat(),
+            shadow(pos.x.toFloat(),
                 pos.y.toFloat(),
                 width.toFloat(),
                 (height + windowHeight).toFloat(),

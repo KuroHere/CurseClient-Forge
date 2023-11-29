@@ -111,7 +111,7 @@ object NewOverlay: DraggableHudModule(
 
         fr.drawString(
             "%.0f%%".format(healthPercentage),
-            pos1.plus(getWidth() - fr.getStringWidth("%.0f%%".format(healthPercentage), 2.0 * scale * 0.65), pos2.y - getHeight() + 40),
+            pos1.plus(getWidth() - fr.getStringWidth("%.0f%%".format(healthPercentage), 2.0 * scale * 0.65), getHeight() - 40),
             color = if (maxHealth > 20) Color(255, 210, 0) else Color.WHITE,
             scale = 2.0 * scale * 0.65
         )

@@ -15,7 +15,7 @@ import java.awt.Color
 
 object CustomSky : Module(
     "CustomSky",
-    "",
+    "Custom your sky box (need fix)",
     Category.VISUAL
 ) {
     private val END_SKY_TEXTURES = ResourceLocation("textures/environment/end_sky.png")

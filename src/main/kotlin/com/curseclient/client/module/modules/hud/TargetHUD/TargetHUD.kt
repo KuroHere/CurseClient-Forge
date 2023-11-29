@@ -40,7 +40,7 @@ import kotlin.math.max
 
 object TargetHUD : DraggableHudModule(
     "TargetHUD",
-    "I hate n",
+    "Draw target info on the screen",
     HudCategory.HUD,
 ) {
     private val widthSetting by setting("Width", 130.0, 90.0, 150.0, 1.0)
