@@ -108,8 +108,6 @@ object ModuleManager: Manager("ModuleManager") {
             TargetStrafe,
 
             //player
-            PenisESP,
-            TwoDESP,
             AntiHunger,
             AntiRotate,
             AntiServerSlot,
@@ -127,6 +125,8 @@ object ModuleManager: Manager("ModuleManager") {
             Timer,
 
             //visual
+            PenisESP,
+            TwoDESP,
             CustomSky,
             PerspectiveMod,
             CustomModel,
@@ -136,7 +136,6 @@ object ModuleManager: Manager("ModuleManager") {
             HitColour,
             PopChams,
             BetterScreenshot,
-            //Hitmarkers,
             WallHack,
             SuperHeroFX,
             CrossHair,
@@ -149,7 +148,7 @@ object ModuleManager: Manager("ModuleManager") {
             BlockESP,
             ConicalHat,
             CrystalRenderer,
-            CustomFov,
+            FovModifier,
             ESP,
             FancyHandshake,
             FogColor,

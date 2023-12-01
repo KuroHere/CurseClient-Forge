@@ -53,7 +53,7 @@ object Watermark: DraggableHudModule(
         Logo
     }
 
-    private fun getPositionWithOffset(width: Double, height: Double): Pair<Vec2d, Vec2d> {
+    private fun getPositionWithOffset(): Pair<Vec2d, Vec2d> {
         val pos1 = pos
         val pos2 = pos.plus(getWidth(), getHeight())
         return Pair(pos1, pos2)
@@ -69,7 +69,7 @@ object Watermark: DraggableHudModule(
     }
 
     override fun onRender() {
-        val (pos1, pos2) = getPositionWithOffset(getWidth(), getHeight())
+        val (pos1, pos2) = getPositionWithOffset()
         val (c1, c2) = getColorsForMode()
 
         when (mode) {

@@ -1,6 +1,7 @@
 package com.curseclient.client.module.modules.visual
 
 import baritone.api.utils.Helper
+import com.curseclient.CurseClient
 import com.curseclient.client.event.events.render.Render3DEvent
 import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.module.Category
@@ -12,6 +13,8 @@ import com.curseclient.client.utility.render.ColorUtils.g
 import com.curseclient.client.utility.render.ColorUtils.r
 import com.curseclient.client.utility.render.shader.RoundedUtil.color
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.culling.Frustum
+import net.minecraft.client.shader.Framebuffer
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.item.EntityItem
@@ -31,15 +34,20 @@ object SimsESP: Module(
 ) {
 
     private val color by setting("Color", Color(0, 255, 0))
+    private val seeThroughWalls by setting("ThroughWalls", false)
     private val players by setting("Players", true)
     private val items by setting("Items", true)
     private val hostiles by setting("Hostiles", false)
     private val animals by setting("Animals", false)
 
+    private var renderNameTags = true
     private val entities = ArrayList<Entity>()
+    private val frustum2 = Frustum()
+
+    var framebuffer: Framebuffer? = null
 
     init {
-        safeListener<Render3DEvent> {
+        safeListener<Render3DEvent> { event ->
             GL11.glPushMatrix()
             GL11.glDisable(3553)
             GL11.glEnable(2848)
@@ -49,51 +57,23 @@ object SimsESP: Module(
             GL11.glHint(3154, 4354)
             GL11.glHint(3155, 4354)
             GL11.glHint(3153, 4354)
-            GL11.glDepthMask(false)
-            GL11.glDisable(GL11.GL_DEPTH_TEST)
+            if (seeThroughWalls) {
+                GL11.glDepthMask(false)
+                GL11.glDisable(GL11.GL_DEPTH_TEST)
+            }
             GL11.glFrontFace(GL11.GL_CW)
-            var i = 0
-            //        GlStateManager.disableCull();
-            for (entity in mc.world.loadedEntityList) {
-                entities.clear()
-                if (entity.isInvisible) continue
-                if (entity == mc.player && mc.gameSettings.thirdPersonView == 0) continue
-                if (entity is EntityItem && items) {
-                    entities.add(entity)
-                }
-                if (entity is EntityAnimal && animals) {
-                    entities.add(entity)
-                }
-                if (entity is EntityPlayer && players) {
-                    entities.add(entity)
-                }
-                if (entity is EntityMob && hostiles) {
-                    entities.add(entity)
-                }
-                i++
-                var color = Color(color.r, color.g, color.b)
-                if (entity.hurtResistantTime > 0) color = Color.RED
-                GL11.glBegin(GL11.GL_TRIANGLE_STRIP)
-                color(color.rgb)
-                val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosX
-                val y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosY + entity.getEyeHeight() + .4 + sin((System.currentTimeMillis() % 1000000 / 333f + i).toDouble()) / 10
-                val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosZ
-                color(color.darker().darker().rgb)
-                GL11.glVertex3d(x, y, z)
-                GL11.glVertex3d(x - 0.1, y + 0.3, z - 0.1)
-                GL11.glVertex3d(x - 0.1, y + 0.3, z + 0.1)
-                color(color.rgb)
-                GL11.glVertex3d(x + 0.1, y + 0.3, z)
-                color(color.darker().darker().rgb)
-                GL11.glVertex3d(x, y, z)
-                color(color.darker().darker().darker().rgb)
-                GL11.glVertex3d(x + 0.1, y + 0.3, z)
-                GL11.glVertex3d(x - 0.1, y + 0.3, z - 0.1)
-                GL11.glEnd()
+            collectEntities()
+            framebuffer?.let {
+                it.framebufferClear()
+                it.bindFramebuffer(true)
+                renderEntities(event.partialTicks)
+                it.unbindFramebuffer()
             }
             GL11.glShadeModel(GL11.GL_FLAT)
             GL11.glFrontFace(GL11.GL_CCW)
-            GL11.glDepthMask(true)
+            if (seeThroughWalls) {
+                GL11.glDepthMask(true)
+            }
             GL11.glEnable(2929)
             GL11.glCullFace(GL11.GL_BACK)
             GlStateManager.enableCull()
@@ -104,4 +84,76 @@ object SimsESP: Module(
             GL11.glColor3f(255f, 255f, 255f)
         }
     }
+
+    private fun renderEntities(ticks: Float) {
+        entities.forEach { entity ->
+            if (entity != null) {
+                try {
+                    renderNameTags = false
+                    mc.renderManager.renderEntityStatic(entity, ticks, false)
+                    renderNameTags = true
+                } catch (e: Exception) {
+                    CurseClient.LOG.debug("Crash rồi nhớ gửi crash log cho Kuro_Here nhé")
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun isInView(ent: Entity): Boolean {
+        frustum2.setPosition(
+            mc.renderViewEntity!!.posX,
+            mc.renderViewEntity!!.posY,
+            mc.renderViewEntity!!.posZ)
+        return frustum2.isBoundingBoxInFrustum(ent.entityBoundingBox) || ent.ignoreFrustumCheck
+    }
+
+    private fun collectEntities() {
+        entities.clear()
+        var i = 0
+        for (entity in mc.world.loadedEntityList) {
+            if (!isInView(entity)) continue
+            if (entity == mc.player && mc.gameSettings.thirdPersonView == 0) continue
+            if (entity is EntityItem && items) {
+                entities.add(entity)
+                onRender(i++.toFloat(), entity)
+            }
+            if (entity is EntityAnimal && animals) {
+                entities.add(entity)
+                onRender(i++.toFloat(), entity)
+            }
+            if (entity is EntityPlayer && players) {
+                entities.add(entity)
+                onRender(i++.toFloat(), entity)
+            }
+            if (entity is EntityMob && hostiles) {
+                entities.add(entity)
+                onRender(i++.toFloat(), entity)
+            }
+
+        }
+    }
+
+    fun onRender(i: Float, entity: Entity) {
+        var color = Color(color.r, color.g, color.b)
+        if (entity.hurtResistantTime > 0) color = Color.RED
+        GL11.glBegin(GL11.GL_TRIANGLE_STRIP)
+        color(color.rgb)
+        val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosX
+        val y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosY + entity.getEyeHeight() + .4 + sin((System.currentTimeMillis() % 1000000 / 333f + i).toDouble()) / 10
+        val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosZ
+        color(color.darker().darker().rgb)
+        GL11.glVertex3d(x, y, z)
+        GL11.glVertex3d(x - 0.1, y + 0.3, z - 0.1)
+        GL11.glVertex3d(x - 0.1, y + 0.3, z + 0.1)
+        color(color.rgb)
+        GL11.glVertex3d(x + 0.1, y + 0.3, z)
+        color(color.darker().darker().rgb)
+        GL11.glVertex3d(x, y, z)
+        color(color.darker().darker().darker().rgb)
+        GL11.glVertex3d(x + 0.1, y + 0.3, z)
+        GL11.glVertex3d(x - 0.1, y + 0.3, z - 0.1)
+        GL11.glEnd()
+    }
+
 }

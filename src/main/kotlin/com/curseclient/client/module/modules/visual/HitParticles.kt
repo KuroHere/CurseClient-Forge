@@ -54,6 +54,7 @@ object HitParticles : Module(
     private val duration by setting("Duration", 30.0, 5.0, 50.0, 0.2, visible = {mode != Mode.Blood})
     private val inertiaAmount by setting("Inertia Amount", 0.8, 0.0, 1.0, 0.05, visible = {mode != Mode.Blood})
     private val gravityAmount by setting("Gravity Amount", 0.0, 0.0, 1.0, 0.05, visible = {mode != Mode.Blood})
+    private val seeThroughWalls by setting("ThroughWalls", false, visible = {mode != Mode.Blood})
 
     private val blood by setting("Blood", true, visible = {mode == Mode.Blood})
     private val sound by setting("Sound", true, visible = {mode == Mode.Blood})
@@ -169,6 +170,9 @@ object HitParticles : Module(
             val p = interpolatedPos.subtract(RenderUtils3D.viewerPos)
 
             matrix {
+                if (seeThroughWalls) {
+                    GlStateManager.disableDepth()
+                }
                 glTranslated(p.x, p.y, p.z)
                 glNormal3f(0.0f, 1.0f, 0.0f)
                 glRotatef(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
@@ -202,6 +206,9 @@ object HitParticles : Module(
                         circle(10f, c2.setAlpha(alpha), s)
                     }
                     Mode.Blood -> {}
+                }
+                if (seeThroughWalls) {
+                    GlStateManager.enableDepth()
                 }
             }
         }

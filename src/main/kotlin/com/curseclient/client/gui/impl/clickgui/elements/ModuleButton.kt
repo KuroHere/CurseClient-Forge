@@ -145,7 +145,7 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
 
         val sp1 = pos.minus(1.0)
         val sp2 = pos.plus(width, height + renderHeight).plus(1.0)
-        val ss = (gui as ClickGuiHud).currentScale * 2.0
+        val ss = gui.currentScale * 2.0
 
         scissor(Vec2d(sp1.x, max(sp1.y, basePanel.yRange.first)), Vec2d(sp2.x, min(sp2.y, basePanel.yRange.second)), ss) {
             drawSettings()

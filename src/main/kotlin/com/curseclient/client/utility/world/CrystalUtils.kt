@@ -25,6 +25,31 @@ import kotlin.math.round
 
 
 object CrystalUtils {
+
+    val MODIFIER_BY_TICK = mapOf(
+        0 to 0.0F,
+        1 to 0.00037497282f,
+        2 to 0.0015000105f,
+        3 to 0.0033749938f,
+        4 to 0.0059999824f,
+        5 to 0.009374976f,
+        6 to 0.013499975f,
+        7 to 0.01837498f,
+        8 to 0.023999989f,
+        9 to 0.030375004f,
+        10 to 0.037500024f,
+        11 to 0.04537499f,
+        12 to 0.05400002f,
+        13 to 0.063374996f,
+        14 to 0.07349998f,
+        15 to 0.084375024f,
+        16 to 0.096000016f,
+        17 to 0.10837501f,
+        18 to 0.121500015f,
+        19 to 0.13537502f,
+        20 to 0.14999998f
+    )
+
     fun getBlockPosInSphere(center: Vec3d, radius: Float): ArrayList<BlockPos> {
         val squaredRadius = radius.pow(2)
         val posList = ArrayList<BlockPos>()
