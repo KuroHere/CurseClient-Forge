@@ -42,7 +42,7 @@ object NewOverlay: DraggableHudModule(
     private var healthProgress = 0.0
     private var previousHealthProgress = 0.0
 
-    private const val w = 160.0
+    private const val w = 150.0
     private const val h = 80.0
     enum class ArmorType(val slot: EntityEquipmentSlot?, val xOffset: Double, val yOffset: Double) {
         HELMET(EntityEquipmentSlot.HEAD, 0.0, 0.0),
@@ -111,9 +111,9 @@ object NewOverlay: DraggableHudModule(
 
         fr.drawString(
             "%.0f%%".format(healthPercentage),
-            pos1.plus(getWidth() - fr.getStringWidth("%.0f%%".format(healthPercentage), 2.0 * scale * 0.65), getHeight() - 40),
+            pos1.plus(getWidth() - fr.getStringWidth("%.0f%%".format(healthPercentage), 2.0 * scale * 0.65), getHeight() - 45),
             color = if (maxHealth > 20) Color(255, 210, 0) else Color.WHITE,
-            scale = 2.0 * scale * 0.65
+            scale = 1.8 * scale * 0.65
         )
     }
 
