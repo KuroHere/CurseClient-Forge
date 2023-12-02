@@ -52,7 +52,7 @@ class CurseClient {
 
     @Mod.EventHandler
     fun preInit(event: FMLPreInitializationEvent) {
-        initTime = System.currentTimeMillis();
+        initTime = System.currentTimeMillis()
         LOG.info("Pre init started")
         val t = System.currentTimeMillis()
 
@@ -64,7 +64,7 @@ class CurseClient {
         Loader.onPreLoad()
 
         LOG.info("Pre init completed, took: ${(System.currentTimeMillis() - t)}ms")
-        initTime = System.currentTimeMillis();
+        initTime = System.currentTimeMillis()
     }
 
     fun getDirectory(): File {
@@ -78,18 +78,18 @@ class CurseClient {
             val t = System.currentTimeMillis()
             SplashProgress.setProgress(1, "KuroHere - Initializing CurseClient...")
             hwidManager = Thingy()
-            SplashProgress.setProgress(2, "Initializing HWID List...");
+            SplashProgress.setProgress(2, "Initializing HWID List...")
             songManager = SongManager
-            SplashProgress.setProgress(3, "Initializing sounds...");
+            SplashProgress.setProgress(3, "Initializing sounds...")
             moduleManager = ModuleManager
-            SplashProgress.setProgress(4, "Initializing Module...");
+            SplashProgress.setProgress(4, "Initializing Module...")
 
             SoundUtils.playSound(.9) { "opening.wav" }
             Loader.onLoad()
             LOG.info("Init completed, took: ${(System.currentTimeMillis() - t)}ms")
         }catch (t: Throwable) {
             // If an issue is caught, crash the game
-            Minecraft.getMinecraft().crashed(CrashReport("CurseClient Startup Failure", t));
+            Minecraft.getMinecraft().crashed(CrashReport("CurseClient Startup Failure", t))
         }
 
     }
@@ -108,14 +108,14 @@ class CurseClient {
 
         LOG.info("Post init started")
         val t = System.currentTimeMillis()
-        SplashProgress.update();
+        SplashProgress.update()
 
         setCurseIcon()
-        SplashProgress.setProgress(5, "Initializing Icon, Display name...");
+        SplashProgress.setProgress(5, "Initializing Icon, Display name...")
 
         Loader.onPostLoad()
-        SplashProgress.setProgress(6, "Loading completed...");
-        Display.setTitle(Client.displayName + " | " + mc.session.username);
+        SplashProgress.setProgress(6, "Loading completed...")
+        Display.setTitle(Client.displayName + " | " + mc.session.username)
         MinecraftForge.EVENT_BUS.register(TitleUtils())
         LOG.info("Post init completed, took: ${( System.currentTimeMillis() - t)}ms")
     }
