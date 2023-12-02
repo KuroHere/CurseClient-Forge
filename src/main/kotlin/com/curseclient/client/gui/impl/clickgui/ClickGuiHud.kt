@@ -3,16 +3,12 @@ package com.curseclient.client.gui.impl.clickgui
 import com.curseclient.client.gui.api.AbstractGui
 import com.curseclient.client.gui.api.other.MouseAction
 import com.curseclient.client.gui.impl.clickgui.elements.CategoryPanel
-import com.curseclient.client.gui.impl.clickgui.elements.DescriptionDisplay
+import com.curseclient.client.gui.impl.clickgui.elements.settings.misc.DescriptionDisplay
 import com.curseclient.client.gui.impl.particles.image.ParticleEngine
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.modules.client.ClickGui
 import com.curseclient.client.module.modules.client.HUD
-import com.curseclient.client.module.modules.client.HUD.particles
-import com.curseclient.client.utility.render.ColorUtils
-import com.curseclient.client.utility.render.ColorUtils.r
 import com.curseclient.client.utility.render.ParticleUtils
-import com.curseclient.client.utility.render.ParticleUtils.drawParticles
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.vector.Vec2d
 import net.minecraft.client.gui.ScaledResolution
@@ -21,7 +17,7 @@ import java.awt.Color
 
 
 class ClickGuiHud : AbstractGui() {
-    var currentScale = 1.0; private set
+    var currentScale = 1.1; private set
     override fun getScaleFactor() = currentScale
 
     val panels = ArrayList<CategoryPanel>()

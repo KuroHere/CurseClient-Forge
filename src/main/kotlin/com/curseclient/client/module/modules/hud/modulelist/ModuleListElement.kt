@@ -58,7 +58,6 @@ class ModuleListElement(val module: Module, var y: Double, var pos: Int) {
         val bgColor = HUD.bgColor.setAlphaD(ModuleList.bgAlpha)
         val fontColor1 = HUD.getColor(pos).setAlpha(if (animationMode != ModuleList.ModuleListAnimationMode.Scale) 255 else (255.0 * p).toInt())
         val fontColor2 = HUD.getColor(pos + 1).setAlpha(if (animationMode != ModuleList.ModuleListAnimationMode.Scale) 255 else (255.0 * p).toInt())
-
         //background
         RenderUtils2D.drawRect(
             Vec2d(sr.scaledWidth + offset, y),

@@ -1,6 +1,6 @@
 package com.curseclient.mixin.render;
 
-import com.curseclient.client.module.modules.visual.GlintColor;
+import com.curseclient.client.module.modules.visual.GlintModifier;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,7 +16,7 @@ public abstract class MixinRenderItem {
     private void renderEffect(RenderItem instance, IBakedModel model, int color) {
         int c = -8372020;
 
-        if (GlintColor.INSTANCE.isEnabled()) c = GlintColor.getColor().getRGB();
+        if (GlintModifier.INSTANCE.isEnabled()) c = GlintModifier.getColor().getRGB();
 
         this.renderModel(model, c);
     }

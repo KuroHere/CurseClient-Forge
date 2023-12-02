@@ -1,6 +1,5 @@
 package com.curseclient.client.module.modules.visual
 
-import com.curseclient.client.event.events.render.Render2DEvent
 import com.curseclient.client.event.events.render.Render3DEvent
 import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.gui.impl.particles.simple.util.RenderUtils
@@ -16,8 +15,6 @@ import com.curseclient.client.utility.extension.mixins.timer
 import com.curseclient.client.utility.render.ColorUtils
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.mixin.accessor.render.AccessorEntityRenderer
-import com.sun.org.apache.regexp.internal.RE
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.EntityRenderer
 import net.minecraft.client.renderer.GLAllocation

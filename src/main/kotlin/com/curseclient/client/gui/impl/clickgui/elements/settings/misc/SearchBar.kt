@@ -1,4 +1,4 @@
-package com.curseclient.client.gui.impl.clickgui.elements
+package com.curseclient.client.gui.impl.clickgui.elements.settings.misc
 
 import baritone.api.utils.Helper.mc
 import com.curseclient.client.gui.api.AbstractGui
@@ -12,6 +12,7 @@ import com.curseclient.client.utility.render.vector.Vec2d
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
+// TODO: make this actually work
 class SearchBar(moduleName: String, pos: Vec2d, gui: AbstractGui) : InteractiveElement(pos, 0.0, 0.0, gui) {
 
     private var moduleName: String = moduleName

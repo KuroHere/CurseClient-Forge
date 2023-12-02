@@ -8,6 +8,7 @@ import com.curseclient.client.setting.setting
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
 
+// TODO: need to make this can move pos
 object ModuleList : HudModule(
     "ModuleList",
     "Shows active modules",

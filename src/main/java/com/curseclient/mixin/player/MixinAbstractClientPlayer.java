@@ -7,11 +7,12 @@ import com.curseclient.client.module.modules.client.Cape;
 import com.curseclient.client.module.modules.visual.FovModifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 
@@ -31,10 +32,12 @@ public class MixinAbstractClientPlayer {
 
     @Inject(method = "getFovModifier", at = @At("HEAD"), cancellable = true)
     private void onFovChange(CallbackInfoReturnable<Float> cir){
+        ItemStack item = Minecraft.getMinecraft().player.getHeldItemMainhand();
         if(FovModifier.INSTANCE.isEnabled()){
             float mod = 1.0f;
             if(FovModifier.INSTANCE.getAllowSprint() && FovModifier.INSTANCE.getStatic() && Minecraft.getMinecraft().player.isSprinting()) mod *= 1.15f;
 
+            if(FovModifier.INSTANCE.getAllowBow() && Minecraft.getMinecraft().player.isHandActive() && Minecraft.getMinecraft().player.isUser() && item.getItem() == Items.BOW) mod /= (float) FovModifier.INSTANCE.getZoomFactor();
             cir.setReturnValue(mod);
         }
     }

@@ -9,6 +9,8 @@ import com.curseclient.client.module.modules.client.ClickGui
 import com.curseclient.client.utility.player.ChatUtils
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
+import com.curseclient.client.utility.render.shader.RectBuilder
+import com.curseclient.client.utility.render.vector.Vec2d
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
@@ -25,7 +27,6 @@ class BindButton(val module: Module, gui: AbstractGui, baseButton: ModuleButton)
 
     override fun onRender() {
         super.onRender()
-
         fr.drawString("Binding:", pos.plus(ClickGui.space, height / 2.0), scale = ClickGui.settingFontSize)
 
         val text = if (binding) "..." else Keyboard.getKeyName(module.key)

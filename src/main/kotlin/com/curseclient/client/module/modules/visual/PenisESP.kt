@@ -11,14 +11,13 @@ import com.curseclient.client.utility.extension.mixins.timer
 import com.curseclient.mixin.accessor.AccessorRenderManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
 import org.lwjgl.util.glu.Sphere
 import java.awt.Color
 
-
+//TODO: need fix view pos
 object PenisESP: Module(
     "PenisESP",
     "Draw a penis",

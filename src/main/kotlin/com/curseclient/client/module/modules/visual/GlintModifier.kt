@@ -5,11 +5,12 @@ import com.curseclient.client.module.Module
 import com.curseclient.client.setting.setting
 import java.awt.Color
 
-object GlintColor : Module(
-    "GlintColor",
-    "Colored nword",
+object GlintModifier : Module(
+    "GlintModifier",
+    "Modifier minecraft glint effect",
     Category.VISUAL
 ) {
     @JvmStatic
     val color by setting("Color", Color(128, 64, 204))
+
 }

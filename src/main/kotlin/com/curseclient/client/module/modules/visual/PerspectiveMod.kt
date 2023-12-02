@@ -8,7 +8,7 @@ import org.lwjgl.opengl.Display
 
 object PerspectiveMod : Module(
     "PerspectiveMod",
-    "",
+    "Free your look",
     Category.VISUAL
 ) {
 

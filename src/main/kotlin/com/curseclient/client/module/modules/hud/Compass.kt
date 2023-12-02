@@ -57,11 +57,11 @@ object Compass: DraggableHudModule(
             RenderUtils2D.drawLine((pos.x - rotationYaw + this.getWidth() / 2 - 135).toFloat(), (pos.y + 2).toFloat(), (pos.x - rotationYaw + this.getWidth() / 2 - 135).toFloat(), (pos.y + this.getHeight() - 2).toFloat(), 2f, -0x1)
 
             // Text
-            Fonts.DEFAULT_BOLD.drawString("N", Vec2d((pos.x - rotationYaw + this.getWidth() / 2 + 180 - Fonts.DEFAULT_BOLD.getStringWidth("N") / 2.0f).toInt(), pos.y.toInt() + 3), color = c1)
-            Fonts.DEFAULT_BOLD.drawString("N", Vec2d((pos.x - rotationYaw + this.getWidth() / 2 - 180 - Fonts.DEFAULT_BOLD.getStringWidth("N") / 2.0f).toInt(), pos.y.toInt() + 3), color = c1)
-            Fonts.DEFAULT_BOLD.drawString("E", Vec2d((pos.x - rotationYaw + this.getWidth() / 2 - 90 - Fonts.DEFAULT_BOLD.getStringWidth("E") / 2.0f).toInt(), pos.y.toInt() + 3), color = c1)
-            Fonts.DEFAULT_BOLD.drawString("S", Vec2d((pos.x - rotationYaw + this.getWidth() / 2 - Fonts.DEFAULT_BOLD.getStringWidth("S") / 2.0f).toInt(), pos.y.toInt() + 3), color = c1)
-            Fonts.DEFAULT_BOLD.drawString("W", Vec2d((pos.x - rotationYaw + this.getWidth() / 2 + 90 - Fonts.DEFAULT_BOLD.getStringWidth("W") / 2.0f).toInt(), pos.y.toInt() + 3), color = c1)
+            Fonts.DEFAULT_BOLD.drawString("N", Vec2d((pos.x - rotationYaw + this.getWidth() / 2 + 180 - Fonts.DEFAULT_BOLD.getStringWidth("N") / 2.0f).toInt(), pos.y.toInt() + 5), color = c1)
+            Fonts.DEFAULT_BOLD.drawString("N", Vec2d((pos.x - rotationYaw + this.getWidth() / 2 - 180 - Fonts.DEFAULT_BOLD.getStringWidth("N") / 2.0f).toInt(), pos.y.toInt() + 5), color = c1)
+            Fonts.DEFAULT_BOLD.drawString("E", Vec2d((pos.x - rotationYaw + this.getWidth() / 2 - 90 - Fonts.DEFAULT_BOLD.getStringWidth("E") / 2.0f).toInt(), pos.y.toInt() + 5), color = c1)
+            Fonts.DEFAULT_BOLD.drawString("S", Vec2d((pos.x - rotationYaw + this.getWidth() / 2 - Fonts.DEFAULT_BOLD.getStringWidth("S") / 2.0f).toInt(), pos.y.toInt() + 5), color = c1)
+            Fonts.DEFAULT_BOLD.drawString("W", Vec2d((pos.x - rotationYaw + this.getWidth() / 2 + 90 - Fonts.DEFAULT_BOLD.getStringWidth("W") / 2.0f).toInt(), pos.y.toInt() + 5), color = c1)
 
             // Centered line
             RenderUtils2D.drawLine((pos.x + this.getWidth() / 2).toFloat(), (pos.y + 1).toFloat(), (pos.x + this.getWidth() / 2).toFloat(), (pos.y + this.getHeight() - 1).toFloat(), 2f, -0x6f6f70)

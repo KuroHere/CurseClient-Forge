@@ -34,9 +34,9 @@ object Notifications : DraggableHudModule(
 ) {
     private val mode by setting("Mode", Mode.Transparent)
     private val widthSetting by setting("Width", 110.0, 80.0, 150.0, 1.0)
+    private val limitNotification by setting("MaxNotifyList", 3.0, 3.0, 10.0, 1.0)
     private val sound by setting("Sound", true)
     private val volume by setting("Volume", 0.5, 0.1, 2.0, 0.1, visible = { sound })
-    //private val heightSetting by setting("Height", 20.0, 14.0, 30.0, 1.0)
 
     val notificationList = ArrayList<Notification>()
 
@@ -64,7 +64,10 @@ object Notifications : DraggableHudModule(
 
     override fun onRender() {
         notificationList.removeIf { it.shouldRemove() }
-
+        // I'm too lazy to remake it😼
+        while (notificationList.size > limitNotification) {
+            notificationList.removeAt(0)
+        }
         var y = pos.y
         notificationList.forEach {
             it.draw(Vec2d(pos.x, y))

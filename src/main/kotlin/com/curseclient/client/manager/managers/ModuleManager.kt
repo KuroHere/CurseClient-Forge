@@ -153,7 +153,7 @@ object ModuleManager: Manager("ModuleManager") {
             FancyHandshake,
             FogColor,
             FullBright,
-            GlintColor,
+            GlintModifier,
             HandShader,
             HealthParticles,
             HitParticles,

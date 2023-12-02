@@ -2,7 +2,6 @@ package com.curseclient.client.gui.impl.clickgui.elements
 
 import com.curseclient.client.gui.api.elements.InteractiveElement
 import com.curseclient.client.gui.api.other.MouseAction
-import com.curseclient.client.gui.impl.altmanager.AltGui.drawBackground
 import com.curseclient.client.gui.impl.clickgui.ClickGuiHud
 import com.curseclient.client.gui.impl.clickgui.elements.settings.SettingButton
 import com.curseclient.client.gui.impl.clickgui.elements.settings.impl.*
@@ -11,6 +10,7 @@ import com.curseclient.client.module.modules.client.ClickGui
 import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.setting.Setting
 import com.curseclient.client.setting.type.*
+import com.curseclient.client.utility.SoundUtils
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.math.MathUtils.toInt
@@ -27,11 +27,11 @@ import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
+import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
 import java.awt.Color
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.math.*
 
 
 class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui: ClickGuiHud, private val basePanel: CategoryPanel) : InteractiveElement(
@@ -54,6 +54,7 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
     override fun onGuiCloseAttempt() {}
 
     val settings = ArrayList<SettingButton>()
+    private var prevHovered = false
 
     var extended = false
     var renderHeight = 0.0
@@ -131,6 +132,13 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
 
         detail()
 
+        // 😼👌
+        if (hovered) {
+            if (!prevHovered)
+                SoundUtils.playSound { "scroll.wav" }
+        }
+        prevHovered = hovered;
+
         val hoveredModule = (gui as ClickGuiHud).panels.flatMap { it.modules }.firstOrNull { it.isHovered(gui.mouse) }
         val descriptionDisplay = gui.descriptionDisplay
 
@@ -138,8 +146,10 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
             descriptionDisplay.setDescription(hoveredModule.module.description)
             descriptionDisplay.setLocation(Vec2d(gui.mouse.x, gui.mouse.y))
             descriptionDisplay.setDraw(true)
-
-        } else { descriptionDisplay?.setDraw(false) }
+        } else {
+            descriptionDisplay?.resetAnimation()
+            descriptionDisplay?.setDraw(false)
+        }
 
         if (renderHeight < 1.0) return
 
@@ -154,7 +164,9 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
 
     private fun detail() {
 
-        val bindPos = pos.plus(ClickGui.space + hoverProgress.ease(NewEaseType.OutBack) * 2.0 + fr.getStringWidth(module.name, ClickGui.settingFontSize) + 5, (height / 2) - 2)
+        val bindPos = pos.plus(
+            ClickGui.space.plus(hoverProgress.ease(NewEaseType.OutBack).times(2.0)) + fr.getStringWidth(module.name, ClickGui.settingFontSize) + fr.getStringWidth(Keyboard.getKeyName(module.key).toString(), 0.3) + 5,
+            (height / 2) - 2)
         val charPos = pos.plus(width - 10, height / 2)
 
         val show_bind = ClickGui.detailPage == ClickGui.Details.Bind

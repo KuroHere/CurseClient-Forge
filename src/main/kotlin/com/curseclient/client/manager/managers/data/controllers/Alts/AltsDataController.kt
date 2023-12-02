@@ -23,7 +23,7 @@ object AltsDataController: DataController(
             }
             val writer = FileWriter(file)
             for (altButton in AltGui.altButtons) {
-                writer.write(((altButton.email + ":" + altButton.password).toString() + ":" + altButton.altType.equals(Alt.AltType.MICROSOFT)).toString() + "\n")
+                writer.write(((altButton.email + ":" + altButton.password) + ":" + (altButton.altType == Alt.AltType.MICROSOFT)) + "\n")
             }
             writer.close()
         } catch (e: Exception) {

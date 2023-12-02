@@ -7,6 +7,7 @@ import com.curseclient.client.setting.getSetting
 import com.curseclient.client.setting.type.BooleanSetting
 import com.curseclient.client.utility.NotificationType
 import com.curseclient.client.utility.NotificationUtils
+import com.mojang.realmsclient.gui.ChatFormatting
 import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard
 import java.awt.Color
@@ -64,7 +65,7 @@ abstract class Module(
             if (!alwaysListenable) EventBus.subscribe(this)
 
             EventBus.post(CurseClientEvent.ModuleToggleEvent(this))
-            NotificationUtils.notify(name, "Module has been enable", NotificationType.INFO, descriptionColor = Color.LIGHT_GRAY)
+            NotificationUtils.notify(name, "Module has been " + ChatFormatting.GREEN + "enable" + ChatFormatting.RESET, NotificationType.INFO, descriptionColor = Color.LIGHT_GRAY)
 
             onEnable()
         }
@@ -77,7 +78,7 @@ abstract class Module(
             if (this is DraggableHudModule) isDragging = false
 
             EventBus.post(CurseClientEvent.ModuleToggleEvent(this))
-            NotificationUtils.notify(name, "Module has been disable", NotificationType.INFO, descriptionColor = Color.LIGHT_GRAY)
+            NotificationUtils.notify(name, "Module has been" + ChatFormatting.RED + " disable" + ChatFormatting.RESET, NotificationType.INFO, descriptionColor = Color.LIGHT_GRAY)
 
             onDisable()
         }

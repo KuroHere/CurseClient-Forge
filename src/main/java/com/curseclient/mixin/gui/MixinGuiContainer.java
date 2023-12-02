@@ -1,16 +1,12 @@
 package com.curseclient.mixin.gui;
 
 import com.curseclient.CurseClient;
-import com.curseclient.client.manager.managers.ModuleManager;
 import com.curseclient.client.module.modules.client.Animations;
 import com.curseclient.client.module.modules.client.HUD;
-import com.curseclient.client.module.modules.combat.KillAura;
 import com.curseclient.client.module.modules.misc.ChestStealer;
 import com.curseclient.client.utility.render.animation.EaseUtils;
 import com.curseclient.client.utility.render.RenderUtils2D;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import org.lwjgl.opengl.GL11;
