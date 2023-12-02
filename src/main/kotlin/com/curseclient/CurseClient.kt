@@ -76,7 +76,7 @@ class CurseClient {
         try {
             LOG.info("Init started")
             val t = System.currentTimeMillis()
-            SplashProgress.setProgress(1, "KuroHere - Initializing CurseClient...")
+            SplashProgress.setProgress(1, "Initializing CurseClient...")
             hwidManager = Thingy()
             SplashProgress.setProgress(2, "Initializing HWID List...");
             songManager = SongManager
