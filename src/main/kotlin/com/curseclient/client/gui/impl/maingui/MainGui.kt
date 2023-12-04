@@ -33,7 +33,7 @@ class MainGui: GuiScreen() {
 
     private val buttons = ArrayList<GeneralButton>()
     private val musicButton = ArrayList<MusicButton>()
-    private val songManager = SongManager // Create SongManager instance
+    private val songManager = SongManager
     private var scaledResolution: ScaledResolution? = null
     private val particleMang: ParticleManager = ParticleManager()
     private val trailMang: OsuLightTrail = OsuLightTrail()
@@ -71,7 +71,7 @@ class MainGui: GuiScreen() {
         )
 
         musicButton.addAll(buttonData.map { (action, xOffset) ->
-            MusicButton(xOffset, y, width, height, action, songManager) // Pass songManager here
+            MusicButton(xOffset, y, width, height, action, songManager)
         })
     }
 

@@ -11,9 +11,9 @@ import net.minecraft.tileentity.TileEntityEnderChest
 import net.minecraft.tileentity.TileEntityShulkerBox
 import java.awt.Color
 
-object BlockESP : Module(
-    "BlockESP",
-    "BlockESP",
+object StorageESP : Module(
+    "StorageESP",
+    "StorageESP",
     Category.VISUAL
 ) {
     private val chest by setting("Chest", true)

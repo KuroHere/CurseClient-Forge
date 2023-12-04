@@ -3,7 +3,6 @@ package com.curseclient.client.manager.managers
 import GlowESP
 import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.manager.Manager
-import com.curseclient.client.module.HudModule
 import com.curseclient.client.module.Module
 import com.curseclient.client.module.modules.client.*
 import com.curseclient.client.module.modules.combat.*
@@ -141,7 +140,7 @@ object ModuleManager: Manager("ModuleManager") {
         GlowESP,
         ViewLock,
         Chams,
-        BlockESP,
+        StorageESP,
         ConicalHat,
         CrystalRenderer,
         FovModifier,

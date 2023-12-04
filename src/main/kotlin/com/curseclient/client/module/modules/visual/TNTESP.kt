@@ -12,7 +12,7 @@ import java.awt.Color
 
 object TNTESP : Module(
     "TNT ESP",
-    "Allows you to see ignited TNT blocks through walls.",
+    "Allows you to see ignited TNT blocks through walls and timer.",
     Category.VISUAL
 ) {
     private val color by setting("Color", Color(173, 0, 0, 250))

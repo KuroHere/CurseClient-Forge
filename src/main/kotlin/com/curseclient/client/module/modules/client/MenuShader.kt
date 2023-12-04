@@ -58,7 +58,7 @@ object MenuShader : Module(
     }
 
     override fun onEnable() {
-        NotificationUtils.notify("MenuShader", "Restart ur client when change shader", NotificationType.INFO, descriptionColor = Color.RED)
+        NotificationUtils.notify("MenuShader", "Require restart when change shader", NotificationType.ERROR, descriptionColor = Color.RED)
 
     }
 

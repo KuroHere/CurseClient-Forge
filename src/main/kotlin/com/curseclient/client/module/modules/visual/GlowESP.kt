@@ -44,22 +44,22 @@ object GlowESP : Module(
     Category.VISUAL
 ) {
 
-    val radius by setting("Radius", 2, 1, 30, 1)
-    val exposure by setting("Exposure", 2.2, 1.0, 3.5, 0.1)
-    val separate by setting("Seperate Texture", false)
+    private val radius by setting("Radius", 2, 1, 30, 1)
+    private val exposure by setting("Exposure", 2.2, 1.0, 3.5, 0.1)
+    private val separate by setting("Seperate Texture", false)
 
-    val color by setting("Color", Color(70, 100, 255))
-    val movingcolors by setting("movingcolors", false)
-    val sync by setting("Sync", false, visible = { movingcolors } )
-    val color1 by setting("Color1", Color(200, 0, 0), visible = { movingcolors && !sync})
-    val color2 by setting("Color2", Color(255, 255, 255), visible = { movingcolors && !sync})
-    val hueInterpolation by setting("hueInterpolation", false)
+    private val color by setting("Color", Color(70, 100, 255))
+    private val movingcolors by setting("movingcolors", false)
+    private val sync by setting("Sync", false, visible = { movingcolors } )
+    private val color1 by setting("Color1", Color(200, 0, 0), visible = { movingcolors && !sync})
+    private val color2 by setting("Color2", Color(255, 255, 255), visible = { movingcolors && !sync})
+    private val hueInterpolation by setting("hueInterpolation", false)
 
-    val players by setting("Players", false)
-    val animals by setting("Animals", false)
-    val mobs by setting("Mobs", false)
-    val items by setting("Items", false)
-    val crystal by setting("Crystal", false)
+    private val players by setting("Players", false)
+    private val animals by setting("Animals", false)
+    private val mobs by setting("Mobs", false)
+    private val items by setting("Items", false)
+    private val crystal by setting("Crystal", false)
 
     private var renderNameTags = true
     private lateinit var fadeIn: Animation
@@ -68,8 +68,8 @@ object GlowESP : Module(
     private val glowShader = ShaderUtils("shaders/client/glow.frag")
 
     var framebuffer: Framebuffer? = null
-    var outlineFrameBuffer: Framebuffer? = null
-    var glowFrameBuffer: Framebuffer? = null
+    private var outlineFrameBuffer: Framebuffer? = null
+    private var glowFrameBuffer: Framebuffer? = null
     private val frustum2 = Frustum()
 
     private val entities = ArrayList<Entity>()
@@ -99,7 +99,7 @@ object GlowESP : Module(
             GlStateManager.disableLighting()
         }
         safeListener<Render2DEvent> {
-            val sr = ScaledResolution(mc)
+            ScaledResolution(mc)
             if (framebuffer != null && outlineFrameBuffer != null && entities.size > 0) {
                 GlStateManager.enableAlpha()
                 GlStateManager.alphaFunc(516, 0.0f)
@@ -161,7 +161,7 @@ object GlowESP : Module(
     }
 
     private fun setupGlowUniforms(dir1: Float, dir2: Float) {
-        val color = GETTHISCOLORFUCKKOTLIN()
+        val color = getGlowColor()
         glowShader.setUniformi("texture", 0)
         if (separate) {
             glowShader.setUniformi("textureToCheck", 16)
@@ -183,7 +183,7 @@ object GlowESP : Module(
     }
 
     private fun setupOutlineUniforms(dir1: Float, dir2: Float) {
-        val color = GETTHISCOLORFUCKKOTLIN()
+        val color = getGlowColor()
         outlineShader.setUniformi("texture", 0)
         outlineShader.setUniformf("radius", (radius / 1.5f).toFloat())
         outlineShader.setUniformf("texelSize", 1.0f / mc.displayWidth, 1.0f / mc.displayHeight)
@@ -193,20 +193,18 @@ object GlowESP : Module(
 
     private fun renderEntities(ticks: Float) {
         entities.forEach { entity ->
-            if (entity != null) {
-                try {
-                    renderNameTags = false
-                    mc.renderManager.renderEntityStatic(entity, ticks, false)
-                    renderNameTags = true
-                } catch (e: Exception) {
-                    CurseClient.LOG.debug("Crash rồi nhớ gửi crash log cho Kuro_Here nhé")
-                    e.printStackTrace()
-                }
+            try {
+                renderNameTags = false
+                mc.renderManager.renderEntityStatic(entity, ticks, false)
+                renderNameTags = true
+            } catch (e: Exception) {
+                CurseClient.LOG.debug("Crash rồi nhớ gửi crash log cho Kuro_Here nhé")
+                e.printStackTrace()
             }
         }
     }
 
-    private fun GETTHISCOLORFUCKKOTLIN(): Color {
+    private fun getGlowColor(): Color {
 
         val c1 = HUD.getColor(0)
         val c2 = HUD.getColor(10)
