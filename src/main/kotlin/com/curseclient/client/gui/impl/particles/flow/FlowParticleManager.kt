@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec2f
 import org.lwjgl.BufferUtils
+import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import java.awt.*
 import java.nio.FloatBuffer
@@ -81,7 +82,7 @@ class FlowParticleManager(amount: Int) {
     }
 
     fun fill(color: Color, x1: Double, y1: Double, x2: Double, y2: Double) {
-        val buffer: FloatBuffer = BufferUtils.createFloatBuffer(16)
+        BufferUtils.createFloatBuffer(16)
 
         var j: Double
         var x1New = x1
@@ -105,7 +106,7 @@ class FlowParticleManager(amount: Int) {
         val g = (color.rgb ushr 16 and 255) / 255.0f
         val h = (color.rgb ushr 8 and 255) / 255.0f
         val k = (color.rgb and 255) / 255.0f
-
+        glPushMatrix()
         glEnable(GL_BLEND)
         glDisable(GL_TEXTURE_2D)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -118,9 +119,10 @@ class FlowParticleManager(amount: Int) {
         glEnd()
         glEnable(GL_TEXTURE_2D)
         glDisable(GL_BLEND)
+        glPopMatrix()
     }
 
-    fun lineScreenD(c: java.awt.Color, x: Double, y: Double, x1: Double, y1: Double) {
+    private fun lineScreenD(c: java.awt.Color, x: Double, y: Double, x1: Double, y1: Double) {
         val g = c.red / 255f
         val h = c.green / 255f
         val k = c.blue / 255f
@@ -128,7 +130,7 @@ class FlowParticleManager(amount: Int) {
 
         val tessellator = Tessellator.getInstance()
         val bufferBuilder: BufferBuilder = tessellator.buffer
-
+        glPushMatrix()
         glEnable(GL_BLEND)
         glDisable(GL_TEXTURE_2D)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -140,6 +142,7 @@ class FlowParticleManager(amount: Int) {
 
         glEnable(GL_TEXTURE_2D)
         glDisable(GL_BLEND)
+        glPopMatrix()
     }
 
     /**

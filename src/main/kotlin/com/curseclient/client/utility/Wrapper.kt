@@ -1,6 +1,5 @@
 package com.curseclient.client.utility
 
-import baritone.api.utils.Helper.mc
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.multiplayer.WorldClient

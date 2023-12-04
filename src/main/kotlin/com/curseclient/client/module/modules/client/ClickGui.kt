@@ -39,7 +39,10 @@ object ClickGui : Module(
 
     //Background
     val darkness by setting("Darkness ", false, { page == Page.BackGround })
-    val newParticles by setting("Particle", false, { page == Page.BackGround })
+    val imageParticle by setting("ImageParticle", false, { page == Page.BackGround })
+    val flowParticle by setting("FlowParticle", false, { page == Page.BackGround })
+    val particle by setting("Particle", false, { page == Page.BackGround })
+    val amount by setting("Amount", 100, 100, 500, 10, { page == Page.BackGround && flowParticle || particle })
 
     // Font
     val fontSize by setting("Font Size", 1.0, 0.5, 2.0, 0.02, { page == Page.Font })

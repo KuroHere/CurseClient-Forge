@@ -6,6 +6,7 @@ import com.curseclient.client.gui.impl.clickgui.elements.CategoryPanel
 import com.curseclient.client.gui.impl.clickgui.elements.settings.misc.DescriptionDisplay
 import com.curseclient.client.gui.impl.particles.flow.FlowParticleManager
 import com.curseclient.client.gui.impl.particles.image.ParticleEngine
+import com.curseclient.client.gui.impl.particles.moving.MovingParticleManager
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.modules.client.ClickGui
 import com.curseclient.client.utility.render.RenderUtils2D
@@ -20,7 +21,8 @@ class ClickGuiHud : AbstractGui() {
     val panels = ArrayList<CategoryPanel>()
 
     private var particleEngine: ParticleEngine = ParticleEngine()
-    val pm: FlowParticleManager = FlowParticleManager(100)
+    val fpm: FlowParticleManager = FlowParticleManager(100)
+    val pm: MovingParticleManager = MovingParticleManager(100)
     var descriptionDisplay: DescriptionDisplay? = null
 
     var dWheel = 0.0; private set
@@ -33,7 +35,8 @@ class ClickGuiHud : AbstractGui() {
 
             if (particleEngine == null)
                 particleEngine = ParticleEngine()
-            pm.remake()
+            fpm.remake()
+
             descriptionDisplay = DescriptionDisplay("", Vec2d(0.0, 0.0), this)
         }
 
@@ -58,6 +61,7 @@ class ClickGuiHud : AbstractGui() {
 
     override fun onTick() {
         panels.forEach { it.onTick() }
+        fpm.tick()
         pm.tick()
     }
 
@@ -76,8 +80,11 @@ class ClickGuiHud : AbstractGui() {
     private fun someEffect() {
         if (ClickGui.darkness )
             RenderUtils2D.drawRect(0f, 0f, width.toFloat() * currentScale.toFloat(), height.toFloat() * currentScale.toFloat(), Color(15, 15, 15, 160).rgb)
-        pm.render()
-        if (ClickGui.newParticles)
+        if (ClickGui.flowParticle)
+            fpm.render()
+        if (ClickGui.particle)
+            pm.render()
+        if (ClickGui.imageParticle)
             particleEngine.render()
 
     }

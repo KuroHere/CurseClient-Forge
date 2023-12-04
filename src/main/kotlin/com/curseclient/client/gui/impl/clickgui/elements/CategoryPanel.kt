@@ -117,7 +117,7 @@ class CategoryPanel(
                 pos.y.toFloat(),
                 width.toFloat(),
                 (height + windowHeight).toFloat(),
-                15,
+                5,
                 Color.BLACK
             )
             outlineColor(c1, c2, c1, c2)
