@@ -2,7 +2,6 @@ package com.curseclient.client.module.modules.visual
 
 import com.curseclient.client.event.events.render.Render3DEvent
 import com.curseclient.client.event.listener.safeListener
-import com.curseclient.client.gui.impl.particles.simple.util.RenderUtils
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.module.modules.client.HUD
@@ -136,10 +135,10 @@ object TwoDESP : Module(
 
                                 val c = HUD.getColor(0)
 
-                                RenderUtils.lineNoGl(posX - w, posY, posX + w - w, endPosY, c)
-                                RenderUtils.lineNoGl(posX, endPosY - w, endPosX, endPosY, c)
-                                RenderUtils.lineNoGl(posX - w, posY, endPosX, posY + w, c)
-                                RenderUtils.lineNoGl(endPosX - w, posY, endPosX, endPosY, c)
+                                lineNoGl(posX - w, posY, posX + w - w, endPosY, c)
+                                lineNoGl(posX, endPosY - w, endPosX, endPosY, c)
+                                lineNoGl(posX - w, posY, endPosX, posY + w, c)
+                                lineNoGl(endPosX - w, posY, endPosX, endPosY, c)
 
                                 val percentage = (endPosY - posY) * p.health / p.maxHealth
 
@@ -150,7 +149,7 @@ object TwoDESP : Module(
                                 val progress = p.health / p.maxHealth
                                 val healthColor = if (p.health >= 0.0f) ColorUtils.blendColors(fractions, colors, progress).brighter() else Color.RED
 
-                                RenderUtils.lineNoGl(posX - w - distance, endPosY - percentage, posX + w - w - distance, endPosY, healthColor)
+                                lineNoGl(posX - w - distance, endPosY - percentage, posX + w - w - distance, endPosY, healthColor)
                             }
                             amount++
                         }
@@ -163,14 +162,14 @@ object TwoDESP : Module(
     }
 
     private fun draw2DBox(width: Double, height: Double, lineWidth: Double, offset: Double, c: Color) {
-        RenderUtils.rect(-width / 2 - offset, -offset, width / 4, lineWidth, c)
-        RenderUtils.rect(width / 2 - offset, -offset, -width / 4, lineWidth, c)
-        RenderUtils.rect(width / 2 - offset, height - offset, -width / 4, lineWidth, c)
-        RenderUtils.rect(-width / 2 - offset, height - offset, width / 4, lineWidth, c)
-        RenderUtils.rect(-width / 2 - offset, height - offset, lineWidth, -height / 4, c)
-        RenderUtils.rect(width / 2 - lineWidth - offset, height - offset, lineWidth, -height / 4, c)
-        RenderUtils.rect(width / 2 - lineWidth - offset, -offset, lineWidth, height / 4, c)
-        RenderUtils.rect(-width / 2 - offset, -offset, lineWidth, height / 4, c)
+        rect(-width / 2 - offset, -offset, width / 4, lineWidth, c)
+        rect(width / 2 - offset, -offset, -width / 4, lineWidth, c)
+        rect(width / 2 - offset, height - offset, -width / 4, lineWidth, c)
+        rect(-width / 2 - offset, height - offset, width / 4, lineWidth, c)
+        rect(-width / 2 - offset, height - offset, lineWidth, -height / 4, c)
+        rect(width / 2 - lineWidth - offset, height - offset, lineWidth, -height / 4, c)
+        rect(width / 2 - lineWidth - offset, -offset, lineWidth, height / 4, c)
+        rect(-width / 2 - offset, -offset, lineWidth, height / 4, c)
     }
 
     private fun project2D(scaleFactor: Int, x: Double, y: Double, z: Double): Vector3d? {
@@ -178,5 +177,127 @@ object TwoDESP : Module(
         GL11.glGetFloat(2983, projection)
         GL11.glGetInteger(2978, viewport)
         return if (GLU.gluProject(x.toFloat(), y.toFloat(), z.toFloat(), modelview, projection, viewport, vector)) Vector3d(vector.get(0).toDouble() / scaleFactor, (Display.getHeight() - vector.get(1)).toDouble() / scaleFactor, vector.get(2).toDouble()) else null
+    }
+
+    fun start() {
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glDisable(GL11.GL_CULL_FACE)
+        GlStateManager.disableAlpha()
+        GlStateManager.disableDepth()
+    }
+
+    fun stop() {
+        GlStateManager.enableAlpha()
+        GlStateManager.enableDepth()
+        GL11.glEnable(GL11.GL_CULL_FACE)
+        GL11.glEnable(GL11.GL_TEXTURE_2D)
+        GL11.glDisable(GL11.GL_BLEND)
+        color(Color.white)
+    }
+
+    fun color(red: Double, green: Double, blue: Double, alpha: Double) {
+        GL11.glColor4d(red, green, blue, alpha)
+    }
+
+    fun color(red: Double, green: Double, blue: Double) {
+        color(red, green, blue, 1.0)
+    }
+
+    fun color(color: Color?) {
+        val convertedColor = color ?: Color.WHITE
+        color(convertedColor.red / 255.0, convertedColor.green / 255.0, convertedColor.blue / 255.0, convertedColor.alpha / 255.0)
+    }
+
+    fun color(color: Color?, alpha: Int) {
+        val convertedColor = color ?: Color.WHITE
+        color(convertedColor.red / 255.0, convertedColor.green / 255.0, convertedColor.blue / 255.0, 0.5)
+    }
+
+    fun lineNoGl(firstX: Double, firstY: Double, secondX: Double, secondY: Double, color: Color) {
+        start()
+        color(color)
+        GL11.glLineWidth(1f)
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glBegin(GL11.GL_LINES)
+        run {
+            GL11.glVertex2d(firstX, firstY)
+            GL11.glVertex2d(secondX, secondY)
+        }
+        GL11.glEnd()
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        stop()
+    }
+
+    fun rect(x: Double, y: Double, width: Double, height: Double, filled: Boolean, color: Color) {
+        start()
+        color(color)
+        GL11.glBegin(if (filled) GL11.GL_TRIANGLE_FAN else GL11.GL_LINES)
+        run {
+            GL11.glVertex2d(x, y)
+            GL11.glVertex2d(x + width, y)
+            GL11.glVertex2d(x + width, y + height)
+            GL11.glVertex2d(x, y + height)
+            if (!filled) {
+                GL11.glVertex2d(x, y)
+                GL11.glVertex2d(x, y + height)
+                GL11.glVertex2d(x + width, y)
+                GL11.glVertex2d(x + width, y + height)
+            }
+        }
+        GL11.glEnd()
+        stop()
+    }
+
+    fun rect(x: Double, y: Double, width: Double, height: Double, filled: Boolean) {
+        rect(x, y, width, height, filled)
+    }
+
+    fun rect(x: Double, y: Double, width: Double, height: Double, color: Color) {
+        rect(x, y, width, height, true, color)
+    }
+
+    fun rect(x: Double, y: Double, width: Double, height: Double) {
+        rect(x, y, width, height, true)
+    }
+
+
+    private fun polygon(x: Double, y: Double, sideLength: Double, amountOfSides: Double, filled: Boolean, color: Color?) {
+        var sideLength = sideLength
+        sideLength /= 2
+        start()
+        if (color != null)
+            color(color)
+        if (!filled) GL11.glLineWidth(2f)
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glBegin(if (filled) GL11.GL_TRIANGLE_FAN else GL11.GL_LINE_STRIP)
+        run {
+            var i = 0.0
+            while (i <= amountOfSides / 4) {
+                val angle = i * 4 * (Math.PI * 2) / 360
+                GL11.glVertex2d(x + sideLength * Math.cos(angle) + sideLength, y + sideLength * Math.sin(angle) + sideLength)
+                i++
+            }
+        }
+        GL11.glEnd()
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        stop()
+    }
+
+    fun circle(x: Double, y: Double, radius: Double, filled: Boolean, color: Color?) {
+        polygon(x, y, radius, 360.0, filled, color)
+    }
+
+    fun circle(x: Double, y: Double, radius: Double, filled: Boolean) {
+        polygon(x, y, radius, 360.0, filled, null)
+    }
+
+    fun circle(x: Double, y: Double, radius: Double, color: Color?) {
+        polygon(x, y, radius, 360.0, true, color)
+    }
+
+    fun circle(x: Double, y: Double, radius: Double) {
+        polygon(x, y, radius, 360.0, true, null)
     }
 }

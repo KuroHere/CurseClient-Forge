@@ -13,6 +13,8 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.abs
 
+
+// TODO: it work only when gradle runclient
 class OsuLightTrail {
     private val trail: MutableList<Pair<Double, Double>> = ArrayList()
     private val maxTrailLength = 100

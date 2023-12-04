@@ -8,6 +8,7 @@ import com.curseclient.client.module.modules.client.*
 import com.curseclient.client.module.modules.combat.*
 import com.curseclient.client.module.modules.hud.*
 import com.curseclient.client.module.modules.hud.Status.Status
+import com.curseclient.client.module.modules.hud.TargetHUD.FollowTargetHud
 import com.curseclient.client.module.modules.hud.TargetHUD.TargetHUD
 import com.curseclient.client.module.modules.hud.graph.FpsGraph
 import com.curseclient.client.module.modules.hud.graph.MovementGraph
@@ -120,6 +121,7 @@ object ModuleManager: Manager("ModuleManager") {
         Timer,
 
         //visual
+        FollowTargetHud,
         PenisESP,
         TwoDESP,
         CustomSky,
