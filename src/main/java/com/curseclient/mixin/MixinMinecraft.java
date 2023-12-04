@@ -1,10 +1,10 @@
 package com.curseclient.mixin;
 
 import com.curseclient.client.event.EventBus;
-import com.curseclient.client.event.events.RootEvent;
 import com.curseclient.client.module.modules.client.MenuShader;
 import com.curseclient.client.utility.render.IconUtils;
 import com.curseclient.client.utility.threads.MainThreadExecutor;
+import com.curseclient.client.events.RootEvent;
 import com.curseclient.client.utility.render.SplashProgress;
 import com.curseclient.client.utility.DeltaTime;
 import net.minecraft.client.Minecraft;
