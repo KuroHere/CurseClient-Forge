@@ -23,6 +23,7 @@ import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.*
 
+// TODO: AutoJump?
 object Speed: Module(
     "Speed",
     "Move faster",

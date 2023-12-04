@@ -43,8 +43,6 @@ class WingModel : ModelBase(), LayerRenderer<AbstractClientPlayer> {
 
     fun renderWing(player: AbstractClientPlayer, scale: Double) {
         if (CustomModel.isEnabled() && !player.isInvisible) {
-            val c1 = HUD.getColor(0)
-            val c2 = HUD.getColor(5)
             GL11.glPushMatrix()
             GL11.glScaled(-scale, -scale, scale)
             GL11.glTranslated(0.0, -1.45, 0.0)
@@ -54,18 +52,10 @@ class WingModel : ModelBase(), LayerRenderer<AbstractClientPlayer> {
             }
             GL11.glRotated(180.0, 1.0, 0.0, 0.0)
             GL11.glRotated(180.0, 0.0, 1.0, 0.0)
-            if (CustomModel.colorM == CustomModel.Mode.Client) {
-                resetColor()
-                GradientUtil.applyGradientHorizontal(0f, 0f, 300f, 300f, 1f, c1, c2) {
-                    setAlphaLimit(0f)
-                    mc.textureManager.bindTexture(location)
-                    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
-                }
-            }
-            else {
-                GlStateManager.color(CustomModel.color.red / 255.0f, CustomModel.color.green / 255.0f, CustomModel.color.blue / 255.0f, 1.0f)
-                mc.textureManager.bindTexture(location)
-            }
+
+            GlStateManager.color(CustomModel.color.red / 255.0f, CustomModel.color.green / 255.0f, CustomModel.color.blue / 255.0f, 1.0f)
+            mc.textureManager.bindTexture(location)
+
             for (j in 0..1) {
                 GL11.glEnable(2884)
                 val f11: Float = (System.currentTimeMillis() % 1000L / 1000.0f * 3.1415927f * 2.0f)

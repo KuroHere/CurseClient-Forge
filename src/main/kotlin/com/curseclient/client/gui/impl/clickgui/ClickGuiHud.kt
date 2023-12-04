@@ -21,8 +21,8 @@ class ClickGuiHud : AbstractGui() {
     val panels = ArrayList<CategoryPanel>()
 
     private var particleEngine: ParticleEngine = ParticleEngine()
-    val fpm: FlowParticleManager = FlowParticleManager(ClickGui.amount.toInt())
-    val pm: MovingParticleManager = MovingParticleManager(ClickGui.amount.toInt())
+    val fpm: FlowParticleManager = FlowParticleManager(140)
+    val pm: MovingParticleManager = MovingParticleManager(140)
     var descriptionDisplay: DescriptionDisplay? = null
 
     var dWheel = 0.0; private set
