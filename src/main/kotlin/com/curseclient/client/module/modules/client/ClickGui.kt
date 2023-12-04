@@ -22,7 +22,7 @@ object ClickGui : Module(
     private val page by setting("Page", Page.General)
 
     // General
-    val scale by setting("Scale", 1.1, 0.5, 1.5, 0.01, { page == Page.General })
+    val scale by setting("Scale", 1.0, 0.5, 1.5, 0.01, { page == Page.General })
     val width by setting("Panel Width", 100.0, 100.0, 140.0, 1.0, { page == Page.General })
     val panelRound by setting("Panel Radius", 2.7, 0.0, 10.0, 0.1, { page == Page.General })
     val height by setting("Button Height", 15.0, 12.0, 20.0, 0.5, { page == Page.General })
@@ -39,10 +39,11 @@ object ClickGui : Module(
 
     //Background
     val darkness by setting("Darkness ", false, { page == Page.BackGround })
+    val clean by setting("Clean", false, { page == Page.BackGround })
     val imageParticle by setting("ImageParticle", false, { page == Page.BackGround })
     val flowParticle by setting("FlowParticle", false, { page == Page.BackGround })
     val particle by setting("Particle", false, { page == Page.BackGround })
-    val amount by setting("Amount", 100, 100, 500, 10, { page == Page.BackGround && flowParticle || particle })
+    val amount by setting("Amount", 100, 100, 500, 10, { page == Page.BackGround })
 
     // Font
     val fontSize by setting("Font Size", 1.0, 0.5, 2.0, 0.02, { page == Page.Font })

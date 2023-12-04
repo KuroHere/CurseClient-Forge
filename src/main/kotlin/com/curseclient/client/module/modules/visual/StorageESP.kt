@@ -11,6 +11,7 @@ import net.minecraft.tileentity.TileEntityEnderChest
 import net.minecraft.tileentity.TileEntityShulkerBox
 import java.awt.Color
 
+// TODO: Shader thing
 object StorageESP : Module(
     "StorageESP",
     "StorageESP",

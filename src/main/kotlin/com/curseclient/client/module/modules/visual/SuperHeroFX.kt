@@ -32,6 +32,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.random.Random
 
+// TODO: fix some font bug
 object SuperHeroFX : Module(
     name = "SuperHeroFX",
     description = "Skid ZeroDay's SuperheroFX",

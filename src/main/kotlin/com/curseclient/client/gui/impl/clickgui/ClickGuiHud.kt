@@ -16,13 +16,13 @@ import java.awt.Color
 
 
 class ClickGuiHud : AbstractGui() {
-    var currentScale = 1.1; private set
+    var currentScale = 1.0; private set
     override fun getScaleFactor() = currentScale
     val panels = ArrayList<CategoryPanel>()
 
     private var particleEngine: ParticleEngine = ParticleEngine()
-    val fpm: FlowParticleManager = FlowParticleManager(100)
-    val pm: MovingParticleManager = MovingParticleManager(100)
+    val fpm: FlowParticleManager = FlowParticleManager(ClickGui.amount.toInt())
+    val pm: MovingParticleManager = MovingParticleManager(ClickGui.amount.toInt())
     var descriptionDisplay: DescriptionDisplay? = null
 
     var dWheel = 0.0; private set
@@ -79,7 +79,10 @@ class ClickGuiHud : AbstractGui() {
 
     private fun someEffect() {
         if (ClickGui.darkness )
-            RenderUtils2D.drawRect(0f, 0f, width.toFloat() * currentScale.toFloat(), height.toFloat() * currentScale.toFloat(), Color(15, 15, 15, 160).rgb)
+            RenderUtils2D.drawRect(0f, 0f, width.toFloat(), height.toFloat(), Color(15, 15, 15, 160).rgb)
+        if (ClickGui.clean)
+            // For science
+            RenderUtils2D.renderColoredQuads(0f, 0f, width.toFloat(), height.toFloat())
         if (ClickGui.flowParticle)
             fpm.render()
         if (ClickGui.particle)
