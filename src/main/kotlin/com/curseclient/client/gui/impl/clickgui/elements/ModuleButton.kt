@@ -133,11 +133,11 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
         detail()
 
         // 😼👌
-        if (hovered) {
-            if (!prevHovered)
-                SoundUtils.playSound { "scroll.wav" }
-        }
-        prevHovered = hovered;
+        //if (hovered) {
+        //    if (!prevHovered)
+        //        SoundUtils.playSound { "scroll.wav" }
+        //}
+        //prevHovered = hovered;
 
         val hoveredModule = (gui as ClickGuiHud).panels.flatMap { it.modules }.firstOrNull { it.isHovered(gui.mouse) }
         val descriptionDisplay = gui.descriptionDisplay

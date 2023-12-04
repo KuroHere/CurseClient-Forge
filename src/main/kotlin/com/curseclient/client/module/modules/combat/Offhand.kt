@@ -1,12 +1,12 @@
 package com.curseclient.client.module.modules.combat
 
+import com.curseclient.client.event.events.RootEvent
 import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.setting.setting
 import com.curseclient.client.utility.extension.Timer
 import com.curseclient.client.utility.world.CrystalUtils
-import com.curseclient.client.events.RootEvent
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.entity.item.EntityEnderCrystal

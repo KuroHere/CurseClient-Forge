@@ -5,7 +5,7 @@ import com.curseclient.client.events.EventRenderSky
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.setting.setting
-import com.curseclient.client.utility.render.texture.Texture
+import com.curseclient.client.utility.render.RenderUtils2D
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.Tessellator
@@ -24,8 +24,8 @@ object CustomSky : Module(
     private val skyGamma by setting("SkyGamma", 128, 1, 255, 1, visible = { skyMode == SkyMode.CURSE || skyMode == SkyMode.RAINBOW }, description = "Edit the skybox gamma")
     private val skyGammaEnd by setting("SkyGammaEnd", 40, 1, 255, 1, visible = { skyMode == SkyMode.END }, description = "Edit the skybox gamma (END mode only)")
 
-    private val curseSkyTexture = Texture("curse_sky.jpg")
-    private val rainbowSkyTexture = Texture("spectrum.jpg")
+    private val curseSkyTexture: ResourceLocation = ResourceLocation("textures/sky/curse_sky.jpg")
+    private val rainbowSkyTexture: ResourceLocation = ResourceLocation("textures/sky/spectrum.jpg")
     
     init {
         safeListener<EventRenderSky> { event ->
@@ -49,11 +49,11 @@ object CustomSky : Module(
         var needsTexture = false
         when (skyMode.name) {
             "CURSE" -> {
-                curseSkyTexture.bind()
+                RenderUtils2D.bind(curseSkyTexture)
                 needsTexture = true
             }
             "RAINBOW" -> {
-                rainbowSkyTexture.bind()
+                RenderUtils2D.bind(rainbowSkyTexture)
                 needsTexture = true
             }
             "END" -> {

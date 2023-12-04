@@ -22,27 +22,6 @@ public class MixinEntity {
     @Shadow private int entityId;
     private boolean modifiedSneaking = false;
 
-    //@Redirect(method = "turn", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;rotationYaw:F", ordinal = 0))
-    //private float redirectRotationYaw(Entity entity, float value) {
-    //    if (entity instanceof net.minecraft.client.entity.EntityPlayerSP) {
-    //        if (PerspectiveMod.perspectiveToggled) {
-    //            PerspectiveMod.INSTANCE.overrideMouse();
-    //            entity.rotationYaw = PerspectiveMod.cameraYaw; // Đảm bảo sử dụng giá trị góc nhìn đã được điều chỉnh
-    //        }
-    //    }
-    //    return value;
-    //}
-//
-    //@Redirect(method = "turn", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;rotationPitch:F", ordinal = 0))
-    //private float redirectRotationPitch(Entity entity, float value) {
-    //    if (entity instanceof net.minecraft.client.entity.EntityPlayerSP) {
-    //        if (PerspectiveMod.perspectiveToggled) {
-    //            entity.rotationPitch = PerspectiveMod.cameraPitch; // Đảm bảo sử dụng giá trị góc nhìn đã được điều chỉnh
-    //        }
-    //    }
-    //    return value;
-    //}
-
     @Inject(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isSneaking()Z", ordinal = 0, shift = At.Shift.BEFORE))
     public void moveInvokeIsSneakingPre(MoverType type, double x, double y, double z, CallbackInfo ci) {
         if (SafeWalk.shouldSafewalk(this.entityId)) {

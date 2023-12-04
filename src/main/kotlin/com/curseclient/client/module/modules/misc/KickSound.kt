@@ -1,6 +1,5 @@
 package com.curseclient.client.module.modules.misc
 
-import com.curseclient.client.event.listener.listener
 import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module

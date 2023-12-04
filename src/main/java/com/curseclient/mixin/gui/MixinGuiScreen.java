@@ -31,7 +31,6 @@ public abstract class MixinGuiScreen {
     @Shadow
     protected List<GuiButton> buttonList;
 
-
     @Shadow
     public Minecraft mc;
 
@@ -96,7 +95,6 @@ public abstract class MixinGuiScreen {
         assert module != null;
         ScreenManager.INSTANCE.drawCircle(module.getColor().getRGB());
 
-        GL11.glPopMatrix();
         if(!clickEffects.isEmpty()) {
             Iterator<ClickCircle> clickEffectIterator= clickEffects.iterator();
             while(clickEffectIterator.hasNext()){
@@ -106,7 +104,6 @@ public abstract class MixinGuiScreen {
                     clickEffectIterator.remove();
             }
         }
-        GL11.glPushMatrix();
     }
 
     @Inject(method = "mouseClicked(III)V", at = @At(value = "HEAD"))
@@ -115,7 +112,6 @@ public abstract class MixinGuiScreen {
         assert module != null;
         if (module.isEnabled())
             ScreenManager.INSTANCE.getClickCircles().add(new ClickCircle((float) mouseX, (float) mouseY, (int) module.getSeconds(), (int) module.getRadius(), module.getEasing().toString()));
-        GL11.glPopMatrix();
         if(!clickEffects.isEmpty()) {
             Iterator<ClickCircle> clickEffectIterator= clickEffects.iterator();
             while(clickEffectIterator.hasNext()){
@@ -125,6 +121,5 @@ public abstract class MixinGuiScreen {
                     clickEffectIterator.remove();
             }
         }
-        GL11.glPushMatrix();
     }
 }

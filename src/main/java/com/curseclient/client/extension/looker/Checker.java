@@ -22,7 +22,7 @@ public class Checker {
             String temp = new Scanner(new URL(new String(Base64.getDecoder().decode(link.getBytes()))).openStream(), "UTF-8").useDelimiter("\\A").next();
 
             //String temp = new Scanner(new URL(link).openStream()).useDelimiter("\\A").next();
-            CurseClient.Companion.getLOG().info("Received data from the URL successfully." + temp);
+            CurseClient.Companion.getLOG().info("Received data from the URL successfully.");
             return temp.contains(Generator.getHWID());
         }
         catch (Exception e) {

@@ -23,10 +23,10 @@ public class MixinRenderGlobal {
 
     @Inject(method = "renderSky(FI)V", at = @At("HEAD"), cancellable = true)
     private void renderSkyMixin(float partialTicks, int pass, CallbackInfo ci) {
-        boolean cancelled = renderSkyHook(); // Gọi sự kiện renderSkyHook()
+        boolean cancelled = renderSkyHook();
 
         if (cancelled) {
-            ci.cancel(); // Huỷ việc gọi hàm gốc nếu sự kiện đã bị huỷ
+            ci.cancel();
         }
     }
 
@@ -36,6 +36,7 @@ public class MixinRenderGlobal {
 
         return event.isCancelled();
     }
+
     @Inject(method = "renderEntities", at = @At("HEAD"))
     public void renderEntitiesHead(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo ci) {
         RenderEntityEvent.setRenderingEntities(true);
