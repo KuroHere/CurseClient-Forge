@@ -29,17 +29,14 @@ object Armor: DraggableHudModule(
     }
 
     override fun onRender() {
-        when (mode.name) {
-            "Horizon" -> mc.player.armorInventoryList.reversed().forEachIndexed { index, item ->
-                drawItem(item, pos.plus(20.0 * index, 0.0))
-                w = 76.0
-                h = 22.0
-            }
-            "Vertical" -> mc.player.armorInventoryList.reversed().forEachIndexed { index, item ->
-                drawItem(item, pos.plus(0.0, 20.0 * index))
-                w = 20.0
-                h = 81.0
-            }
+        val horizontal = mode == Mode.Horizon
+        val startingPos = if (horizontal) Vec2d(20.0, 0.0) else Vec2d(0.0, 20.0)
+        val dimension = if (horizontal) Vec2d(76.0, 22.0) else Vec2d(20.0, 81.0)
+
+        mc.player.armorInventoryList.reversed().forEachIndexed { index, item ->
+            drawItem(item, pos.plus(startingPos * index.toDouble()))
+            w = dimension.x
+            h = dimension.y
         }
     }
 
