@@ -32,7 +32,6 @@ object HUD : Module(
     enabledByDefault = true
 ) {
 
-    val everyRectBuilderGlow by setting("EveryRectBuilderGlow", false)
     val page by setting("Page", Page.Client)
 
     //Client
@@ -44,7 +43,6 @@ object HUD : Module(
 
     val containerBackground by setting("Container-Background", false, visible = { page == Page.Game })
     val guiButtonStyle by setting("Button-Style", ButtonStyle.Minecraft, visible = { page == Page.Game })
-    val particles by setting("Particle ", false, visible = { page == Page.Game })
 
     // BLur
     val blur by setting("Blur", false, visible = { page == Page.Game })
@@ -62,12 +60,6 @@ object HUD : Module(
     val animHotbarValue by setting("AnimatedHotbar", false, visible = {page == Page.Game})
     val blackHotbarValue by setting("BlackHotbar", true, visible = { page == Page.Game })
     private val hotbarAnimation = AnimationFlag(com.curseclient.client.utility.render.animation.Easing.OUT_CUBIC, 200.0f)
-
-    enum class Button {
-        TopLeft,
-        TopRight,
-        Off
-    }
 
     enum class Page {
         Client,

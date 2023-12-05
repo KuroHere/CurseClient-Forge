@@ -1,13 +1,14 @@
 package com.curseclient.client.utility.render
 
 import com.curseclient.client.module.modules.client.GuiClickCircle
-import com.curseclient.client.utility.math.ColorConverter
+import com.curseclient.client.utility.render.ColorUtils.setAlpha
 import com.curseclient.client.utility.render.animation.EaseUtils
-import com.curseclient.client.utility.render.animation.Easings
+import com.curseclient.client.utility.render.animation.Easing
 import com.curseclient.client.utility.render.animation.SimpleAnimation
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.MathHelper
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -19,15 +20,15 @@ class ClickCircle(var x: Float, var y: Float, private var seconds: Int, var radi
     fun draw(color: Int) {
         val value = MathHelper.clamp((System.currentTimeMillis() - time).toFloat() / (seconds * 1000f), 0f, 1f)
         if (GuiClickCircle.mode == GuiClickCircle.Mode.Fill) {
-            val animationMode: Double = Easings.toOutEasing(easing, value.toDouble())
-            drawCircle(x, y, (radius * animationMode.toFloat()), ColorConverter(color).setAlpha((255 * (1 - EaseUtils.easeInOutBack(value.toDouble()).toFloat())).toInt()))
+            val animationMode: Double = Easing.toOutEasing(easing, value.toDouble())
+            drawCircle(x, y, (radius * animationMode.toFloat()), Color(color).setAlpha((255 * (1 - EaseUtils.easeInOutBack(value.toDouble()).toInt()))).rgb)
         }
         else {
             animation.setAnimation(100f, 12.0)
             val radius: Double = (radius * animation.value / 100).toDouble()
             val alpha = (255 - 255 * animation.value / 100).toInt()
             val arc: Double = (360 * animation.value / 100).toDouble()
-            val color: Int = ColorConverter(color).setAlpha((alpha))
+            val color: Int = Color(color).setAlpha((alpha)).rgb
 
             if (GuiClickCircle.isEnabled()) {
                 drawArc(x, y, radius, color, 0, arc, 2)

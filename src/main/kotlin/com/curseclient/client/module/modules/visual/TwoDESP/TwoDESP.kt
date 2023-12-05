@@ -1,8 +1,7 @@
-package com.curseclient.client.module.modules.visual
+package com.curseclient.client.module.modules.visual.TwoDESP
 
 import com.curseclient.client.event.events.render.Render3DEvent
 import com.curseclient.client.event.listener.safeListener
-import com.curseclient.client.gui.impl.particles.simple.util.RenderUtils
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.module.modules.client.HUD
@@ -83,12 +82,10 @@ object TwoDESP : Module(
                 }
             }
             if (mode.name == "Real") {
-                GL11.glPushMatrix()
-
-                val scaledresolution = ScaledResolution(mc)
+                val scaleResolution = ScaledResolution(mc)
                 val entityRenderer: EntityRenderer = mc.entityRenderer
 
-                val scaleFactor = scaledresolution.scaleFactor
+                val scaleFactor = scaleResolution.scaleFactor
                 val renderMng = mc.renderManager
 
                 var amount = 0
@@ -104,7 +101,7 @@ object TwoDESP : Module(
                             val width = p.width / 1.5
                             val height = p.height + if (p.isSneaking) -0.3 else 0.2
                             val aabb = AxisAlignedBB(x - width, y, z - width, x + width, y + height, z + width)
-                            val vectors = Arrays.asList(Vector3d(aabb.minX, aabb.minY, aabb.minZ), Vector3d(aabb.minX, aabb.maxY, aabb.minZ), Vector3d(aabb.maxX, aabb.minY, aabb.minZ), Vector3d(aabb.maxX, aabb.maxY, aabb.minZ), Vector3d(aabb.minX, aabb.minY, aabb.maxZ), Vector3d(aabb.minX, aabb.maxY, aabb.maxZ), Vector3d(aabb.maxX, aabb.minY, aabb.maxZ), Vector3d(aabb.maxX, aabb.maxY, aabb.maxZ))
+                            val vectors = listOf(Vector3d(aabb.minX, aabb.minY, aabb.minZ), Vector3d(aabb.minX, aabb.maxY, aabb.minZ), Vector3d(aabb.maxX, aabb.minY, aabb.minZ), Vector3d(aabb.maxX, aabb.maxY, aabb.minZ), Vector3d(aabb.minX, aabb.minY, aabb.maxZ), Vector3d(aabb.minX, aabb.maxY, aabb.maxZ), Vector3d(aabb.maxX, aabb.minY, aabb.maxZ), Vector3d(aabb.maxX, aabb.maxY, aabb.maxZ))
 
                             var position: Vector4d? = null
                             if (position != null) {
@@ -114,14 +111,14 @@ object TwoDESP : Module(
                             }
 
                             for (v in vectors) {
-                                var v = project2D(scaleFactor, v.x - renderMng.viewerPosX, v.y - renderMng.viewerPosY, v.z - renderMng.viewerPosZ)
+                                val v = project2D(scaleFactor, v.x - renderMng.viewerPosX, v.y - renderMng.viewerPosY, v.z - renderMng.viewerPosZ)
                                 if (v != null && v.z >= 0.0 && v.z < 1.0) {
                                     if (position == null)
                                         position = Vector4d(v.x, v.y, v.z, 0.0)
-                                    position.x = Math.min(v.x, position.x)
-                                    position.y = Math.min(v.y, position.y)
-                                    position.z = Math.max(v.x, position.z)
-                                    position.w = Math.max(v.y, position.w)
+                                    position.x = v.x.coerceAtMost(position.x)
+                                    position.y = v.y.coerceAtMost(position.y)
+                                    position.z = v.x.coerceAtLeast(position.z)
+                                    position.w = v.y.coerceAtLeast(position.w)
                                 }
                             }
 
@@ -136,10 +133,10 @@ object TwoDESP : Module(
 
                                 val c = HUD.getColor(0)
 
-                                RenderUtils.lineNoGl(posX - w, posY, posX + w - w, endPosY, c)
-                                RenderUtils.lineNoGl(posX, endPosY - w, endPosX, endPosY, c)
-                                RenderUtils.lineNoGl(posX - w, posY, endPosX, posY + w, c)
-                                RenderUtils.lineNoGl(endPosX - w, posY, endPosX, endPosY, c)
+                                Utils.lineNoGl(posX - w, posY, posX + w - w, endPosY, c)
+                                Utils.lineNoGl(posX, endPosY - w, endPosX, endPosY, c)
+                                Utils.lineNoGl(posX - w, posY, endPosX, posY + w, c)
+                                Utils.lineNoGl(endPosX - w, posY, endPosX, endPosY, c)
 
                                 val percentage = (endPosY - posY) * p.health / p.maxHealth
 
@@ -150,30 +147,29 @@ object TwoDESP : Module(
                                 val progress = p.health / p.maxHealth
                                 val healthColor = if (p.health >= 0.0f) ColorUtils.blendColors(fractions, colors, progress).brighter() else Color.RED
 
-                                RenderUtils.lineNoGl(posX - w - distance, endPosY - percentage, posX + w - w - distance, endPosY, healthColor)
+                                Utils.lineNoGl(posX - w - distance, endPosY - percentage, posX + w - w - distance, endPosY, healthColor)
                             }
                             amount++
                         }
                     }
                 }
-                GL11.glPopMatrix()
             }
         }
 
     }
 
-    private fun draw2DBox(width: Double, height: Double, lineWidth: Double, offset: Double, c: Color) {
-        RenderUtils.rect(-width / 2 - offset, -offset, width / 4, lineWidth, c)
-        RenderUtils.rect(width / 2 - offset, -offset, -width / 4, lineWidth, c)
-        RenderUtils.rect(width / 2 - offset, height - offset, -width / 4, lineWidth, c)
-        RenderUtils.rect(-width / 2 - offset, height - offset, width / 4, lineWidth, c)
-        RenderUtils.rect(-width / 2 - offset, height - offset, lineWidth, -height / 4, c)
-        RenderUtils.rect(width / 2 - lineWidth - offset, height - offset, lineWidth, -height / 4, c)
-        RenderUtils.rect(width / 2 - lineWidth - offset, -offset, lineWidth, height / 4, c)
-        RenderUtils.rect(-width / 2 - offset, -offset, lineWidth, height / 4, c)
+    fun draw2DBox(width: Double, height: Double, lineWidth: Double, offset: Double, c: Color) {
+        Utils.rect(-width / 2 - offset, -offset, width / 4, lineWidth, c)
+        Utils.rect(width / 2 - offset, -offset, -width / 4, lineWidth, c)
+        Utils.rect(width / 2 - offset, height - offset, -width / 4, lineWidth, c)
+        Utils.rect(-width / 2 - offset, height - offset, width / 4, lineWidth, c)
+        Utils.rect(-width / 2 - offset, height - offset, lineWidth, -height / 4, c)
+        Utils.rect(width / 2 - lineWidth - offset, height - offset, lineWidth, -height / 4, c)
+        Utils.rect(width / 2 - lineWidth - offset, -offset, lineWidth, height / 4, c)
+        Utils.rect(-width / 2 - offset, -offset, lineWidth, height / 4, c)
     }
 
-    private fun project2D(scaleFactor: Int, x: Double, y: Double, z: Double): Vector3d? {
+    fun project2D(scaleFactor: Int, x: Double, y: Double, z: Double): Vector3d? {
         GL11.glGetFloat(2982, modelview)
         GL11.glGetFloat(2983, projection)
         GL11.glGetInteger(2978, viewport)

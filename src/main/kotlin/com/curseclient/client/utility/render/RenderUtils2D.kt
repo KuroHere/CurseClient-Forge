@@ -1,60 +1,49 @@
 package com.curseclient.client.utility.render
 
-import com.curseclient.client.utility.render.ColorUtils.a
-import com.curseclient.client.utility.render.ColorUtils.b
-import com.curseclient.client.utility.render.ColorUtils.g
+import baritone.api.utils.Helper.mc
 import com.curseclient.client.utility.render.ColorUtils.glColor
-import com.curseclient.client.utility.render.ColorUtils.r
 import com.curseclient.client.utility.render.graphic.GLUtils.draw
 import com.curseclient.client.utility.render.graphic.GLUtils.glColor
 import com.curseclient.client.utility.render.graphic.GLUtils.matrix
 import com.curseclient.client.utility.render.graphic.GlStateUtils
-import com.curseclient.client.utility.render.graphic.drawBuffer
-import com.curseclient.client.utility.render.graphic.pos
-import com.curseclient.client.utility.render.graphic.withVertexFormat
 import com.curseclient.client.utility.render.shader.GradientShader.finish
 import com.curseclient.client.utility.render.shader.GradientShader.setup
-import com.curseclient.client.utility.render.texture.MipmapTexture
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.jhlabs.image.GaussianFilter
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GL32
 import java.awt.Color
 import java.awt.image.BufferedImage
-import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.sin
+import kotlin.math.*
 
 
 object RenderUtils2D {
 
     private val blank = ResourceLocation("textures/blank.png")
     private val blurCache = HashMap<BlurData, Int>()
-    private val mc = Minecraft.getMinecraft()
-    private var zLevel = 0f
     private val frustrum = Frustum()
 
     fun bind(resourceLocation: ResourceLocation) {
         mc.textureManager.bindTexture(resourceLocation)
     }
 
-    fun bindBlank() {
+    private fun bindBlank() {
         bind(blank)
     }
 
@@ -111,83 +100,6 @@ object RenderUtils2D {
         val finalX = x * scale
         val finalWidth = width * scale
         glScissor(finalX.toInt(), (finalY - finalHeight).toInt(), finalWidth.toInt(), finalHeight.toInt())
-    }
-
-    @JvmStatic
-    fun enableGL2D() {
-        GlStateUtils.blend(true)
-        GlStateUtils.alpha(false)
-        GlStateUtils.texture2d(false)
-        GlStateUtils.lineSmooth(true)
-        GlStateUtils.hintPolygon(true)
-        GlStateUtils.smooth(true)
-        GlStateUtils.cull(false)
-    }
-
-    @JvmStatic
-    fun disableGL2D() {
-        GlStateUtils.cull(true)
-        GlStateUtils.smooth(false)
-        GlStateUtils.hintPolygon(false)
-        GlStateUtils.lineSmooth(false)
-        GlStateUtils.texture2d(true)
-        GlStateUtils.alpha(true)
-        GlStateUtils.blend(false)
-    }
-
-    fun prepareGL3D() {
-        GlStateUtils.matrix(true)
-        GlStateUtils.blend(true)
-        GlStateUtils.depth(false)
-        glEnable(GL32.GL_DEPTH_CLAMP)
-        GlStateUtils.alpha(false)
-        GlStateUtils.smooth(true)
-        GlStateUtils.cull(false)
-        GlStateUtils.lineSmooth(true)
-        GlStateUtils.hintPolygon(true)
-        GlStateUtils.lighting(false)
-        GlStateUtils.texture2d(false)
-        GlStateUtils.depthMask(false)
-    }
-
-    fun releaseGL3D() {
-        GlStateUtils.depthMask(true)
-        GlStateUtils.lighting(true)
-        GlStateUtils.texture2d(true)
-        GlStateUtils.cull(true)
-        GlStateUtils.smooth(false)
-        GlStateUtils.alpha(true)
-        GlStateUtils.lineSmooth(false)
-        GlStateUtils.hintPolygon(false)
-        glDisable(GL32.GL_DEPTH_CLAMP)
-        GlStateUtils.depth(true)
-        GlStateUtils.blend(false)
-        GlStateUtils.resetColour()
-        GlStateUtils.matrix(false)
-    }
-
-    fun rectGuiTex(x: Float, y: Float, width: Float, height: Float, color: Color?) {
-        setup()
-        bindBlank()
-        glPushMatrix()
-        glEnable(GL_BLEND)
-        glDisable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glColor(color!!)
-        glBegin(GL_QUADS)
-        glTexCoord2f(0.0f, 0.0f)
-        glVertex2f(x, y)
-        glTexCoord2f(0.0f, 1.0f)
-        glVertex2f(x, height)
-        glTexCoord2f(1.0f, 1.0f)
-        glVertex2f(width, height)
-        glTexCoord2f(1.0f, 0.0f)
-        glVertex2f(width, y)
-        glEnd()
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-        glPopMatrix()
-        finish()
     }
 
     fun rectGuiTexSmooth(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Color?) {
@@ -252,7 +164,6 @@ object RenderUtils2D {
         }
         return frustrum.isBoundingBoxInFrustum(bb)
     }
-
 
     /**
      * Translates, scales, and rotates around a location
@@ -350,156 +261,6 @@ object RenderUtils2D {
         glTranslated(-x.toDouble(), -y.toDouble(), 0.0)
     }
 
-    fun draw2DGradientRect(left: Float, top: Float, right: Float, bottom: Float, leftBottomColor: Color, leftTopColor: Color, rightBottomColor: Color, rightTopColor: Color) {
-        val tessellator = Tessellator.getInstance()
-        val bufferbuilder = tessellator.buffer
-        GlStateManager.enableBlend()
-        GlStateManager.color(1f, 1f, 1f, 1f)
-        bufferbuilder.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
-        bufferbuilder.pos(right, top, 0.0f).color(rightTopColor.r, rightTopColor.g, rightTopColor.b, rightTopColor.a).endVertex()
-        bufferbuilder.pos(left, top, 0.0f).color(leftTopColor.r, leftTopColor.g, leftTopColor.b, leftTopColor.a).endVertex()
-        bufferbuilder.pos(left, bottom, 0.0f).color(leftBottomColor.r, leftBottomColor.g, leftBottomColor.b, leftBottomColor.a).endVertex()
-        bufferbuilder.pos(right, bottom, 0.0f).color(rightBottomColor.r, rightBottomColor.g, rightBottomColor.b, rightBottomColor.a).endVertex()
-        tessellator.draw()
-        GlStateManager.disableBlend()
-    }
-
-    fun drawVerticalGradientRect(x: Float, y: Float, width: Float, height: Float, color1: Int, color2: Int) {
-        val f5 = (color1 shr 24 and 0xFF).toFloat() / 255.0f
-        val f6 = (color1 shr 16 and 0xFF).toFloat() / 255.0f
-        val f7 = (color1 shr 8 and 0xFF).toFloat() / 255.0f
-        val f8 = (color1 and 0xFF).toFloat() / 255.0f
-        val f9 = (color2 shr 24 and 0xFF).toFloat() / 255.0f
-        val f10 = (color2 shr 16 and 0xFF).toFloat() / 255.0f
-        val f11 = (color2 shr 8 and 0xFF).toFloat() / 255.0f
-        val f12 = (color2 and 0xFF).toFloat() / 255.0f
-        GlStateManager.disableTexture2D()
-        GlStateManager.enableBlend()
-        GlStateManager.disableAlpha()
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO)
-        GlStateManager.shadeModel(7425)
-        val tessellator = Tessellator.getInstance()
-        val bufferBuilder = tessellator.buffer
-        bufferBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR)
-        bufferBuilder.pos(x.toDouble(), y.toDouble(), 0.0).color(f6, f7, f8, f5).endVertex()
-        bufferBuilder.pos(x.toDouble(), (y + height).toDouble(), 0.0).color(f10, f11, f12, f9).endVertex()
-        bufferBuilder.pos((x + width).toDouble(), (y + height).toDouble(), 0.0).color(f10, f11, f12, f9).endVertex()
-        bufferBuilder.pos((x + width).toDouble(), y.toDouble(), 0.0).color(f6, f7, f8, f5).endVertex()
-        tessellator.draw()
-        GlStateManager.shadeModel(7424)
-        GlStateManager.disableBlend()
-        GlStateManager.enableAlpha()
-        GlStateManager.enableTexture2D()
-    }
-
-
-    fun drawVGradientRect(left: Float, top: Float, right: Float, bottom: Float, startColor: Int, endColor: Int) {
-        val f = (startColor shr 24 and 255).toFloat() / 255.0f
-        val f1 = (startColor shr 16 and 255).toFloat() / 255.0f
-        val f2 = (startColor shr 8 and 255).toFloat() / 255.0f
-        val f3 = (startColor and 255).toFloat() / 255.0f
-        val f4 = (endColor shr 24 and 255).toFloat() / 255.0f
-        val f5 = (endColor shr 16 and 255).toFloat() / 255.0f
-        val f6 = (endColor shr 8 and 255).toFloat() / 255.0f
-        val f7 = (endColor and 255).toFloat() / 255.0f
-        GlStateManager.disableTexture2D()
-        GlStateManager.enableBlend()
-        GlStateManager.disableAlpha()
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO)
-        GlStateManager.shadeModel(7425)
-        val tessellator = Tessellator.getInstance()
-        val bufferbuilder = tessellator.buffer
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR)
-        bufferbuilder.pos(right.toDouble(), top.toDouble(), 0.0).color(f1, f2, f3, f).endVertex()
-        bufferbuilder.pos(left.toDouble(), top.toDouble(), 0.0).color(f1, f2, f3, f).endVertex()
-        bufferbuilder.pos(left.toDouble(), bottom.toDouble(), 0.0).color(f5, f6, f7, f4).endVertex()
-        bufferbuilder.pos(right.toDouble(), bottom.toDouble(), 0.0).color(f5, f6, f7, f4).endVertex()
-        tessellator.draw()
-        GlStateManager.shadeModel(7424)
-        GlStateManager.disableBlend()
-        GlStateManager.enableAlpha()
-        GlStateManager.enableTexture2D()
-    }
-
-    fun drawHGradientRect(left: Float, top: Float, right: Float, bottom: Float, startColor: Int, endColor: Int) {
-        val f = (startColor shr 24 and 255).toFloat() / 255.0f
-        val f1 = (startColor shr 16 and 255).toFloat() / 255.0f
-        val f2 = (startColor shr 8 and 255).toFloat() / 255.0f
-        val f3 = (startColor and 255).toFloat() / 255.0f
-        val f4 = (endColor shr 24 and 255).toFloat() / 255.0f
-        val f5 = (endColor shr 16 and 255).toFloat() / 255.0f
-        val f6 = (endColor shr 8 and 255).toFloat() / 255.0f
-        val f7 = (endColor and 255).toFloat() / 255.0f
-        GlStateManager.disableTexture2D()
-        GlStateManager.enableBlend()
-        GlStateManager.disableAlpha()
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO)
-        GlStateManager.shadeModel(7425)
-        val tessellator = Tessellator.getInstance()
-        val bufferbuilder = tessellator.buffer
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR)
-        bufferbuilder.pos(left.toDouble(), top.toDouble(), 0.0).color(f1, f2, f3, f4).endVertex()
-        bufferbuilder.pos(left.toDouble(), bottom.toDouble(), 0.0).color(f1, f2, f3, f4).endVertex()
-        bufferbuilder.pos(right.toDouble(), bottom.toDouble(), 0.0).color(f5, f6, f7, f4).endVertex()
-        bufferbuilder.pos(right.toDouble(), top.toDouble(), 0.0).color(f5, f6, f7, f4).endVertex()
-        tessellator.draw()
-        GlStateManager.shadeModel(7424)
-        GlStateManager.disableBlend()
-        GlStateManager.enableAlpha()
-        GlStateManager.enableTexture2D()
-    }
-
-
-    fun drawGlow(x: Double, y: Double, x1: Double, y1: Double, color: Int) {
-        GlStateManager.disableTexture2D()
-        GlStateManager.enableBlend()
-        GlStateManager.disableAlpha()
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO)
-        GlStateManager.shadeModel(7425)
-        drawVGradientRect(x.toFloat(), y.toFloat(), x1.toFloat(), (y + (y1 - y) / 2f).toFloat(), ColorUtils.toRGBA(Color(color).red, Color(color).green, Color(color).blue, 0), color)
-        drawVGradientRect(x.toFloat(), (y + (y1 - y) / 2f).toFloat(), x1.toFloat(), y1.toFloat(), color, ColorUtils.toRGBA(Color(color).red, Color(color).green, Color(color).blue, 0))
-        val radius = ((y1 - y) / 2f).toInt()
-        drawPolygonPart(x, y + (y1 - y) / 2f, radius, 0, color, ColorUtils.toRGBA(Color(color).red, Color(color).green, Color(color).blue, 0))
-        drawPolygonPart(x, y + (y1 - y) / 2f, radius, 1, color, ColorUtils.toRGBA(Color(color).red, Color(color).green, Color(color).blue, 0))
-        drawPolygonPart(x1, y + (y1 - y) / 2f, radius, 2, color, ColorUtils.toRGBA(Color(color).red, Color(color).green, Color(color).blue, 0))
-        drawPolygonPart(x1, y + (y1 - y) / 2f, radius, 3, color, ColorUtils.toRGBA(Color(color).red, Color(color).green, Color(color).blue, 0))
-        GlStateManager.shadeModel(7424)
-        GlStateManager.disableBlend()
-        GlStateManager.enableAlpha()
-        GlStateManager.enableTexture2D()
-    }
-
-    fun drawPolygonPart(x: Double, y: Double, radius: Int, part: Int, color: Int, endcolor: Int) {
-        val alpha = (color shr 24 and 255).toFloat() / 255.0f
-        val red = (color shr 16 and 255).toFloat() / 255.0f
-        val green = (color shr 8 and 255).toFloat() / 255.0f
-        val blue = (color and 255).toFloat() / 255.0f
-        val alpha1 = (endcolor shr 24 and 255).toFloat() / 255.0f
-        val red1 = (endcolor shr 16 and 255).toFloat() / 255.0f
-        val green1 = (endcolor shr 8 and 255).toFloat() / 255.0f
-        val blue1 = (endcolor and 255).toFloat() / 255.0f
-        GlStateManager.disableTexture2D()
-        GlStateManager.enableBlend()
-        GlStateManager.disableAlpha()
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO)
-        GlStateManager.shadeModel(7425)
-        val tessellator = Tessellator.getInstance()
-        val bufferbuilder = tessellator.buffer
-        bufferbuilder.begin(GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR)
-        bufferbuilder.pos(x, y, 0.0).color(red, green, blue, alpha).endVertex()
-        val TWICE_PI = Math.PI * 2
-        for (i in part * 90..part * 90 + 90) {
-            val angle = TWICE_PI * i / 360 + Math.toRadians(180.0)
-            bufferbuilder.pos(x + sin(angle) * radius, y + cos(angle) * radius, 0.0).color(red1, green1, blue1, alpha1).endVertex()
-        }
-        tessellator.draw()
-        GlStateManager.shadeModel(7424)
-        GlStateManager.disableBlend()
-        GlStateManager.enableAlpha()
-        GlStateManager.enableTexture2D()
-    }
-
-
     fun drawItem(itemStack: ItemStack, x: Double, y: Double, text: String? = null, drawOverlay: Boolean = true) {
         glPushMatrix()
 
@@ -521,24 +282,6 @@ object RenderUtils2D {
         GlStateManager.disableDepth()
         GlStateManager.enableTexture2D()
         glPopMatrix()
-    }
-
-    fun drawBorderedRectBlurred(x: Float, y: Float, x1: Float, y1: Float, lineWidth: Float, insideColor: Int, borderColor: Int) {
-        drawRect(x, y, x1, y1, insideColor)
-        GlStateManager.enableBlend()
-        GlStateManager.disableTexture2D()
-        GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glLineWidth(lineWidth)
-        glColor(borderColor)
-        glBegin(3)
-        glVertex2f(x, y)
-        glVertex2f(x, y1)
-        glVertex2f(x1, y1)
-        glVertex2f(x1, y)
-        glVertex2f(x, y)
-        glEnd()
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
     }
 
     fun drawRect(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
@@ -612,7 +355,7 @@ object RenderUtils2D {
         glLineWidth(1f)
     }
 
-    fun drawRectFilled(x: Float, y: Float, endX: Float, endY: Float, color: Color) {
+    private fun drawRectFilled(x: Float, y: Float, endX: Float, endY: Float, color: Color) {
         val pos1 = Vec2d(x.toDouble(), y.toDouble())
         val pos2 = Vec2d(endX.toDouble(), y.toDouble()) // Top right
         val pos3 = Vec2d(endX.toDouble(), endY.toDouble())
@@ -621,11 +364,6 @@ object RenderUtils2D {
     }
 
     private fun drawQuad(pos1: Vec2d, pos2: Vec2d, pos3: Vec2d, pos4: Vec2d, color: Color) {
-        val vertices = arrayOf(pos1, pos2, pos4, pos3)
-        drawTriangleStrip(vertices, color)
-    }
-
-    fun drawQuad(pos1: Vec2d, pos2: Vec2d, pos3: Vec2d, pos4: Vec2d, color: Int) {
         val vertices = arrayOf(pos1, pos2, pos4, pos3)
         drawTriangleStrip(vertices, color)
     }
@@ -642,19 +380,7 @@ object RenderUtils2D {
         releaseGl()
     }
 
-    private fun drawTriangleStrip(vertices: Array<Vec2d>, color: Int) {
-        prepareGl()
-
-        VertexHelper.begin(GL_TRIANGLE_STRIP)
-        for (vertex in vertices) {
-            VertexHelper.put(vertex, color)
-        }
-        VertexHelper.end()
-
-        releaseGl()
-    }
-
-    fun prepareGl() {
+    private fun prepareGl() {
         GlStateUtils.texture2d(false)
         GlStateUtils.blend(true)
         GlStateUtils.smooth(true)
@@ -662,7 +388,7 @@ object RenderUtils2D {
         GlStateUtils.cull(false)
     }
 
-    fun releaseGl() {
+    private fun releaseGl() {
         GlStateUtils.texture2d(true)
         GlStateUtils.smooth(false)
         GlStateUtils.lineSmooth(false)
@@ -682,7 +408,7 @@ object RenderUtils2D {
         val red = (color shr 16 and 0xFF) / 255.0f
         val green = (color shr 8 and 0xFF) / 255.0f
         val blue = (color and 0xFF) / 255.0f
-        var z = 0f
+        var z: Float
         if (paramXStart > paramXEnd) {
             z = paramXStart
             paramXStart = paramXEnd
@@ -745,7 +471,7 @@ object RenderUtils2D {
         val red = (color shr 16 and 0xFF) / 255.0f
         val green = (color shr 8 and 0xFF) / 255.0f
         val blue = (color and 0xFF) / 255.0f
-        var z = 0f
+        var z: Float
         if (paramXStart > paramXEnd) {
             z = paramXStart
             paramXStart = paramXEnd
@@ -812,7 +538,7 @@ object RenderUtils2D {
         val red = (color shr 16 and 0xFF) / 255.0f
         val green = (color shr 8 and 0xFF) / 255.0f
         val blue = (color and 0xFF) / 255.0f
-        var z = 0f
+        var z: Float
         if (paramXStart > paramXEnd) {
             z = paramXStart
             paramXStart = paramXEnd
@@ -885,7 +611,7 @@ object RenderUtils2D {
         val red = (color shr 16 and 0xFF) / 255.0f
         val green = (color shr 8 and 0xFF) / 255.0f
         val blue = (color and 0xFF) / 255.0f
-        var z = 0f
+        var z: Float
         if (paramXStart > paramXEnd) {
             z = paramXStart
             paramXStart = paramXEnd
@@ -975,41 +701,61 @@ object RenderUtils2D {
         GlStateManager.disableBlend()
     }
 
-    @JvmStatic fun drawGradientRect(left: Int, top: Int, right: Int, bottom: Int, startColor: Int, endColor: Int) {
-        val f = (startColor shr 24 and 255).toFloat() / 255.0f
-        val f1 = (startColor shr 16 and 255).toFloat() / 255.0f
-        val f2 = (startColor shr 8 and 255).toFloat() / 255.0f
-        val f3 = (startColor and 255).toFloat() / 255.0f
-        val f4 = (endColor shr 24 and 255).toFloat() / 255.0f
-        val f5 = (endColor shr 16 and 255).toFloat() / 255.0f
-        val f6 = (endColor shr 8 and 255).toFloat() / 255.0f
-        val f7 = (endColor and 255).toFloat() / 255.0f
-        GlStateManager.pushMatrix()
-        GlStateManager.disableTexture2D()
-        GlStateManager.enableBlend()
-        GlStateManager.disableAlpha()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        GlStateManager.shadeModel(7425)
-        val tessellator = Tessellator.getInstance()
-        val builder = tessellator.buffer
-        builder.begin(7, DefaultVertexFormats.POSITION_COLOR)
-        builder.pos(right.toDouble(), top.toDouble(), zLevel.toDouble()).color(f1, f2, f3, f).endVertex()
-        builder.pos(left.toDouble(), top.toDouble(), zLevel.toDouble()).color(f1, f2, f3, f).endVertex()
-        builder.pos(left.toDouble(), bottom.toDouble(), zLevel.toDouble()).color(f5, f6, f7, f4).endVertex()
-        builder.pos(right.toDouble(), bottom.toDouble(), zLevel.toDouble()).color(f5, f6, f7, f4).endVertex()
-        tessellator.draw()
-        GlStateManager.shadeModel(7424)
-        GlStateManager.disableBlend()
-        GlStateManager.enableAlpha()
-        GlStateManager.enableTexture2D()
-        GlStateManager.popMatrix()
+    fun renderColoredQuads(startX: Float, startY: Float, endX: Float, endY: Float) {
+        Tessellator.getInstance().buffer
+
+        val offset = (System.currentTimeMillis() % 3000) / 3000.0f
+        val hsv2p = 0.25f + offset
+        val hsv3p = 0.5f + offset
+        val hsv4p = 0.75f + offset
+
+        val hsv1 = Color.getHSBColor((offset % 1), 0.6f, 1f)
+        val hsv2 = Color.getHSBColor((hsv2p % 1), 0.6f, 1f)
+        val hsv3 = Color.getHSBColor((hsv3p % 1), 0.6f, 1f)
+        val hsv4 = Color.getHSBColor((hsv4p % 1), 0.6f, 1f)
+
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glBegin(GL_QUADS)
+        glColor4f(
+            hsv1.red.toFloat() / 255,
+            hsv1.green.toFloat() / 255,
+            hsv1.blue.toFloat() / 255,
+            0.6f
+        )
+        glVertex2f(startX, startY)
+        glColor4f(
+            hsv2.red.toFloat() / 255,
+            hsv2.green.toFloat() / 255,
+            hsv2.blue.toFloat() / 255,
+            0.6f
+        )
+        glVertex2f(startX, endY)
+        glColor4f(
+            hsv3.red.toFloat() / 255,
+            hsv3.green.toFloat() / 255,
+            hsv3.blue.toFloat() / 255,
+            0.6f
+        )
+        glVertex2f(endX, endY)
+        glColor4f(
+            hsv4.red.toFloat() / 255,
+            hsv4.green.toFloat() / 255,
+            hsv4.blue.toFloat() / 255,
+            0.6f
+        )
+        glVertex2f(endX, startY)
+        glEnd()
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
     }
 
     fun drawGradientRect(posBegin: Vec2d, posEnd: Vec2d, colorLeftTop: Color, colorRightTop: Color, colorLeftBottom: Color, colorRightBottom: Color) {
         drawGradientRect(posBegin.toVec2f(), posEnd.toVec2f(), colorLeftTop, colorRightTop, colorLeftBottom, colorRightBottom)
     }
 
-    private fun drawGradientRect(pos1: Vec2f, pos2: Vec2f, color1: Color, color2: Color, color3: Color, color4: Color) {
+    fun drawGradientRect(pos1: Vec2f, pos2: Vec2f, color1: Color, color2: Color, color3: Color, color4: Color) {
         val x1 = min(pos1.x, pos2.x)
         val y1 = min(pos1.y, pos2.y)
         val x2 = max(pos1.x, pos2.x)
@@ -1043,7 +789,45 @@ object RenderUtils2D {
         glHint(3155, 4352)
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
+    }
 
+    fun drawPlayer(player: EntityPlayer, playerScale: Float, x: Float, y: Float) {
+        GlStateManager.pushMatrix()
+        GlStateManager.color(1.0f, 1.0f, 1.0f)
+        RenderHelper.enableStandardItemLighting()
+        GlStateManager.enableAlpha()
+        GlStateManager.shadeModel(7424)
+        GlStateManager.enableAlpha()
+        GlStateManager.enableDepth()
+        GlStateManager.rotate(0.0f, 0.0f, 5.0f, 0.0f)
+        GlStateManager.enableColorMaterial()
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(x, y, 50.0f)
+        GlStateManager.scale(-50.0f * playerScale, 50.0f * playerScale, 50.0f * playerScale)
+        GlStateManager.rotate(180.0f, 0.0f, 0.0f, 1.0f)
+        GlStateManager.rotate(135.0f, 0.0f, 1.0f, 0.0f)
+        RenderHelper.enableStandardItemLighting()
+        GlStateManager.rotate(-135.0f, 0.0f, 1.0f, 0.0f)
+        GlStateManager.rotate((-atan((y / 40.0f).toDouble())).toFloat() * 20.0f, 1.0f, 0.0f, 0.0f)
+        GlStateManager.translate(0.0f, 0.0f, 0.0f)
+        val renderManager = mc.renderManager
+        renderManager.setPlayerViewY(180.0f)
+        renderManager.isRenderShadow = false
+        try {
+            renderManager.renderEntity(player, 0.0, 0.0, 0.0, 0.0f, 1.0f, false)
+        } catch (ignored: Exception) {
+        }
+        renderManager.isRenderShadow = true
+        GlStateManager.popMatrix()
+        RenderHelper.disableStandardItemLighting()
+        GlStateManager.disableRescaleNormal()
+        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit)
+        GlStateManager.disableTexture2D()
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit)
+        GlStateManager.depthFunc(515)
+        GlStateManager.resetColor()
+        GlStateManager.disableDepth()
+        GlStateManager.popMatrix()
     }
 
     fun drawTexture(x: Float, y: Float, textureX: Float, textureY: Float, width: Float, height: Float) {
@@ -1157,7 +941,7 @@ object RenderUtils2D {
         drawBlurredShadow(x, y, width, height, blurRadius, color)
     }
 
-    private data class BlurData(val width: Float, val height: Float, val blurRadius: Int){
+    data class BlurData(val width: Float, val height: Float, val blurRadius: Int){
         override fun equals(other: Any?): Boolean {
             if (other !is BlurData) return false
 
@@ -1232,40 +1016,6 @@ object RenderUtils2D {
 
             glEnable(GL_CULL_FACE)
         }
-    }
-
-    @JvmStatic
-    fun drawMipMapTexture(texture: MipmapTexture, x: Double, y: Double, size: Float) {
-        texture.bindTexture()
-
-        GL_TRIANGLE_STRIP withVertexFormat DefaultVertexFormats.POSITION_TEX drawBuffer {
-            pos(x, y + size, tex = 0.0 to 1.0)
-            pos(x + size, y + size, tex = 1.0 to 1.0)
-            pos(x, y, tex = 0.0 to 0.0)
-            pos(x + size, y, tex = 1.0 to 0.0)
-        }
-
-    }
-
-    fun drawCircle(x: Float, y: Float, radius: Float, color: Int) {
-        val alpha = (color shr 24 and 255).toFloat() / 255.0f
-        val red = (color shr 16 and 255).toFloat() / 255.0f
-        val green = (color shr 8 and 255).toFloat() / 255.0f
-        val blue = (color and 255).toFloat() / 255.0f
-        GlStateManager.pushMatrix()
-        GlStateManager.enableBlend()
-        GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO)
-        glColor4f(red, green, blue, alpha)
-        glBegin(GL_POLYGON)
-        for (i in 0..360) {
-            glVertex2d(x + sin(i.toDouble() * 3.141526 / 180.0) * radius.toDouble(), y + cos(i.toDouble() * 3.141526 / 180.0) * radius.toDouble())
-        }
-        glEnd()
-        GlStateManager.resetColor()
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
-        GlStateManager.popMatrix()
     }
 
 }

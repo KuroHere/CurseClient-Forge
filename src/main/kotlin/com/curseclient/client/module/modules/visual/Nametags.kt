@@ -33,7 +33,7 @@ import kotlin.math.max
 
 object Nametags : Module(
     "Nametags",
-    "Shitty font above players",
+    "Better than minecraft nametags.",
     Category.VISUAL
 ) {
     private val page by setting("Page", Page.Targets)

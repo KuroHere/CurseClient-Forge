@@ -117,9 +117,8 @@ class CategoryPanel(
                 pos.y.toFloat(),
                 width.toFloat(),
                 (height + windowHeight).toFloat(),
-                10,
-                if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.BLACK
-                else c1.darker().darker()
+                5,
+                Color.BLACK
             )
             outlineColor(c1, c2, c1, c2)
             width(ClickGui.outlineWidth)
@@ -162,13 +161,10 @@ class CategoryPanel(
                 it.onRender()
             }
         }
-        RenderUtils2D.drawBlurredShadow(
-            pos.x.toFloat(),
-            pos.y.toFloat(),
-            (width).toFloat(),
-            15f,
-            10, Color.BLACK
-        )
+        RectBuilder(p1, p2).apply {
+            shadow(pos.x, pos.y, width, 15.0, 10, Color.BLACK)
+            shadow(pos.x, pos.y + height + windowHeight, width, 5.0, 15, Color.BLACK)
+        }
         toggleScissor(false)
 
         val dragText = "•••"
@@ -176,7 +172,7 @@ class CategoryPanel(
         Fonts.DEFAULT_BOLD.drawString(dragText, dragTextPos, color = (if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2).setAlphaD(windowHeight / targetWindowHeight))
     }
 
-    // Chỉ là vô tình thấy nó thú vị nên add vào
+    // I just accidentally found it interesting so I added it
     private fun bgShader() {
         GlStateManager.enableBlend()
         GlStateManager.disableTexture2D()

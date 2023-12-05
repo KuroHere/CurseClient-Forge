@@ -8,7 +8,8 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
 
-// Tôi phải công nhận rằng tôi ghét điều này....
+// I Have To Admit That I Hate This....
+// Gonna remove this
 class Particle(private var x: Double, private var y: Double) {
 
     private val rand = Random

@@ -6,7 +6,6 @@ import com.curseclient.client.utility.render.vector.Vec2d
 import java.awt.Color
 
 object FontUtils {
-
     fun Fonts.drawString(
         text: String,
         pos: Vec2d,
@@ -26,14 +25,4 @@ object FontUtils {
     fun Fonts.
         getStringWidth(text: String, scale: Double = 1.0) =
         FontRenderer.getStringWidth(text, this, scale.toFloat()).toDouble()
-
-    fun getColorIndex(type: Char): Int {
-        return when (type) {
-            in '0'..'9' -> type - '0'
-            in 'a'..'f' -> type - 'a' + 10
-            in 'k'..'o' -> type - 'k' + 16
-            'r' -> 21
-            else -> -1
-        }
-    }
 }

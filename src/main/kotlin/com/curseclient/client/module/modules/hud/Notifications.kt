@@ -90,7 +90,7 @@ object Notifications : DraggableHudModule(
             val c2 = HUD.getColor(10)
             val xShift = max(0.0, getProgress() * 10.0 - 10.0) * 10.0
             val pos1 = Vec2d(lerp(Screen.scaledWidth, position.x, getProgress()) - xShift, position.y + 20)
-            val pos2 = pos1.plus(getWidth() + info.description.length / 2, getHeight())
+            val pos2 = pos1.plus(getWidth() + info.description.length / 1.5, getHeight())
 
             val x:Float = (lerp(Screen.scaledWidth, position.x, getProgress()) - xShift).toFloat()
             val y2:Float = (position.y + 20).toFloat()
@@ -100,7 +100,7 @@ object Notifications : DraggableHudModule(
                     RenderUtils2D.drawBlurredShadow(
                         x,
                         y2,
-                        (getWidth() + info.description.length / 2).toFloat(),
+                        (getWidth() + info.description.length / 1.5).toFloat(),
                         getHeight().toFloat(),
                         5,
                         Color(25, 25, 25)
@@ -131,7 +131,7 @@ object Notifications : DraggableHudModule(
                     RenderUtils2D.drawBlurredShadow(
                         x,
                         y2,
-                        (getWidth() + info.description.length / 2).toFloat(),
+                        (getWidth() + info.description.length / 1.5).toFloat(),
                         getHeight().toFloat(),
                         5,
                         Color(0, 0,  0, 50)

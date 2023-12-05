@@ -16,6 +16,8 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 object CrossHair : Module(
@@ -148,10 +150,31 @@ object CrossHair : Module(
                 }
             }
             if (dot) {
-                RenderUtils2D.drawCircle(screenMiddleX.toFloat(), screenMiddleY.toFloat(), dotRadius.toFloat(), Color(dotColor.r, dotColor.g, dotColor.b).rgb)
+                drawCircle(screenMiddleX.toFloat(), screenMiddleY.toFloat(), dotRadius.toFloat(), Color(dotColor.r, dotColor.g, dotColor.b).rgb)
             }
 
         }
+    }
+
+    private fun drawCircle(x: Float, y: Float, radius: Float, color: Int) {
+        val alpha = (color shr 24 and 255).toFloat() / 255.0f
+        val red = (color shr 16 and 255).toFloat() / 255.0f
+        val green = (color shr 8 and 255).toFloat() / 255.0f
+        val blue = (color and 255).toFloat() / 255.0f
+        GlStateManager.pushMatrix()
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO)
+        GL11.glColor4f(red, green, blue, alpha)
+        GL11.glBegin(GL11.GL_POLYGON)
+        for (i in 0..360) {
+            GL11.glVertex2d(x + sin(i.toDouble() * 3.141526 / 180.0) * radius.toDouble(), y + cos(i.toDouble() * 3.141526 / 180.0) * radius.toDouble())
+        }
+        GL11.glEnd()
+        GlStateManager.resetColor()
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+        GlStateManager.popMatrix()
     }
     
     fun isMoving(): Boolean {

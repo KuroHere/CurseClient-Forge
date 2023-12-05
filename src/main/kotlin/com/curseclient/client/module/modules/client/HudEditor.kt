@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object HudEditor : Module(
     "HudEditor",
-    "?$#(@H*",
+    "Edit your HUD element.",
     Category.CLIENT,
     alwaysListenable = true
 ){

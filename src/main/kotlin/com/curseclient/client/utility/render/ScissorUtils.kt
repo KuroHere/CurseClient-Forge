@@ -4,6 +4,7 @@ import com.curseclient.client.utility.math.MathUtils.ceilToInt
 import com.curseclient.client.utility.math.MathUtils.floorToInt
 import com.curseclient.client.utility.render.vector.Vec2d
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11
 
 object ScissorUtils {
@@ -37,4 +38,5 @@ object ScissorUtils {
             ((height * scale) + 1.0).ceilToInt()
         )
     }
+
 }

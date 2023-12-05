@@ -106,10 +106,6 @@ class RectBuilder(val pos1: Vec2d, val pos2: Vec2d) {
         val scale = sr.scaleFactor.toFloat()
         val radius = min(roundRadius, min(width, height) / 2.0f)
 
-        //This one too ...
-        if (HUD.isEnabled() && HUD.everyRectBuilderGlow && ClickGui.colorMode != ClickGui.ColorMode.Shader)
-        shadow(x, y, width, height, 10, colorIn.first)
-
         GlStateManager.resetColor()
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)

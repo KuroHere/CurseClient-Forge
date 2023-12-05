@@ -95,7 +95,7 @@ public abstract class MixinGuiNewChat {
         final ChatMod chatMod = ModuleManager.INSTANCE.getModuleByClass(ChatMod.class);;
         if (Objects.requireNonNull(ModuleManager.INSTANCE.getModuleByName("ChatMod")).isEnabled() && Objects.requireNonNull(chatMod).getSmooth() && lineBeingDrawn <= newLines) {
             int opacity = (original >> 24) & 0xFF;
-            opacity *= animationPercent;
+            opacity *= (int) animationPercent;
             return (original & ~(0xFF << 24)) | (opacity << 24);
         } else {
             return original;

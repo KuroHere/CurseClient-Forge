@@ -6,6 +6,7 @@ import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.module.modules.client.HUD
+import com.curseclient.client.module.modules.combat.CrystalAura
 import com.curseclient.client.module.modules.combat.KillAura
 import com.curseclient.client.setting.setting
 import com.curseclient.client.utility.extension.entity.interpolatedPosition

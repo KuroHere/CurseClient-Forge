@@ -17,7 +17,6 @@ public interface AccessorItemRenderer {
     @Accessor("prevEquippedProgressMainHand") float getPrevEquippedProgressMainHand();
     @Accessor("prevEquippedProgressMainHand") void setPrevEquippedProgressMainHand(float value);
 
-
     @Accessor("equippedProgressOffHand") float getEquippedProgressOffHand();
     @Accessor("equippedProgressOffHand") void setEquippedProgressOffHand(float value);
 

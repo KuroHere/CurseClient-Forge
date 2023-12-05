@@ -28,8 +28,8 @@ object Compass: DraggableHudModule(
         val c1 =  HUD.getColor(0)
 
         // Background
-        RenderUtils2D.drawGradientRect(Vec2d(pos.x.toInt(), pos.y.toInt()), Vec2d((pos.x + this.getWidth() / 2).toInt(), (pos.y + this.getHeight()).toInt()), Color(0,0,0,50), Color(0x75101010), Color(0x75101010), Color(0,0,0,50))
-        RenderUtils2D.drawGradientRect(Vec2d(pos.x.toInt() + (this.getWidth() / 2).toInt(), pos.y.toInt()), Vec2d((pos.x + this.getWidth()).toInt(), (pos.y + this.getHeight()).toInt()), Color(0x75101010), Color(0,0,0,50), Color(0,0,0,50), Color(0x75101010))
+        RenderUtils2D.drawGradientRect(Vec2d(pos.x.toInt(), pos.y.toInt()), Vec2d((pos.x + this.getWidth() / 2).toInt(), (pos.y + this.getHeight()).toInt()), Color(0,0,0,20), Color(0, 0, 0, 150), Color(0, 0, 0, 150), Color(0,0,0,20))
+        RenderUtils2D.drawGradientRect(Vec2d(pos.x.toInt() + (this.getWidth() / 2).toInt(), pos.y.toInt()), Vec2d((pos.x + this.getWidth()).toInt(), (pos.y + this.getHeight()).toInt()), Color(0, 0, 0, 150), Color(0,0,0,20), Color(0,0,0,50), Color(0, 0, 0, 150))
 
         if (Helper.mc.world != null) {
             val sr = ScaledResolution(Helper.mc)

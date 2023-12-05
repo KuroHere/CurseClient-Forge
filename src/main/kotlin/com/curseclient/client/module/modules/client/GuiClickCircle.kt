@@ -13,7 +13,6 @@ object GuiClickCircle: Module(
     Category.CLIENT
 ) {
     val mode by setting("Mode", Mode.Fill)
-    //val accentColor by setting("Accent Color", false, visible = {mode == Mode.Outline})
     val seconds by setting("Seconds", 2, 1, 5,1, visible = {mode == Mode.Fill})
     val radius by setting("Radius", 5, 3, 15, 1)
     val color by setting("Color", Color(-0x7f000001))

@@ -61,10 +61,6 @@ public abstract class MixinGuiIngameForge extends MixinGuiIngame {
     @Shadow
     public abstract void renderFood(int width, int height);
 
-    /**
-     * @author
-     * @reason
-     */
     @Overwrite(remap = false)
     protected void renderPlayerList(int width, int height) {
         final Minecraft mc = Minecraft.getMinecraft();

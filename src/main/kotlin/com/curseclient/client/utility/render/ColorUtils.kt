@@ -17,14 +17,6 @@ object ColorUtils {
     const val ONE_THIRD = 1.0f / 3.0f
     const val TWO_THIRD = 2.0f / 3.0f
 
-    fun mixColors(color1: Color, color2: Color, percent: Double): Color {
-        val inverse_percent = 1.0 - percent
-        val redPart = (color1.red * percent + color2.red * inverse_percent).toInt()
-        val greenPart = (color1.green * percent + color2.green * inverse_percent).toInt()
-        val bluePart = (color1.blue * percent + color2.blue * inverse_percent).toInt()
-        return Color(redPart, greenPart, bluePart)
-    }
-
     fun blendColors(fractions: FloatArray?, colors: Array<Color>?, progress: Float): Color {
         requireNotNull(fractions) { "Fractions can't be null" }
         requireNotNull(colors) { "Colours can't be null" }
@@ -65,11 +57,6 @@ object ColorUtils {
         var origColor = origColor
         origColor = origColor and 0x00FFFFFF
         return userInputedAlpha shl 24 or origColor
-    }
-
-    fun applyOpacity(color: Int, opacity: Float): Int {
-        val old = Color(color)
-        return applyOpacity(old, opacity).rgb
     }
 
     //Opacity value ranges from 0-1
@@ -172,11 +159,11 @@ object ColorUtils {
         return (red shl 16) or (green shl 8) or blue
     }
 
-    fun hsbToRGB(h: Float, s: Float, b: Float): ColorExtend {
+    fun hsbToRGB(h: Float, s: Float, b: Float): Color {
         return hsbToRGB(h, s, b, 1.0f)
     }
 
-    fun hsbToRGB(h: Float, s: Float, b: Float, a: Float): ColorExtend {
+    fun hsbToRGB(h: Float, s: Float, b: Float, a: Float): Color {
         val hue6 = (h % 1.0f) * 6.0f
         val intHue6 = hue6.toInt()
         val f = hue6 - intHue6
@@ -185,13 +172,13 @@ object ColorUtils {
         val t = b * (1.0f - (1.0f - f) * s)
 
         return when (intHue6) {
-            0 -> ColorExtend(b, t, p, a)
-            1 -> ColorExtend(q, b, p, a)
-            2 -> ColorExtend(p, b, t, a)
-            3 -> ColorExtend(p, q, b, a)
-            4 -> ColorExtend(t, p, b, a)
-            5 -> ColorExtend(b, p, q, a)
-            else -> ColorExtend(255, 255, 255)
+            0 -> Color(b, t, p, a)
+            1 -> Color(q, b, p, a)
+            2 -> Color(p, b, t, a)
+            3 -> Color(p, q, b, a)
+            4 -> Color(t, p, b, a)
+            5 -> Color(b, p, q, a)
+            else -> Color(255, 255, 255)
         }
     }
 

@@ -6,12 +6,11 @@ import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.setting.setting
 import com.curseclient.client.utility.render.RenderUtils2D
-import com.curseclient.client.utility.world.CrystalUtils
-import org.lwjgl.opengl.Display
-import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.client.Minecraft
 import net.minecraft.init.Items
-import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.opengl.Display
 
 
 object FovModifier : Module(
@@ -24,20 +23,39 @@ object FovModifier : Module(
     val static by setting("Static", true)
     val allowSprint by setting("Allow Sprint", true, visible = { static })
 
-    val allowBow by setting("BowZoom", false)
+    val allowBow by setting("Bow Zoom", false)
     val zoomFactor by setting("Zoom Factor", 1.5, 1.0, 5.0, 0.1, visible = { allowBow })
+    private val smoothCamera by setting("SmoothCamera", true, visible = { allowBow })
 
-    // TODO: fix this T_T
-    // Oh its got fixed fr, why I'm not realize it soon
+    private var lastSensitivity = mc.gameSettings.mouseSensitivity
+    private var wasCinematic = false
+
     init {
+        safeListener<TickEvent.ClientTickEvent> {
+            val player = Minecraft.getMinecraft().player
+            val item = player.heldItemMainhand
+
+            if (player.isUser) {
+                if (allowBow && player.isHandActive && item.item === Items.BOW) {
+                    lastSensitivity = mc.gameSettings.mouseSensitivity
+                    wasCinematic = mc.gameSettings.smoothCamera
+                    mc.gameSettings.smoothCamera = smoothCamera
+                    mc.renderGlobal.setDisplayListEntitiesDirty()
+                } else if (!player.isHandActive || item.item !== Items.BOW) {
+                    mc.gameSettings.mouseSensitivity = lastSensitivity
+                    mc.gameSettings.smoothCamera = wasCinematic
+                }
+            }
+        }
         safeListener<EventFovUpdate> { event ->
             val base = baseFov
             event.setFov(base.toFloat())
         }
+
     }
 
     // just Put It Here And Will Touch It Later
-    private fun bowOverlay(alpha: Float) {
+    private fun bowOverlay(progress: Float, alpha: Float) {
         mc.textureManager.bindTexture(ResourceLocation("textures/bowoverlays.png"))
         RenderUtils2D.drawTexture(0f, 0f, 0f, 0f, Display.getWidth().toFloat(), Display.getHeight().toFloat())
     }

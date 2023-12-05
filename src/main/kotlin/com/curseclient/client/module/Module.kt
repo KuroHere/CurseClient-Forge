@@ -83,8 +83,4 @@ abstract class Module(
             onDisable()
         }
     }
-
-    fun setTags(tags: String) {
-        tags;
-    }
 }

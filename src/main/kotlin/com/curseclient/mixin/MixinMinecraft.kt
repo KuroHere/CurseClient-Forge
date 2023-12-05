@@ -1,7 +1,7 @@
 package com.curseclient.mixin
 
 import com.curseclient.client.event.EventBus
-import com.curseclient.client.events.RootEvent
+import com.curseclient.client.event.events.RootEvent
 import com.curseclient.client.module.modules.client.MenuShader
 import com.curseclient.client.utility.DeltaTime
 import com.curseclient.client.utility.render.IconUtils

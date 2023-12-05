@@ -23,7 +23,7 @@ class MusicButton(
     width: Int,
     height: Int,
     val action: MainGui.MusicAction,
-    val songManager: SongManager // Pass SongManager instance to MusicButton
+    val songManager: SongManager
 ) : MainGuiElement(xCenter, yCenter, width, height) {
 
     private var isClicking = false

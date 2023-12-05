@@ -82,7 +82,7 @@ object RenderUtils3D {
             - renderManager.renderPosY)
         val z: Double = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks
             - renderManager.renderPosZ)
-        val entityBox: AxisAlignedBB = entity.getEntityBoundingBox()
+        val entityBox: AxisAlignedBB = entity.entityBoundingBox
         val axisAlignedBB = AxisAlignedBB(
             entityBox.minX - entity.posX + x - 0.05,
             entityBox.minY - entity.posY + y,
@@ -94,7 +94,7 @@ object RenderUtils3D {
         if (outline) {
             glLineWidth(1f)
             enableGlCap(GL_LINE_SMOOTH)
-            glColor(color.getRed(), color.getGreen(), color.getBlue(), 95);
+            glColor(color.red, color.green, color.blue, 95);
             drawSelectionBoundingBox(axisAlignedBB)
         }
         glColor(color.red, color.green, color.blue, (if (outline) 26 else 35))
@@ -182,93 +182,92 @@ object RenderUtils3D {
 
 
     fun renderFaceMesh(bb: AxisAlignedBB, face: EnumFacing, stepSize: Double, width: Float, hex: Int) {
-        if (face == EnumFacing.NORTH) {
-            run {
-                var i = bb.minX
-                while (i <= bb.maxX) {
-                    drawLine3D(i, bb.minY, bb.minZ, i, bb.maxY, bb.minZ, width, hex)
+        when (face) {
+            EnumFacing.NORTH -> {
+                run {
+                    var i = bb.minX
+                    while (i <= bb.maxX) {
+                        drawLine3D(i, bb.minY, bb.minZ, i, bb.maxY, bb.minZ, width, hex)
+                        i += stepSize
+                    }
+                }
+                var i = bb.minY
+                while (i <= bb.maxY) {
+                    drawLine3D(bb.minX, i, bb.minZ, bb.maxX, i, bb.minZ, width, hex)
                     i += stepSize
                 }
             }
-            var i = bb.minY
-            while (i <= bb.maxY) {
-                drawLine3D(bb.minX, i, bb.minZ, bb.maxX, i, bb.minZ, width, hex)
-                i += stepSize
-            }
-        } else if (face == EnumFacing.SOUTH) {
-            run {
-                var i = bb.minX
-                while (i <= bb.maxX) {
-                    drawLine3D(i, bb.minY, bb.maxZ, i, bb.maxY, bb.maxZ, width, hex)
+            EnumFacing.SOUTH -> {
+                run {
+                    var i = bb.minX
+                    while (i <= bb.maxX) {
+                        drawLine3D(i, bb.minY, bb.maxZ, i, bb.maxY, bb.maxZ, width, hex)
+                        i += stepSize
+                    }
+                }
+                var i = bb.minY
+                while (i <= bb.maxY) {
+                    drawLine3D(bb.minX, i, bb.maxZ, bb.maxX, i, bb.maxZ, width, hex)
                     i += stepSize
                 }
             }
-            var i = bb.minY
-            while (i <= bb.maxY) {
-                drawLine3D(bb.minX, i, bb.maxZ, bb.maxX, i, bb.maxZ, width, hex)
-                i += stepSize
+            EnumFacing.EAST -> {
+                run {
+                    var i = bb.minZ
+                    while (i <= bb.maxZ) {
+                        drawLine3D(bb.maxX, bb.minY, i, bb.maxX, bb.maxY, i, width, hex)
+                        i += stepSize
+                    }
+                }
+                var i = bb.minY
+                while (i <= bb.maxY) {
+                    drawLine3D(bb.maxX, i, bb.minZ, bb.maxX, i, bb.maxZ, width, hex)
+                    i += stepSize
+                }
             }
-        } else if (face == EnumFacing.EAST) {
-            run {
+            EnumFacing.WEST -> {
+                run {
+                    var i = bb.minZ
+                    while (i <= bb.maxZ) {
+                        drawLine3D(bb.minX, bb.minY, i, bb.minX, bb.maxY, i, width, hex)
+                        i += stepSize
+                    }
+                }
+                var i = bb.minY
+                while (i <= bb.maxY) {
+                    drawLine3D(bb.minX, i, bb.minZ, bb.minX, i, bb.maxZ, width, hex)
+                    i += stepSize
+                }
+            }
+            EnumFacing.UP -> {
+                run {
+                    var i = bb.minX
+                    while (i <= bb.maxX) {
+                        drawLine3D(i, bb.maxY, bb.minZ, i, bb.maxY, bb.maxZ, width, hex)
+                        i += stepSize
+                    }
+                }
                 var i = bb.minZ
                 while (i <= bb.maxZ) {
-                    drawLine3D(bb.maxX, bb.minY, i, bb.maxX, bb.maxY, i, width, hex)
+                    drawLine3D(bb.minX, bb.maxY, i, bb.maxX, bb.maxY, i, width, hex)
                     i += stepSize
                 }
             }
-            var i = bb.minY
-            while (i <= bb.maxY) {
-                drawLine3D(bb.maxX, i, bb.minZ, bb.maxX, i, bb.maxZ, width, hex)
-                i += stepSize
-            }
-        } else if (face == EnumFacing.WEST) {
-            run {
+            EnumFacing.DOWN -> {
+                run {
+                    var i = bb.minX
+                    while (i <= bb.maxX) {
+                        drawLine3D(i, bb.minY, bb.minZ, i, bb.minY, bb.maxZ, width, hex)
+                        i += stepSize
+                    }
+                }
                 var i = bb.minZ
                 while (i <= bb.maxZ) {
-                    drawLine3D(bb.minX, bb.minY, i, bb.minX, bb.maxY, i, width, hex)
+                    drawLine3D(bb.minX, bb.minY, i, bb.maxX, bb.minY, i, width, hex)
                     i += stepSize
                 }
-            }
-            var i = bb.minY
-            while (i <= bb.maxY) {
-                drawLine3D(bb.minX, i, bb.minZ, bb.minX, i, bb.maxZ, width, hex)
-                i += stepSize
-            }
-        } else if (face == EnumFacing.UP) {
-            run {
-                var i = bb.minX
-                while (i <= bb.maxX) {
-                    drawLine3D(i, bb.maxY, bb.minZ, i, bb.maxY, bb.maxZ, width, hex)
-                    i += stepSize
-                }
-            }
-            var i = bb.minZ
-            while (i <= bb.maxZ) {
-                drawLine3D(bb.minX, bb.maxY, i, bb.maxX, bb.maxY, i, width, hex)
-                i += stepSize
-            }
-        } else if (face == EnumFacing.DOWN) {
-            run {
-                var i = bb.minX
-                while (i <= bb.maxX) {
-                    drawLine3D(i, bb.minY, bb.minZ, i, bb.minY, bb.maxZ, width, hex)
-                    i += stepSize
-                }
-            }
-            var i = bb.minZ
-            while (i <= bb.maxZ) {
-                drawLine3D(bb.minX, bb.minY, i, bb.maxX, bb.minY, i, width, hex)
-                i += stepSize
             }
         }
-    }
-
-
-    fun glColorClient(alpha: Int) {
-        val r = HUD.color1.r
-        val g = HUD.color1.g
-        val b = HUD.color1.b
-        glColor(r.toInt(), g.toInt(), b.toInt(), alpha)
     }
 
     fun glColor(red: Int, green: Int, blue: Int, alpha: Int) {
@@ -292,7 +291,7 @@ object RenderUtils3D {
     }
 
 
-    fun drawSelectionBoundingBox(boundingBox: AxisAlignedBB) {
+    private fun drawSelectionBoundingBox(boundingBox: AxisAlignedBB) {
         val tessellator = Tessellator.getInstance()
         val builder = tessellator.buffer
         builder.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION)
@@ -321,7 +320,7 @@ object RenderUtils3D {
         tessellator.draw()
     }
 
-    fun drawFilledBox(axisAlignedBB: AxisAlignedBB) {
+    private fun drawFilledBox(axisAlignedBB: AxisAlignedBB) {
         val tessellator = Tessellator.getInstance()
         val builder = tessellator.buffer
         builder.begin(7, DefaultVertexFormats.POSITION)

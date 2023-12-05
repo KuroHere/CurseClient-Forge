@@ -62,10 +62,6 @@ public abstract class MixinGuiButton extends Gui {
     private float cut;
     private float alpha;
 
-    /**
-     * @author
-     * @reason
-     */
     @Overwrite
     public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
         if (visible) {

@@ -1,9 +1,6 @@
 package com.curseclient.client.module.modules.hud.graph
 
 import baritone.api.utils.Helper
-import com.curseclient.client.event.events.render.Render3DEvent
-import com.curseclient.client.event.listener.safeListener
-import com.curseclient.client.gui.impl.hudeditor.HudEditorGui
 import com.curseclient.client.module.DraggableHudModule
 import com.curseclient.client.module.HudCategory
 import com.curseclient.client.module.modules.client.HUD
@@ -18,7 +15,6 @@ import com.curseclient.client.utility.render.font.FontRenderer
 import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
-import io.netty.util.internal.MathUtil
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.math.MathHelper
 import org.lwjgl.opengl.GL11
