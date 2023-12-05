@@ -1,4 +1,4 @@
-package com.curseclient.client.module.modules.visual
+package com.curseclient.client.module.modules.visual.TwoDESP
 
 import com.curseclient.client.event.events.render.Render3DEvent
 import com.curseclient.client.event.listener.safeListener
@@ -85,10 +85,10 @@ object TwoDESP : Module(
             if (mode.name == "Real") {
                 GL11.glPushMatrix()
 
-                val scaledresolution = ScaledResolution(mc)
+                val scaleResolution = ScaledResolution(mc)
                 val entityRenderer: EntityRenderer = mc.entityRenderer
 
-                val scaleFactor = scaledresolution.scaleFactor
+                val scaleFactor = scaleResolution.scaleFactor
                 val renderMng = mc.renderManager
 
                 var amount = 0
@@ -104,7 +104,7 @@ object TwoDESP : Module(
                             val width = p.width / 1.5
                             val height = p.height + if (p.isSneaking) -0.3 else 0.2
                             val aabb = AxisAlignedBB(x - width, y, z - width, x + width, y + height, z + width)
-                            val vectors = Arrays.asList(Vector3d(aabb.minX, aabb.minY, aabb.minZ), Vector3d(aabb.minX, aabb.maxY, aabb.minZ), Vector3d(aabb.maxX, aabb.minY, aabb.minZ), Vector3d(aabb.maxX, aabb.maxY, aabb.minZ), Vector3d(aabb.minX, aabb.minY, aabb.maxZ), Vector3d(aabb.minX, aabb.maxY, aabb.maxZ), Vector3d(aabb.maxX, aabb.minY, aabb.maxZ), Vector3d(aabb.maxX, aabb.maxY, aabb.maxZ))
+                            val vectors = listOf(Vector3d(aabb.minX, aabb.minY, aabb.minZ), Vector3d(aabb.minX, aabb.maxY, aabb.minZ), Vector3d(aabb.maxX, aabb.minY, aabb.minZ), Vector3d(aabb.maxX, aabb.maxY, aabb.minZ), Vector3d(aabb.minX, aabb.minY, aabb.maxZ), Vector3d(aabb.minX, aabb.maxY, aabb.maxZ), Vector3d(aabb.maxX, aabb.minY, aabb.maxZ), Vector3d(aabb.maxX, aabb.maxY, aabb.maxZ))
 
                             var position: Vector4d? = null
                             if (position != null) {
@@ -114,14 +114,14 @@ object TwoDESP : Module(
                             }
 
                             for (v in vectors) {
-                                var v = project2D(scaleFactor, v.x - renderMng.viewerPosX, v.y - renderMng.viewerPosY, v.z - renderMng.viewerPosZ)
+                                val v = project2D(scaleFactor, v.x - renderMng.viewerPosX, v.y - renderMng.viewerPosY, v.z - renderMng.viewerPosZ)
                                 if (v != null && v.z >= 0.0 && v.z < 1.0) {
                                     if (position == null)
                                         position = Vector4d(v.x, v.y, v.z, 0.0)
-                                    position.x = Math.min(v.x, position.x)
-                                    position.y = Math.min(v.y, position.y)
-                                    position.z = Math.max(v.x, position.z)
-                                    position.w = Math.max(v.y, position.w)
+                                    position.x = v.x.coerceAtMost(position.x)
+                                    position.y = v.y.coerceAtMost(position.y)
+                                    position.z = v.x.coerceAtLeast(position.z)
+                                    position.w = v.y.coerceAtLeast(position.w)
                                 }
                             }
 
@@ -136,10 +136,10 @@ object TwoDESP : Module(
 
                                 val c = HUD.getColor(0)
 
-                                lineNoGl(posX - w, posY, posX + w - w, endPosY, c)
-                                lineNoGl(posX, endPosY - w, endPosX, endPosY, c)
-                                lineNoGl(posX - w, posY, endPosX, posY + w, c)
-                                lineNoGl(endPosX - w, posY, endPosX, endPosY, c)
+                                Utils.lineNoGl(posX - w, posY, posX + w - w, endPosY, c)
+                                Utils.lineNoGl(posX, endPosY - w, endPosX, endPosY, c)
+                                Utils.lineNoGl(posX - w, posY, endPosX, posY + w, c)
+                                Utils.lineNoGl(endPosX - w, posY, endPosX, endPosY, c)
 
                                 val percentage = (endPosY - posY) * p.health / p.maxHealth
 
@@ -150,7 +150,7 @@ object TwoDESP : Module(
                                 val progress = p.health / p.maxHealth
                                 val healthColor = if (p.health >= 0.0f) ColorUtils.blendColors(fractions, colors, progress).brighter() else Color.RED
 
-                                lineNoGl(posX - w - distance, endPosY - percentage, posX + w - w - distance, endPosY, healthColor)
+                                Utils.lineNoGl(posX - w - distance, endPosY - percentage, posX + w - w - distance, endPosY, healthColor)
                             }
                             amount++
                         }
@@ -163,14 +163,14 @@ object TwoDESP : Module(
     }
 
     private fun draw2DBox(width: Double, height: Double, lineWidth: Double, offset: Double, c: Color) {
-        rect(-width / 2 - offset, -offset, width / 4, lineWidth, c)
-        rect(width / 2 - offset, -offset, -width / 4, lineWidth, c)
-        rect(width / 2 - offset, height - offset, -width / 4, lineWidth, c)
-        rect(-width / 2 - offset, height - offset, width / 4, lineWidth, c)
-        rect(-width / 2 - offset, height - offset, lineWidth, -height / 4, c)
-        rect(width / 2 - lineWidth - offset, height - offset, lineWidth, -height / 4, c)
-        rect(width / 2 - lineWidth - offset, -offset, lineWidth, height / 4, c)
-        rect(-width / 2 - offset, -offset, lineWidth, height / 4, c)
+        Utils.rect(-width / 2 - offset, -offset, width / 4, lineWidth, c)
+        Utils.rect(width / 2 - offset, -offset, -width / 4, lineWidth, c)
+        Utils.rect(width / 2 - offset, height - offset, -width / 4, lineWidth, c)
+        Utils.rect(-width / 2 - offset, height - offset, width / 4, lineWidth, c)
+        Utils.rect(-width / 2 - offset, height - offset, lineWidth, -height / 4, c)
+        Utils.rect(width / 2 - lineWidth - offset, height - offset, lineWidth, -height / 4, c)
+        Utils.rect(width / 2 - lineWidth - offset, -offset, lineWidth, height / 4, c)
+        Utils.rect(-width / 2 - offset, -offset, lineWidth, height / 4, c)
     }
 
     private fun project2D(scaleFactor: Int, x: Double, y: Double, z: Double): Vector3d? {
@@ -178,127 +178,5 @@ object TwoDESP : Module(
         GL11.glGetFloat(2983, projection)
         GL11.glGetInteger(2978, viewport)
         return if (GLU.gluProject(x.toFloat(), y.toFloat(), z.toFloat(), modelview, projection, viewport, vector)) Vector3d(vector.get(0).toDouble() / scaleFactor, (Display.getHeight() - vector.get(1)).toDouble() / scaleFactor, vector.get(2).toDouble()) else null
-    }
-
-    fun start() {
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glDisable(GL11.GL_CULL_FACE)
-        GlStateManager.disableAlpha()
-        GlStateManager.disableDepth()
-    }
-
-    fun stop() {
-        GlStateManager.enableAlpha()
-        GlStateManager.enableDepth()
-        GL11.glEnable(GL11.GL_CULL_FACE)
-        GL11.glEnable(GL11.GL_TEXTURE_2D)
-        GL11.glDisable(GL11.GL_BLEND)
-        color(Color.white)
-    }
-
-    fun color(red: Double, green: Double, blue: Double, alpha: Double) {
-        GL11.glColor4d(red, green, blue, alpha)
-    }
-
-    fun color(red: Double, green: Double, blue: Double) {
-        color(red, green, blue, 1.0)
-    }
-
-    fun color(color: Color?) {
-        val convertedColor = color ?: Color.WHITE
-        color(convertedColor.red / 255.0, convertedColor.green / 255.0, convertedColor.blue / 255.0, convertedColor.alpha / 255.0)
-    }
-
-    fun color(color: Color?, alpha: Int) {
-        val convertedColor = color ?: Color.WHITE
-        color(convertedColor.red / 255.0, convertedColor.green / 255.0, convertedColor.blue / 255.0, 0.5)
-    }
-
-    fun lineNoGl(firstX: Double, firstY: Double, secondX: Double, secondY: Double, color: Color) {
-        start()
-        color(color)
-        GL11.glLineWidth(1f)
-        GL11.glEnable(GL11.GL_LINE_SMOOTH)
-        GL11.glBegin(GL11.GL_LINES)
-        run {
-            GL11.glVertex2d(firstX, firstY)
-            GL11.glVertex2d(secondX, secondY)
-        }
-        GL11.glEnd()
-        GL11.glDisable(GL11.GL_LINE_SMOOTH)
-        stop()
-    }
-
-    fun rect(x: Double, y: Double, width: Double, height: Double, filled: Boolean, color: Color) {
-        start()
-        color(color)
-        GL11.glBegin(if (filled) GL11.GL_TRIANGLE_FAN else GL11.GL_LINES)
-        run {
-            GL11.glVertex2d(x, y)
-            GL11.glVertex2d(x + width, y)
-            GL11.glVertex2d(x + width, y + height)
-            GL11.glVertex2d(x, y + height)
-            if (!filled) {
-                GL11.glVertex2d(x, y)
-                GL11.glVertex2d(x, y + height)
-                GL11.glVertex2d(x + width, y)
-                GL11.glVertex2d(x + width, y + height)
-            }
-        }
-        GL11.glEnd()
-        stop()
-    }
-
-    fun rect(x: Double, y: Double, width: Double, height: Double, filled: Boolean) {
-        rect(x, y, width, height, filled)
-    }
-
-    fun rect(x: Double, y: Double, width: Double, height: Double, color: Color) {
-        rect(x, y, width, height, true, color)
-    }
-
-    fun rect(x: Double, y: Double, width: Double, height: Double) {
-        rect(x, y, width, height, true)
-    }
-
-
-    private fun polygon(x: Double, y: Double, sideLength: Double, amountOfSides: Double, filled: Boolean, color: Color?) {
-        var sideLength = sideLength
-        sideLength /= 2
-        start()
-        if (color != null)
-            color(color)
-        if (!filled) GL11.glLineWidth(2f)
-        GL11.glEnable(GL11.GL_LINE_SMOOTH)
-        GL11.glBegin(if (filled) GL11.GL_TRIANGLE_FAN else GL11.GL_LINE_STRIP)
-        run {
-            var i = 0.0
-            while (i <= amountOfSides / 4) {
-                val angle = i * 4 * (Math.PI * 2) / 360
-                GL11.glVertex2d(x + sideLength * Math.cos(angle) + sideLength, y + sideLength * Math.sin(angle) + sideLength)
-                i++
-            }
-        }
-        GL11.glEnd()
-        GL11.glDisable(GL11.GL_LINE_SMOOTH)
-        stop()
-    }
-
-    fun circle(x: Double, y: Double, radius: Double, filled: Boolean, color: Color?) {
-        polygon(x, y, radius, 360.0, filled, color)
-    }
-
-    fun circle(x: Double, y: Double, radius: Double, filled: Boolean) {
-        polygon(x, y, radius, 360.0, filled, null)
-    }
-
-    fun circle(x: Double, y: Double, radius: Double, color: Color?) {
-        polygon(x, y, radius, 360.0, true, color)
-    }
-
-    fun circle(x: Double, y: Double, radius: Double) {
-        polygon(x, y, radius, 360.0, true, null)
     }
 }

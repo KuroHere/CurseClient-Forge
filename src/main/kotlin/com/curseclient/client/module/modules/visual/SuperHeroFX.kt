@@ -8,11 +8,11 @@ import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.setting.setting
-import com.curseclient.client.utility.render.ColorExtend
 import com.curseclient.client.utility.math.MathUtils
 import com.curseclient.client.utility.extension.Timer
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.curseclient.client.utility.render.ColorUtils
+import com.curseclient.client.utility.render.ColorUtils.setAlpha
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getHeight
@@ -67,46 +67,16 @@ object SuperHeroFX : Module(
 
     init {
 
-        safeListener<Render3DEvent> {
+        safeListener<Render3DEvent> { event ->
             popups.forEach {
                 it.render()
             }
-
             popups.removeIf { it.animation.getAnimationFactor() == 0.0 && !it.animation.state }
-        }
 
-        safeListener<EntityAttackedEvent> { event ->
-            if (popupStyle.equals(PopupStyle.BanTumLum)) {
-                for (i in 0 until ThreadLocalRandom.current().nextInt(4)) {
-                    val offsetX = Random.nextFloat() * 2
-                    val offsetY = Random.nextFloat() * 2
-                    val offsetZ = Random.nextFloat() * 2
-                    val text = superHeroTextsDamageTaken[Random.nextInt(superHeroTextsDamageTaken.size)]
-
-                    popups.add(
-                        Popup(
-                            event.entity.positionVector.add(
-                                offsetX - 1.0,
-                                event.entity.height + offsetY - 1.0,
-                                offsetZ - 1.0
-                            ), text, Color(Color.HSBtoRGB(Random.nextFloat(), 1f, 1f))
-                        )
-                    )
-                }
-            }
-        }
-
-        safeListener<TickEvent.ClientTickEvent> {
-
-            popTexts.removeIf { it.isMarked }
-            popTexts.forEach { it.update() }
-        }
-
-        safeListener<Render3DEvent> { event ->
-            if (popupStyle.equals(PopupStyle.Heaven)) {
+            if (popupStyle == PopupStyle.Heaven) {
                 val fontRenderer = when (font) {
                     Font.Client -> Fonts.DEFAULT
-                    Font.Client_Bold -> Fonts.DEFAULT_BOLD
+                    Font.ClientBOLD -> Fonts.DEFAULT_BOLD
                     Font.Osaka -> Fonts.OSAKACHIPS
                     Font.Knight -> Fonts.KNIGHT
                     Font.Badaboom -> Fonts.BADABOOM
@@ -143,7 +113,7 @@ object SuperHeroFX : Module(
                         val nameTag = pop.displayName
                         val width = fontRenderer.getStringWidth(nameTag, 1.0) / 2f
                         val height = fontRenderer.getHeight(1.0)
-                        fontRenderer.drawString(nameTag, Vec2d(-width + 1.0f, -height + 3.0f), true, pop.colorExtend.toHSB(), 1.0)
+                        fontRenderer.drawString(nameTag, Vec2d(-width + 1.0f, -height + 3.0f), true, pop.colorExtend, 1.0)
                         GlStateManager.disablePolygonOffset()
                         GlStateManager.doPolygonOffset(1.0f, 1500000.0f)
                         GlStateManager.popMatrix()
@@ -155,6 +125,32 @@ object SuperHeroFX : Module(
             }
         }
 
+        safeListener<EntityAttackedEvent> { event ->
+            if (popupStyle == PopupStyle.BanTumLum) {
+                for (i in 0 until ThreadLocalRandom.current().nextInt(4)) {
+                    val offsetX = Random.nextFloat() * 2
+                    val offsetY = Random.nextFloat() * 2
+                    val offsetZ = Random.nextFloat() * 2
+                    val text = superHeroTextsDamageTaken[Random.nextInt(superHeroTextsDamageTaken.size)]
+
+                    popups.add(
+                        Popup(
+                            event.entity.positionVector.add(
+                                offsetX - 1.0,
+                                event.entity.height + offsetY - 1.0,
+                                offsetZ - 1.0
+                            ), text, Color(Color.HSBtoRGB(Random.nextFloat(), 1f, 1f))
+                        )
+                    )
+                }
+            }
+        }
+
+        safeListener<TickEvent.ClientTickEvent> {
+
+            popTexts.removeIf { it.isMarked }
+            popTexts.forEach { it.update() }
+        }
         safeListener<PacketEvent.Receive> { event ->
             runSafe {
                 if (event.packet !is SPacketExplosion) {
@@ -204,7 +200,7 @@ object SuperHeroFX : Module(
     private class Popup(val vec: Vec3d, val text: String, val colour: Color) {
         val fontRenderer = when (font) {
             Font.Client -> Fonts.DEFAULT
-            Font.Client_Bold -> Fonts.DEFAULT_BOLD
+            Font.ClientBOLD -> Fonts.DEFAULT_BOLD
             Font.Osaka -> Fonts.OSAKACHIPS
             Font.Knight -> Fonts.KNIGHT
             Font.Badaboom -> Fonts.BADABOOM
@@ -243,12 +239,12 @@ object SuperHeroFX : Module(
         var zIncrease = Random.nextFloat()
         private val duration = 1000.0 * SuperHeroFX.duration
         var isMarked = false
-        var colorExtend: ColorExtend
+        var colorExtend: Color
 
         fun update() {
             pos = pos.add(0.0, yIncrease, 0.0)
             val presentA = 1.0 - ((System.currentTimeMillis() - startTime) / duration).coerceAtMost(1.0).coerceAtLeast(0.0)
-            colorExtend = colorExtend.alpha((presentA * 255.0).toInt())
+            colorExtend = colorExtend.setAlpha((presentA * 255.0).toInt())
             if (timer.passed(duration)) {
                 isMarked = true
             }
@@ -268,7 +264,7 @@ object SuperHeroFX : Module(
 
 
     enum class Font {
-        Osaka, Knight, Badaboom, Client, Client_Bold
+        Osaka, Knight, Badaboom, Client, ClientBOLD
     }
 
 }

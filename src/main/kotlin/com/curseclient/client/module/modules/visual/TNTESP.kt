@@ -16,6 +16,7 @@ object TNTESP : Module(
     Category.VISUAL
 ) {
     private val color by setting("Color", Color(173, 0, 0, 250))
+    val timeCount by setting("Count", true)
 
         init {
         safeListener<Render3DEvent> {

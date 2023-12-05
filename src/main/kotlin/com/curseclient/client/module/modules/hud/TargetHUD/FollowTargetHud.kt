@@ -32,6 +32,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.EntityLivingBase
+import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import javax.vecmath.Vector2d
@@ -79,6 +80,7 @@ object FollowTargetHud : Module(
                         val pos = it.second.subtract(viewerPos)
 
                     matrix {
+                        glPopMatrix()
                         GlStateManager.disableDepth()
                         glTranslated(pos.x, pos.y, pos.z)
                         glNormal3f(0.0f, 1.0f, 0.0f)
@@ -90,6 +92,7 @@ object FollowTargetHud : Module(
                         glScaled(-scaleFactor, -scaleFactor, scaleFactor)
 
                         drawTargetHUD(it.first)
+                        glPushMatrix()
                     }
                 }
             }

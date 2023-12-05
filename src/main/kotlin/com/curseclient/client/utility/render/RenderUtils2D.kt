@@ -1,5 +1,6 @@
 package com.curseclient.client.utility.render
 
+import baritone.api.utils.Helper.mc
 import com.curseclient.client.utility.render.ColorUtils.glColor
 import com.curseclient.client.utility.render.graphic.GLUtils.draw
 import com.curseclient.client.utility.render.graphic.GLUtils.glColor
@@ -26,9 +27,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GL32
 import java.awt.Color
 import java.awt.image.BufferedImage
 import kotlin.math.*
@@ -38,7 +37,6 @@ object RenderUtils2D {
 
     private val blank = ResourceLocation("textures/blank.png")
     private val blurCache = HashMap<BlurData, Int>()
-    private val mc = Minecraft.getMinecraft()
     private val frustrum = Frustum()
 
     fun bind(resourceLocation: ResourceLocation) {
@@ -357,7 +355,7 @@ object RenderUtils2D {
         glLineWidth(1f)
     }
 
-    fun drawRectFilled(x: Float, y: Float, endX: Float, endY: Float, color: Color) {
+    private fun drawRectFilled(x: Float, y: Float, endX: Float, endY: Float, color: Color) {
         val pos1 = Vec2d(x.toDouble(), y.toDouble())
         val pos2 = Vec2d(endX.toDouble(), y.toDouble()) // Top right
         val pos3 = Vec2d(endX.toDouble(), endY.toDouble())
@@ -366,11 +364,6 @@ object RenderUtils2D {
     }
 
     private fun drawQuad(pos1: Vec2d, pos2: Vec2d, pos3: Vec2d, pos4: Vec2d, color: Color) {
-        val vertices = arrayOf(pos1, pos2, pos4, pos3)
-        drawTriangleStrip(vertices, color)
-    }
-
-    fun drawQuad(pos1: Vec2d, pos2: Vec2d, pos3: Vec2d, pos4: Vec2d, color: Int) {
         val vertices = arrayOf(pos1, pos2, pos4, pos3)
         drawTriangleStrip(vertices, color)
     }
@@ -387,19 +380,7 @@ object RenderUtils2D {
         releaseGl()
     }
 
-    private fun drawTriangleStrip(vertices: Array<Vec2d>, color: Int) {
-        prepareGl()
-
-        VertexHelper.begin(GL_TRIANGLE_STRIP)
-        for (vertex in vertices) {
-            VertexHelper.put(vertex, color)
-        }
-        VertexHelper.end()
-
-        releaseGl()
-    }
-
-    fun prepareGl() {
+    private fun prepareGl() {
         GlStateUtils.texture2d(false)
         GlStateUtils.blend(true)
         GlStateUtils.smooth(true)
@@ -407,7 +388,7 @@ object RenderUtils2D {
         GlStateUtils.cull(false)
     }
 
-    fun releaseGl() {
+    private fun releaseGl() {
         GlStateUtils.texture2d(true)
         GlStateUtils.smooth(false)
         GlStateUtils.lineSmooth(false)
@@ -427,7 +408,7 @@ object RenderUtils2D {
         val red = (color shr 16 and 0xFF) / 255.0f
         val green = (color shr 8 and 0xFF) / 255.0f
         val blue = (color and 0xFF) / 255.0f
-        var z = 0f
+        var z: Float
         if (paramXStart > paramXEnd) {
             z = paramXStart
             paramXStart = paramXEnd
@@ -490,7 +471,7 @@ object RenderUtils2D {
         val red = (color shr 16 and 0xFF) / 255.0f
         val green = (color shr 8 and 0xFF) / 255.0f
         val blue = (color and 0xFF) / 255.0f
-        var z = 0f
+        var z: Float
         if (paramXStart > paramXEnd) {
             z = paramXStart
             paramXStart = paramXEnd
@@ -557,7 +538,7 @@ object RenderUtils2D {
         val red = (color shr 16 and 0xFF) / 255.0f
         val green = (color shr 8 and 0xFF) / 255.0f
         val blue = (color and 0xFF) / 255.0f
-        var z = 0f
+        var z: Float
         if (paramXStart > paramXEnd) {
             z = paramXStart
             paramXStart = paramXEnd
@@ -630,7 +611,7 @@ object RenderUtils2D {
         val red = (color shr 16 and 0xFF) / 255.0f
         val green = (color shr 8 and 0xFF) / 255.0f
         val blue = (color and 0xFF) / 255.0f
-        var z = 0f
+        var z: Float
         if (paramXStart > paramXEnd) {
             z = paramXStart
             paramXStart = paramXEnd
@@ -721,7 +702,7 @@ object RenderUtils2D {
     }
 
     fun renderColoredQuads(startX: Float, startY: Float, endX: Float, endY: Float) {
-        val bufferBuilder = Tessellator.getInstance().buffer
+        Tessellator.getInstance().buffer
 
         val offset = (System.currentTimeMillis() % 3000) / 3000.0f
         val hsv2p = 0.25f + offset
@@ -733,48 +714,48 @@ object RenderUtils2D {
         val hsv3 = Color.getHSBColor((hsv3p % 1), 0.6f, 1f)
         val hsv4 = Color.getHSBColor((hsv4p % 1), 0.6f, 1f)
 
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GL11.glBegin(GL11.GL_QUADS)
-        GL11.glColor4f(
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glBegin(GL_QUADS)
+        glColor4f(
             hsv1.red.toFloat() / 255,
             hsv1.green.toFloat() / 255,
             hsv1.blue.toFloat() / 255,
             0.6f
         )
-        GL11.glVertex2f(startX, startY)
-        GL11.glColor4f(
+        glVertex2f(startX, startY)
+        glColor4f(
             hsv2.red.toFloat() / 255,
             hsv2.green.toFloat() / 255,
             hsv2.blue.toFloat() / 255,
             0.6f
         )
-        GL11.glVertex2f(startX, endY)
-        GL11.glColor4f(
+        glVertex2f(startX, endY)
+        glColor4f(
             hsv3.red.toFloat() / 255,
             hsv3.green.toFloat() / 255,
             hsv3.blue.toFloat() / 255,
             0.6f
         )
-        GL11.glVertex2f(endX, endY)
-        GL11.glColor4f(
+        glVertex2f(endX, endY)
+        glColor4f(
             hsv4.red.toFloat() / 255,
             hsv4.green.toFloat() / 255,
             hsv4.blue.toFloat() / 255,
             0.6f
         )
-        GL11.glVertex2f(endX, startY)
-        GL11.glEnd()
-        GL11.glEnable(GL11.GL_TEXTURE_2D)
-        GL11.glDisable(GL11.GL_BLEND)
+        glVertex2f(endX, startY)
+        glEnd()
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
     }
 
     fun drawGradientRect(posBegin: Vec2d, posEnd: Vec2d, colorLeftTop: Color, colorRightTop: Color, colorLeftBottom: Color, colorRightBottom: Color) {
         drawGradientRect(posBegin.toVec2f(), posEnd.toVec2f(), colorLeftTop, colorRightTop, colorLeftBottom, colorRightBottom)
     }
 
-    private fun drawGradientRect(pos1: Vec2f, pos2: Vec2f, color1: Color, color2: Color, color3: Color, color4: Color) {
+    fun drawGradientRect(pos1: Vec2f, pos2: Vec2f, color1: Color, color2: Color, color3: Color, color4: Color) {
         val x1 = min(pos1.x, pos2.x)
         val y1 = min(pos1.y, pos2.y)
         val x2 = max(pos1.x, pos2.x)
@@ -960,7 +941,7 @@ object RenderUtils2D {
         drawBlurredShadow(x, y, width, height, blurRadius, color)
     }
 
-    private data class BlurData(val width: Float, val height: Float, val blurRadius: Int){
+    data class BlurData(val width: Float, val height: Float, val blurRadius: Int){
         override fun equals(other: Any?): Boolean {
             if (other !is BlurData) return false
 

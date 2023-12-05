@@ -39,11 +39,10 @@ object PerspectiveMod : Module(
         return false
     }
 
-    fun resetPerspective() {
+    private fun resetPerspective() {
         perspectiveToggled = false
         mc.gameSettings.thirdPersonView = previousPerspective
     }
-
 
     override fun onEnable() {
         perspectiveToggled = !perspectiveToggled

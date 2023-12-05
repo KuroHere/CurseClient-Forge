@@ -13,7 +13,7 @@ import com.curseclient.client.utility.render.graphic.GLUtils
 
 object SmoothCrouch : Module(
     "SmoothCrouch",
-    "Throws exceptions",
+    "Smooth Crouch effect",
     Category.VISUAL
 ) {
     private val speed by setting("Speed", 1.0, 0.1, 5.0, 0.1)

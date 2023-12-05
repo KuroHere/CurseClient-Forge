@@ -17,6 +17,7 @@ import com.curseclient.client.module.modules.misc.*
 import com.curseclient.client.module.modules.movement.*
 import com.curseclient.client.module.modules.player.*
 import com.curseclient.client.module.modules.visual.*
+import com.curseclient.client.module.modules.visual.TwoDESP.TwoDESP
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Keyboard
 

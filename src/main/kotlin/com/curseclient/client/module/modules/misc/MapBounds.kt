@@ -21,13 +21,13 @@ object MapBounds: Module(
     Category.MISC
 ) {
     //If rendering should go through walls
-    val throughWalls by setting("ThroughWalls", false)
+    private val throughWalls by setting("ThroughWalls", false)
 
     //The color the outline should be
-    val outlineColor by setting("OutlineColor", Color(75, 25, 255, 255))
+    private val outlineColor by setting("OutlineColor", Color(75, 25, 255, 255))
 
     //The color the grid should be
-    val gridColor by setting("GridColor", Color(5, 155, 0, 255))
+    private val gridColor by setting("GridColor", Color(5, 155, 0, 255))
 
     init {
         safeListener<Render3DEvent> {event ->
@@ -50,7 +50,7 @@ object MapBounds: Module(
 
     }
 
-    fun interpolateBB(bb: AxisAlignedBB, partialTicks: Float): AxisAlignedBB {
+    private fun interpolateBB(bb: AxisAlignedBB, partialTicks: Float): AxisAlignedBB {
         val entityplayer: EntityPlayer = Minecraft.getMinecraft().player
         val ix = entityplayer.lastTickPosX + (entityplayer.posX - entityplayer.lastTickPosX) * partialTicks.toDouble()
         val iy = entityplayer.lastTickPosY + (entityplayer.posY - entityplayer.lastTickPosY) * partialTicks.toDouble()

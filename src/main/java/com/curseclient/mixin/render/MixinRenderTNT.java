@@ -23,14 +23,14 @@ public class MixinRenderTNT {
 
     private static DecimalFormat timeFormatter = new DecimalFormat("0.00");
 
-    @Inject(method = "doRender*", at = @At("HEAD"))
+    @Inject(method = "doRender", at = @At("HEAD"))
     public void doRender(EntityTNTPrimed entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
-        if(TNTESP.INSTANCE.isEnabled()) {
-            doRender((RenderTNTPrimed) (Object) this, entity, x, y, z, partialTicks);
+        if(TNTESP.INSTANCE.isEnabled() && TNTESP.INSTANCE.getTimeCount()) {
+            doTNTRender((RenderTNTPrimed) (Object) this, entity, x, y, z, partialTicks);
         }
     }
 
-    private static void doRender(RenderTNTPrimed tntRenderer, EntityTNTPrimed tntPrimed, double x, double y, double z, float partialTicks) {
+    private static void doTNTRender(RenderTNTPrimed tntRenderer, EntityTNTPrimed tntPrimed, double x, double y, double z, float partialTicks) {
         int fuseTimer = tntPrimed.getFuse();
 
         if (fuseTimer >= 1) {
@@ -38,7 +38,7 @@ public class MixinRenderTNT {
 
             if (distance <= 4096.0D) {
                 float number = ((float) fuseTimer - partialTicks) / 20.0F;
-                String time = timeFormatter.format((double) number);
+                String time = timeFormatter.format(number);
                 FontRenderer fontrenderer = tntRenderer.getFontRendererFromRenderManager();
 
                 GlStateManager.pushMatrix();
@@ -70,10 +70,10 @@ public class MixinRenderTNT {
                 GlStateManager.depthMask(true);
                 GlStateManager.disableTexture2D();
                 bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-                bufferbuilder.pos((double) (-stringWidth - 1), -1.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-                bufferbuilder.pos((double) (-stringWidth - 1), 8.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-                bufferbuilder.pos((double) (stringWidth + 1), 8.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-                bufferbuilder.pos((double) (stringWidth + 1), -1.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+                bufferbuilder.pos(-stringWidth - 1, -1.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+                bufferbuilder.pos(-stringWidth - 1, 8.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+                bufferbuilder.pos(stringWidth + 1, 8.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+                bufferbuilder.pos(stringWidth + 1, -1.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
                 tessellator.draw();
                 GlStateManager.enableTexture2D();
                 fontrenderer.drawString(time, -fontrenderer.getStringWidth(time) >> 1, 0, color.getRGB());

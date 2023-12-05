@@ -31,19 +31,15 @@ object PopChams : Module(
     Category.VISUAL
 ) {
 
-    private val renderStyle by setting("Style", Style.WIREFRAME
-    )
+    private val renderStyle by setting("Style", Style.WIREFRAME)
     //"Time a cham will be shown"
-    private val aliveTime by setting("Time", 2000F, 50F, 5000F, 50F
-    )
+    private val aliveTime by setting("Time", 2000F, 50F, 5000F, 50F)
     //"Move the cham after its creation"
     private val move by setting("Move", true)
     //"Direction to move the cham" subOf move
-    private val direction by setting("Direction", MovementDirection.UP
-    )
+    private val direction by setting("Direction", MovementDirection.UP)
     //"Height that the chams will travel" subOf move
-    private val movementHeight by setting("Height", 4.5F, 2.0F, 10F, 0.1F
-    )
+    private val movementHeight by setting("Height", 4.5F, 2.0F, 10F, 0.1F)
 
     //"Will be used for fading and moving"
     private val easing by setting("Easing", Easing.QUINT_IN, visible =  { fadeOut || move })
