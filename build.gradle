@@ -21,6 +21,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 
 version project.modVersion
 group project.modGroup
+archivesBaseName = "curseclient"
 
 compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
@@ -42,6 +43,13 @@ repositories {
 
 minecraft {
     mappings channel: "$mappingsChannel", version: "$mappingsVersion"
+    //1.12.2-14.23.5.2860_mapped_stable_39-1.12
+    //minecraftVersion=1.12.2
+    //forgeVersion=14.23.5.2860
+    //mappingsChannel=stable
+    //mappingsVersion=39-1.12
+
+    //MINECRAFTVERSION-FORGEVERSION_mapped_MAPPINGSCHANNEL_MAPPINGSVERSION
 
     runs {
         client {
@@ -126,8 +134,6 @@ processResources {
 }
 
 shadowJar {
-    archiveFileName = "curseclient-${modVersion}.jar"
-
     manifest.attributes(
             'Manifest-Version': 1.0,
             'MixinConfigs': 'mixins.curseclient.json',
@@ -171,3 +177,14 @@ artifacts {
     shadowJar
 }
 
+tasks.register('refmapper', Exec) {
+    commandLine(
+            "java",
+            "-jar",
+            "refmapper-1.1.jar",
+            "build/libs/${archivesBaseName}-${version}.jar",
+            "build/libs/${archivesBaseName}-${version}-refmap.jar",
+            "refmapper/tiny",
+            "/home/ksmn/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.12.2-14.23.5.2860_mapped_stable_39-1.12/forge-1.12.2-14.23.5.2860_mapped_stable_39-1.12.jar"
+    )
+}
