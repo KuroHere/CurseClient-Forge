@@ -89,7 +89,7 @@ object Utils {
     }
 
 
-    private fun polygon(x: Double, y: Double, sideLength: Double, amountOfSides: Double, filled: Boolean, color: Color?) {
+    fun polygon(x: Double, y: Double, sideLength: Double, amountOfSides: Double, filled: Boolean, color: Color?) {
         var sideLength = sideLength
         sideLength /= 2
         start()

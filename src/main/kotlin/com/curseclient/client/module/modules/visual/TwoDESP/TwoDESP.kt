@@ -29,7 +29,6 @@ import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import java.util.*
 
-// TODO: Make one not skidding
 object TwoDESP : Module(
     "2DESP",
     "2D version of ESP",
@@ -83,8 +82,6 @@ object TwoDESP : Module(
                 }
             }
             if (mode.name == "Real") {
-                GL11.glPushMatrix()
-
                 val scaleResolution = ScaledResolution(mc)
                 val entityRenderer: EntityRenderer = mc.entityRenderer
 
@@ -156,13 +153,12 @@ object TwoDESP : Module(
                         }
                     }
                 }
-                GL11.glPopMatrix()
             }
         }
 
     }
 
-    private fun draw2DBox(width: Double, height: Double, lineWidth: Double, offset: Double, c: Color) {
+    fun draw2DBox(width: Double, height: Double, lineWidth: Double, offset: Double, c: Color) {
         Utils.rect(-width / 2 - offset, -offset, width / 4, lineWidth, c)
         Utils.rect(width / 2 - offset, -offset, -width / 4, lineWidth, c)
         Utils.rect(width / 2 - offset, height - offset, -width / 4, lineWidth, c)
@@ -173,7 +169,7 @@ object TwoDESP : Module(
         Utils.rect(-width / 2 - offset, -offset, lineWidth, height / 4, c)
     }
 
-    private fun project2D(scaleFactor: Int, x: Double, y: Double, z: Double): Vector3d? {
+    fun project2D(scaleFactor: Int, x: Double, y: Double, z: Double): Vector3d? {
         GL11.glGetFloat(2982, modelview)
         GL11.glGetFloat(2983, projection)
         GL11.glGetInteger(2978, viewport)
