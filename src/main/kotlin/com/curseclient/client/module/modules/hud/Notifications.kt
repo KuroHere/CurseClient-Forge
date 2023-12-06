@@ -4,6 +4,7 @@ import com.curseclient.client.event.events.CurseClientEvent
 import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.module.DraggableHudModule
 import com.curseclient.client.module.HudCategory
+import com.curseclient.client.module.modules.client.ClickGui
 import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.setting.setting
 import com.curseclient.client.utility.misc.NotificationInfo
@@ -11,6 +12,7 @@ import com.curseclient.client.utility.misc.SoundUtils
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.player.ChatUtils
+import com.curseclient.client.utility.render.ColorUtils
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.Screen
 import com.curseclient.client.utility.render.animation.NewEaseType
@@ -86,14 +88,22 @@ object Notifications : DraggableHudModule(
 
         fun draw(position: Vec2d) {
 
-            val c1 = HUD.getColor(0)
-            val c2 = HUD.getColor(10)
+            val c1 = if (ClickGui.colorMode == ClickGui.ColorMode.Client)
+                HUD.getColor(0)
+            else if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
+
+            val c2 = when (ClickGui.colorMode) {
+                ClickGui.ColorMode.Client -> HUD.getColor(5)
+                ClickGui.ColorMode.Static -> if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
+                else -> ClickGui.buttonColor2
+            }
+
             val xShift = max(0.0, getProgress() * 10.0 - 10.0) * 10.0
-            val pos1 = Vec2d(lerp(Screen.scaledWidth, position.x, getProgress()) - xShift, position.y + 20)
+            val pos1 = Vec2d(lerp(Screen.scaledWidth, position.x, getProgress()) - xShift, position.y)
             val pos2 = pos1.plus(getWidth() + info.description.length / 1.5, getHeight())
 
             val x:Float = (lerp(Screen.scaledWidth, position.x, getProgress()) - xShift).toFloat()
-            val y2:Float = (position.y + 20).toFloat()
+            val y2:Float = (position.y).toFloat()
 
             when(mode) {
                 Mode.Classic -> {

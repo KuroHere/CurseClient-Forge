@@ -40,7 +40,7 @@ import kotlin.math.max
 
 object FollowTargetHud : Module(
     "FollowTargetHUD",
-    "Draw follow target info.",
+    "Draw follow target info. | Don't use it's not done",
     Category.VISUAL
 ) {
 
@@ -51,7 +51,6 @@ object FollowTargetHud : Module(
     private val scale by setting("Scale", 1.0, 0.5, 2.0, 0.1)
     private val xOffset by setting("XOffset", 1.0, -5.0, 5.0, 0.1)
     private val yOffset by setting("YOffset", 0.5, -3.0, 3.0, 0.1)
-    //private val zOffset by setting("ZOffset", 1.0, -5.0, 5.0, 0.1)
 
     private var progress = 0.0
     private var healthProgress = 0.0

@@ -4,11 +4,16 @@ import com.curseclient.client.Client
 import com.curseclient.client.module.DraggableHudModule
 import com.curseclient.client.module.HudCategory
 import com.curseclient.client.module.modules.client.HUD
+import com.curseclient.client.module.modules.hud.Watermark.mode
+import com.curseclient.client.module.modules.hud.Watermark.size
 import com.curseclient.client.setting.setting
 import com.curseclient.client.utility.math.PingerUtils
 import com.curseclient.client.utility.render.ColorUtils.glColor
+import com.curseclient.client.utility.render.ColorUtils.setAlpha
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.font.FontRenderer
+import com.curseclient.client.utility.render.font.FontUtils.getHeight
+import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.graphic.GLUtils.draw
 import com.curseclient.client.utility.render.shader.GradientUtil
@@ -22,6 +27,7 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL14
 import java.awt.Color
+import kotlin.time.times
 
 
 object Watermark: DraggableHudModule(
@@ -30,7 +36,7 @@ object Watermark: DraggableHudModule(
     HudCategory.HUD,
 ) {
     private val mode by setting("Mode", W_Mode.Modern)
-    private val size by setting("Size", 1.0, 0.5, 3.0, 0.1)
+    private val size by setting("Size", 1.0, 0.5, 3.0, 0.1, { mode != W_Mode.CSGO })
 
     // Text
     private val version by setting("Version", true, visible = { mode == W_Mode.Text })
@@ -81,10 +87,10 @@ object Watermark: DraggableHudModule(
     }
 
     private fun renderLogo(pos1: Vec2d, pos2: Vec2d, c1: Color, c2: Color) {
-        val textSizeLimit = 3.5
-        val textScaleLimit = 1.5
-        val adjustedSize = size.coerceIn(1.5, textSizeLimit)
-        val adjustedScale = (adjustedSize / textSizeLimit) * textScaleLimit
+        val imageSizeLimit = 3.5
+        val imageScaleLimit = 1.5
+        val adjustedSize = size.coerceIn(1.5, imageSizeLimit)
+        val adjustedScale = (adjustedSize / imageSizeLimit) * imageScaleLimit
 
         val WH = adjustedScale * 256 / 4.5f
 
@@ -95,7 +101,7 @@ object Watermark: DraggableHudModule(
         ) {
             mc.textureManager.bindTexture(ResourceLocation("textures/icons/logo/logo.png"))
             drawModalRectWithCustomSizedTexture(
-                (pos1.x + 7).toInt(), (pos1.y + 7).toInt(), 0F, 0F, WH.toInt(), WH.toInt(), WH.toFloat(), WH.toFloat())
+                pos1.x.toInt(), pos1.y.toInt(), 0F, 0F, WH.toInt(), WH.toInt(), WH.toFloat(), WH.toFloat())
         }
     }
 
@@ -108,22 +114,21 @@ object Watermark: DraggableHudModule(
         val textWidth = FontRenderer.getStringWidth(text, Fonts.DEFAULT) + FontRenderer.getStringWidth(curse, Fonts.DEFAULT_BOLD, 1.2f)
         val textHeight = FontRenderer.getFontHeight(Fonts.DEFAULT).toDouble()
 
-        RenderUtils2D.drawBlurredRect(Vec2d(x + 2.3f, y + 4.5f), Vec2d(x + textWidth + 5.8f, y + textHeight + 10), 10, c1.darker())
-        RectBuilder(Vec2d(x + 2.3f, y + 4.5f), Vec2d(x + textWidth + 5.8f, y + textHeight + 10)).draw {
+        RenderUtils2D.drawBlurredRect(Vec2d(x - 1.7f, y + 4.5f), Vec2d(x + textWidth + 1.8f, y + textHeight + 10), 10, c1.darker())
+        RectBuilder(Vec2d(x - 1.7f, y + 4.5f), Vec2d(x + textWidth + 1.8f, y + textHeight + 10)).draw {
             outlineColor(HUD.bgColor.brighter(), c1.darker().darker(), c2.darker().darker(), HUD.bgColor.brighter())
             width(2.0)
             color(HUD.bgColor)
         }
 
-        GradientUtil.drawGradientLR((x + 3.7f).toFloat(), (y + 16f).toFloat(), textWidth - .3f, 1f, 1f, c1, c2)
-
+        GradientUtil.drawGradientLR((x - .3f).toFloat(), (y + 16f).toFloat(), textWidth - .3f, 1f, 1f, c1, c2)
         resetColor()
-        GradientUtil.applyGradientHorizontal(x.toFloat(), y.toFloat(), textWidth + 7, 19F, 1f, c1, c2) {
+        GradientUtil.applyGradientHorizontal(x.toFloat(), y.toFloat(), textWidth + 3, 19F, 1f, c1, c2) {
             setAlphaLimit(0f)
-            FontRenderer.drawString(text, (x + 4.5f + FontRenderer.getStringWidth(curse, Fonts.DEFAULT_BOLD, 1.2f)).toFloat(), (y + 5.5f).toFloat(), false, Color.WHITE, 1f, Fonts.DEFAULT)
+            FontRenderer.drawString(text, (x + 0.5f + FontRenderer.getStringWidth(curse, Fonts.DEFAULT_BOLD, 1.2f)).toFloat(), (y + 5.5f).toFloat(), false, Color.WHITE, 1f, Fonts.DEFAULT)
         }
 
-        FontRenderer.drawString(curse, (x + 4f).toFloat(), (y + 4f).toFloat(), false, Color.WHITE, 1.2f, Fonts.DEFAULT_BOLD)
+        FontRenderer.drawString(curse, (x).toFloat(), (y + 4f).toFloat(), false, Color.WHITE, 1.2f, Fonts.DEFAULT_BOLD)
     }
 
     private fun renderText(pos1: Vec2d, pos2: Vec2d, c1: Color, c2: Color) {
@@ -215,6 +220,16 @@ object Watermark: DraggableHudModule(
         resetColor()
     }
 
-    override fun getWidth() = w * size * 0.65
-    override fun getHeight() = h * size * 0.65
+    override fun getWidth(): Double {
+        val scaleFactor = if (mode == W_Mode.Text) {
+            FontRenderer.getStringWidth(Client.NAME + if (version) Client.VERSION else 0, Fonts.DEFAULT, size.toFloat()) * 0.65f
+        } else {
+            w.toFloat() * size.times(if (mode == W_Mode.Logo) 2f else 0.65f)
+        }
+        return scaleFactor.toDouble()
+    }
+
+    override fun getHeight(): Double {
+        return h.toFloat() * size.times(if (mode == W_Mode.Logo) 2f else 0.65f)
+    }
 }
