@@ -221,15 +221,21 @@ object Watermark: DraggableHudModule(
     }
 
     override fun getWidth(): Double {
-        val scaleFactor = if (mode == W_Mode.Text) {
-            FontRenderer.getStringWidth(Client.NAME + if (version) Client.VERSION else 0, Fonts.DEFAULT, size.toFloat()) * 0.65f
-        } else {
-            w.toFloat() * size.times(if (mode == W_Mode.Logo) 2f else 0.65f)
+        val scaleFactor = when (mode) {
+            W_Mode.Text -> {
+                FontRenderer.getStringWidth(Client.NAME + if (version) Client.VERSION else 0, Fonts.DEFAULT, size.toFloat()) * 0.65f
+            }
+            W_Mode.Logo -> {
+                h.toFloat() * size.times(1.3f)
+            }
+            else -> {
+                w.toFloat() * size.times(0.65f)
+            }
         }
         return scaleFactor.toDouble()
     }
 
     override fun getHeight(): Double {
-        return h.toFloat() * size.times(if (mode == W_Mode.Logo) 2f else 0.65f)
+        return h.toFloat() * size.times(if (mode == W_Mode.Logo) 1.3f else 0.65f)
     }
 }
