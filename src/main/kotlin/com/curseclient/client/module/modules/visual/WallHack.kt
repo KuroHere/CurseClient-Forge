@@ -1,12 +1,12 @@
 package com.curseclient.client.module.modules.visual
 
-import com.curseclient.client.core.block.block
 import com.curseclient.client.event.events.render.*
 import com.curseclient.client.event.events.world.SetOpaqueCubeEvent
 import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.setting.setting
+import com.curseclient.client.utility.world.WorldUtils.getBlockState
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
@@ -178,7 +178,7 @@ object WallHack: Module(
                     val x = mc.player.posZ.toInt() + posZ
                     val blockPos = BlockPos(x, y, z)
 
-                    val block = blockPos.block
+                    val block = blockPos.getBlockState()
                     if (block == Blocks.DIAMOND_ORE) mc.playerController.clickBlock(blockPos, EnumFacing.DOWN)
                 }
             }

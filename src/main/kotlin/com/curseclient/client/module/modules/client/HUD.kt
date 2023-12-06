@@ -40,7 +40,6 @@ object HUD : Module(
     val bgColor by setting("Background Color", Color(25, 25, 25), visible = { page == Page.Client })
 
     //Game
-
     val containerBackground by setting("Container-Background", false, visible = { page == Page.Game })
     val guiButtonStyle by setting("Button-Style", ButtonStyle.Minecraft, visible = { page == Page.Game })
 
@@ -51,13 +50,13 @@ object HUD : Module(
     val intensity by setting("Intensity", 10f, 1f, 20f, 1f, visible = { page == Page.Game && blur })
 
     // The speed of the fade in animation
-    val animationSpeed by setting("AnimationSpeed", 200f, 0f, 500f, 5f, visible = { page == Page.Game && blur })
+    val animationSpeed by setting("BlurSpeed", 200f, 0f, 500f, 5f, visible = { page == Page.Game && blur })
 
     // The easing type of the animation
     val easing by setting("Easing", Easing.LINEAR, visible = { page == Page.Game && blur })
     val fade = Animation({ animationSpeed.toFloat() }, false, { easing })
 
-    val animHotbarValue by setting("AnimatedHotbar", false, visible = {page == Page.Game})
+    val animHotbarValue by setting("AnimatedHotbar", true, visible = {page == Page.Game})
     val blackHotbarValue by setting("BlackHotbar", true, visible = { page == Page.Game })
     private val hotbarAnimation = AnimationFlag(com.curseclient.client.utility.render.animation.Easing.OUT_CUBIC, 200.0f)
 

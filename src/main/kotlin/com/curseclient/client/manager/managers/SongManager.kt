@@ -3,7 +3,7 @@ package com.curseclient.client.manager.managers
 import baritone.api.utils.Helper.mc
 
 import com.curseclient.client.manager.Manager
-import com.curseclient.client.utility.songs.Song
+import com.curseclient.client.utility.misc.Song
 import net.minecraft.client.audio.ISound
 
 object SongManager : Manager("SongManager") {

@@ -11,6 +11,7 @@ import com.curseclient.client.module.Category
 import com.curseclient.client.module.modules.client.ClickGui
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.vector.Vec2d
+import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Mouse
 import java.awt.Color
 
@@ -33,8 +34,6 @@ class ClickGuiHud : AbstractGui() {
             panel.onRegister()
             panels.add(panel)
 
-            if (particleEngine == null)
-                particleEngine = ParticleEngine()
             fpm.remake()
 
             descriptionDisplay = DescriptionDisplay("", Vec2d(0.0, 0.0), this)

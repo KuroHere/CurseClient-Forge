@@ -7,10 +7,10 @@ import com.curseclient.client.extension.Thingy
 import com.curseclient.client.extension.tracker.Tracker
 import com.curseclient.client.manager.managers.ModuleManager
 import com.curseclient.client.manager.managers.SongManager
-import com.curseclient.client.utility.SoundUtils
+import com.curseclient.client.utility.misc.SoundUtils
 import com.curseclient.client.utility.render.IconUtils
 import com.curseclient.client.utility.render.SplashProgress
-import com.curseclient.client.utility.render.text.TitleUtils
+import com.curseclient.client.utility.misc.TitleUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.crash.CrashReport
 import net.minecraft.util.Util
@@ -65,10 +65,6 @@ class CurseClient {
 
         LOG.info("Pre init completed, took: ${(System.currentTimeMillis() - t)}ms")
         initTime = System.currentTimeMillis()
-    }
-
-    fun getDirectory(): File {
-        return directory
     }
 
     @Mod.EventHandler

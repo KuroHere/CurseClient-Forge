@@ -33,15 +33,16 @@ object FovModifier : Module(
     init {
         safeListener<TickEvent.ClientTickEvent> {
             val player = Minecraft.getMinecraft().player
-            val item = player.heldItemMainhand
+            val mainHandItem = player.heldItemMainhand
+            val offHandItem = player.heldItemOffhand
 
             if (player.isUser) {
-                if (allowBow && player.isHandActive && item.item === Items.BOW) {
+                if (allowBow && player.isHandActive && mainHandItem.item === Items.BOW || offHandItem.item == Items.BOW) {
                     lastSensitivity = mc.gameSettings.mouseSensitivity
                     wasCinematic = mc.gameSettings.smoothCamera
                     mc.gameSettings.smoothCamera = smoothCamera
                     mc.renderGlobal.setDisplayListEntitiesDirty()
-                } else if (!player.isHandActive || item.item !== Items.BOW) {
+                } else if (!player.isHandActive || mainHandItem.item !== Items.BOW || offHandItem.item !== Items.BOW) {
                     mc.gameSettings.mouseSensitivity = lastSensitivity
                     mc.gameSettings.smoothCamera = wasCinematic
                 }

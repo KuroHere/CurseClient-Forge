@@ -5,7 +5,7 @@ import com.curseclient.client.module.Module
 import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.module.Category
 import com.curseclient.client.setting.setting
-import com.curseclient.client.utility.SoundUtils
+import com.curseclient.client.utility.misc.SoundUtils
 import com.curseclient.client.utility.extension.settingName
 import net.minecraft.entity.player.EntityPlayer
 

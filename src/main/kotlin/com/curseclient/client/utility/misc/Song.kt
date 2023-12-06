@@ -1,4 +1,4 @@
-package com.curseclient.client.utility.songs
+package com.curseclient.client.utility.misc
 
 import baritone.api.utils.Helper.mc
 import com.curseclient.client.utility.math.MathUtils

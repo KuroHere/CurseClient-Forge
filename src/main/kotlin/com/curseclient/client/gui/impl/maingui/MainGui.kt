@@ -19,7 +19,7 @@ import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.shader.GradientUtil
 import com.curseclient.client.utility.render.shader.RoundedUtil
 import com.curseclient.client.utility.render.vector.Vec2d
-import com.curseclient.client.utility.songs.Song.Companion.song_name
+import com.curseclient.client.utility.misc.Song.Companion.song_name
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -223,7 +223,7 @@ class MainGui: GuiScreen() {
 
         RenderUtils2D.drawGradientRect(lineStart, lineEnd, fontColor1, fontColor2, fontColor1, fontColor2)
         RenderUtils2D.drawLine(lineStart, lineEnd, 3f, fontColor1)
-        RenderUtils2D.drawBlurredShadow(x - 73f, 91f, x + fr.getStringWidth(logo, 7.0).toFloat(), 3f, 5, fontColor1)
+        RenderUtils2D.drawBlurredShadow(x - 73f, 91f, x + fr.getStringWidth(logo, 7.0).toFloat(), 3f, 15, fontColor1)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {

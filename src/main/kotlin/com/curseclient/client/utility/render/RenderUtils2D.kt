@@ -92,16 +92,6 @@ object RenderUtils2D {
         glScissor((x * sr.scaleFactor).toInt(), (Minecraft.getMinecraft().displayHeight - y1 * sr.scaleFactor).toInt(), ((x1 - x) * sr.scaleFactor).toInt(), ((y1 - y) * sr.scaleFactor).toInt())
     }
 
-    fun glScissor(x: Float, y: Float, width: Float, height: Float) {
-        val sr = ScaledResolution(mc)
-        val scale = sr.scaleFactor.toFloat()
-        val finalHeight = height * scale
-        val finalY = (sr.scaledHeight - y) * scale
-        val finalX = x * scale
-        val finalWidth = width * scale
-        glScissor(finalX.toInt(), (finalY - finalHeight).toInt(), finalWidth.toInt(), finalHeight.toInt())
-    }
-
     fun rectGuiTexSmooth(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Color?) {
         setup()
         bindBlank()
@@ -120,7 +110,7 @@ object RenderUtils2D {
         val degree = Math.PI / 180
 
         // Draw the smooth rounded corners
-        val segments = 90 // Số lượng đoạn để làm mịn góc bo tròn
+        val segments = 90
         for (i in 0..segments) {
             val angle = (i * 90.0 / segments)
 

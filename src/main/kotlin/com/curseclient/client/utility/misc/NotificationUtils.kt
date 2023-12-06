@@ -1,4 +1,4 @@
-package com.curseclient.client.utility
+package com.curseclient.client.utility.misc
 
 import com.curseclient.client.event.EventBus
 import com.curseclient.client.event.events.CurseClientEvent

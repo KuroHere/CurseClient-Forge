@@ -5,8 +5,8 @@ import com.curseclient.client.event.events.CurseClientEvent
 import com.curseclient.client.setting.Setting
 import com.curseclient.client.setting.getSetting
 import com.curseclient.client.setting.type.BooleanSetting
-import com.curseclient.client.utility.NotificationType
-import com.curseclient.client.utility.NotificationUtils
+import com.curseclient.client.utility.misc.NotificationType
+import com.curseclient.client.utility.misc.NotificationUtils
 import com.mojang.realmsclient.gui.ChatFormatting
 import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard

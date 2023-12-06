@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object FakeGameMode : Module(
     "FakeGameMode",
-     "Fakes your current gamemode client side",
+     "Fakes your current gamemode client side.",
     Category.MISC
 ) {
     private val gamemode by setting("Mode", GameMode.CREATIVE)

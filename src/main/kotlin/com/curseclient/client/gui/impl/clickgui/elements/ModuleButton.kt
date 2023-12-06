@@ -10,7 +10,6 @@ import com.curseclient.client.module.modules.client.ClickGui
 import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.setting.Setting
 import com.curseclient.client.setting.type.*
-import com.curseclient.client.utility.SoundUtils
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.math.MathUtils.toInt
@@ -27,9 +26,7 @@ import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
-import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Keyboard
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.*
 

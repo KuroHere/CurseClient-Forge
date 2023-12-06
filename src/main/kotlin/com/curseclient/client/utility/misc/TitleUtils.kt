@@ -1,4 +1,4 @@
-package com.curseclient.client.utility.render.text
+package com.curseclient.client.utility.misc
 
 import baritone.api.utils.Helper
 import com.curseclient.client.Client

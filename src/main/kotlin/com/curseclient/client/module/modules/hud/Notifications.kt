@@ -6,8 +6,8 @@ import com.curseclient.client.module.DraggableHudModule
 import com.curseclient.client.module.HudCategory
 import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.setting.setting
-import com.curseclient.client.utility.NotificationInfo
-import com.curseclient.client.utility.SoundUtils
+import com.curseclient.client.utility.misc.NotificationInfo
+import com.curseclient.client.utility.misc.SoundUtils
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.player.ChatUtils

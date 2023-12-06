@@ -1,13 +1,10 @@
-package com.curseclient.client.utility
+package com.curseclient.client.utility.misc
 
-import baritone.api.utils.Helper.mc
 import com.curseclient.client.event.listener.runTrying
 import com.curseclient.client.utility.math.MathUtils.lerp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.minecraft.util.SoundCategory
-import net.minecraft.util.SoundEvent
 import java.io.BufferedInputStream
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.FloatControl

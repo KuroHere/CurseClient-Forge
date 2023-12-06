@@ -2,10 +2,9 @@ package com.curseclient.client.module.modules.visual
 
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
-import com.curseclient.client.module.modules.hud.Notifications
 import com.curseclient.client.setting.setting
-import com.curseclient.client.utility.NotificationType
-import com.curseclient.client.utility.NotificationUtils
+import com.curseclient.client.utility.misc.NotificationType
+import com.curseclient.client.utility.misc.NotificationUtils
 import java.awt.Color
 import java.lang.reflect.Field
 

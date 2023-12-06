@@ -4,8 +4,8 @@ import com.curseclient.client.event.events.render.PreScreenshotEvent
 import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
-import com.curseclient.client.utility.NotificationType
-import com.curseclient.client.utility.NotificationUtils
+import com.curseclient.client.utility.misc.NotificationType
+import com.curseclient.client.utility.misc.NotificationUtils
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.threads.backgroundThread

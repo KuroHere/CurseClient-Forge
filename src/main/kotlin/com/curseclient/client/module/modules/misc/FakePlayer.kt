@@ -41,7 +41,7 @@ import java.util.*
 
 object FakePlayer : Module(
     "FakePlayer",
-    "Spawns fake player",
+    "Spawns fake player to test your config.",
     Category.MISC,
     alwaysListenable = true
 ) {
@@ -156,7 +156,7 @@ object FakePlayer : Module(
             if (health < 0.0f) {
                 health = 2.0f
                 val vec = fp.positionVector
-                mc.effectRenderer.emitParticleAtEntity(player, EnumParticleTypes.TOTEM, 30);
+                fakePlayer?.let { mc.effectRenderer.emitParticleAtEntity(it, EnumParticleTypes.TOTEM, 30) };
                 world.playSound(player, vec.x, vec.y, vec.z, SoundEvents.ITEM_TOTEM_USE, player.soundCategory, 1.0f, 1.0f)
             }
             fp.health = clamp(health, 1.0f, FakePlayer.maxHealth.toFloat())

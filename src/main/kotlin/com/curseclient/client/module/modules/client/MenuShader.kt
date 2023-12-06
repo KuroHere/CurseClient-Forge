@@ -3,8 +3,8 @@ package com.curseclient.client.module.modules.client
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.setting.setting
-import com.curseclient.client.utility.NotificationType
-import com.curseclient.client.utility.NotificationUtils
+import com.curseclient.client.utility.misc.NotificationType
+import com.curseclient.client.utility.misc.NotificationUtils
 import com.curseclient.client.utility.render.shader.Shaders
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats

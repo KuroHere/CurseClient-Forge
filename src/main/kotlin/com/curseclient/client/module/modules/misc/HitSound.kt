@@ -5,14 +5,14 @@ import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.setting.setting
-import com.curseclient.client.utility.SoundUtils
+import com.curseclient.client.utility.misc.SoundUtils
 import com.curseclient.client.utility.math.MathUtils
 import net.minecraft.entity.item.EntityEnderCrystal
 
 
 object HitSound: Module(
     "HitSound",
-    "sus sounds. ⁝ idea from thunder",
+    "Make sus sound when you hit entity.",
     Category.MISC
 ) {
     private val mode by setting("Sound", Mode.MOAN)

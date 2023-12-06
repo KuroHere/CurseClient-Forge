@@ -12,7 +12,7 @@ import net.minecraft.util.SoundCategory
 
 object ExplosionSoundFix : Module(
     "ExplosionSoundFix",
-    "Fixes crystal explosion sound pitch",
+    "Fixes crystal explosion sound pitch.",
     Category.MISC
 ) {
     private val shift by setting("Shift", -0.2, -0.5, 0.5, 0.05)

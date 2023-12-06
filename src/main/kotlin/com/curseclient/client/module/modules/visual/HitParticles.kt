@@ -10,7 +10,7 @@ import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.setting.setting
-import com.curseclient.client.utility.SoundUtils
+import com.curseclient.client.utility.misc.SoundUtils
 import com.curseclient.client.utility.math.MathUtils
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
@@ -24,7 +24,6 @@ import com.curseclient.client.utility.render.graphic.GLUtils.renderGL
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
-import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Blocks
 import net.minecraft.util.EnumParticleTypes

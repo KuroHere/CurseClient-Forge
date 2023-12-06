@@ -7,8 +7,8 @@ import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.setting.Setting
 import com.curseclient.client.setting.getHudSetting
 import com.curseclient.client.setting.type.BooleanSetting
-import com.curseclient.client.utility.NotificationType
-import com.curseclient.client.utility.NotificationUtils
+import com.curseclient.client.utility.misc.NotificationType
+import com.curseclient.client.utility.misc.NotificationUtils
 import com.curseclient.client.utility.render.graphic.GLUtils.matrix
 import net.minecraft.client.Minecraft
 import java.awt.Color

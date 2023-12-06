@@ -32,12 +32,14 @@ public class MixinAbstractClientPlayer {
 
     @Inject(method = "getFovModifier", at = @At("HEAD"), cancellable = true)
     private void onFovChange(CallbackInfoReturnable<Float> cir){
-        ItemStack item = Minecraft.getMinecraft().player.getHeldItemMainhand();
+        ItemStack mainHandItem = Minecraft.getMinecraft().player.getHeldItemMainhand();
+        ItemStack offHandItem = Minecraft.getMinecraft().player.getHeldItemOffhand();
+
         if(FovModifier.INSTANCE.isEnabled()){
             float mod = 1.0f;
             if(FovModifier.INSTANCE.getAllowSprint() && FovModifier.INSTANCE.getStatic() && Minecraft.getMinecraft().player.isSprinting()) mod *= 1.15f;
 
-            if(FovModifier.INSTANCE.getAllowBow() && Minecraft.getMinecraft().player.isHandActive() && Minecraft.getMinecraft().player.isUser() && item.getItem() == Items.BOW) mod /= (float) FovModifier.INSTANCE.getZoomFactor();
+            if(FovModifier.INSTANCE.getAllowBow() && Minecraft.getMinecraft().player.isHandActive() && Minecraft.getMinecraft().player.isUser() && mainHandItem.getItem() == Items.BOW || offHandItem.getItem() == Items.BOW) mod /= (float) FovModifier.INSTANCE.getZoomFactor();
             cir.setReturnValue(mod);
         }
     }

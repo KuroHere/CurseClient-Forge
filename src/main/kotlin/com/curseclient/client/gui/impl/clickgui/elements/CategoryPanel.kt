@@ -113,13 +113,6 @@ class CategoryPanel(
             else -> ClickGui.buttonColor2
         }
         RectBuilder(pos, pos.plus(width, height + windowHeight)).apply {
-            shadow(pos.x.toFloat(),
-                pos.y.toFloat(),
-                width.toFloat(),
-                (height + windowHeight).toFloat(),
-                5,
-                Color.BLACK
-            )
             outlineColor(c1, c2, c1, c2)
             width(ClickGui.outlineWidth)
             color(ClickGui.backgroundColor)
@@ -163,7 +156,7 @@ class CategoryPanel(
         }
         RectBuilder(p1, p2).apply {
             shadow(pos.x, pos.y, width, 15.0, 10, Color.BLACK)
-            shadow(pos.x, pos.y + height + windowHeight, width, 5.0, 15, Color.BLACK)
+            shadow(pos.x, pos.y + height + windowHeight - radius, width, 5.0, 10, Color.BLACK)
         }
         toggleScissor(false)
 
@@ -172,7 +165,7 @@ class CategoryPanel(
         Fonts.DEFAULT_BOLD.drawString(dragText, dragTextPos, color = (if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2).setAlphaD(windowHeight / targetWindowHeight))
     }
 
-    // I just accidentally found it interesting so I added it
+    // I just accidentally found it interesting, so I added it
     private fun bgShader() {
         GlStateManager.enableBlend()
         GlStateManager.disableTexture2D()
@@ -186,7 +179,7 @@ class CategoryPanel(
     private fun scroll() {
         val t = GLUtils.deltaTimeDouble()
 
-        scrollSpeed += sign((gui as com.curseclient.client.gui.impl.clickgui.ClickGuiHud).dWheel) * 150.0 * ClickGui.scrollSpeed * (extended && modulesHovered && panelFocused && !isDraggingHeight).toInt()
+        scrollSpeed += sign((gui as ClickGuiHud).dWheel) * 150.0 * ClickGui.scrollSpeed * (extended && modulesHovered && panelFocused && !isDraggingHeight).toInt()
 
         val scrollDistance = scrollSpeed * t
         scrollShift += scrollDistance
