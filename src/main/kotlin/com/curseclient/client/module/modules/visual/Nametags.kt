@@ -156,6 +156,7 @@ object Nametags : Module(
     }
 
     private fun drawItem(itemStack: ItemStack, x: Double, y: Double) {
+        glPopMatrix()
         GlStateManager.enableTexture2D()
 
         glPushAttrib(GL_SCISSOR_BIT)
@@ -177,6 +178,7 @@ object Nametags : Module(
             mc.renderItem.zLevel = 0f
         }
 
+        glPushMatrix()
         GlStateManager.enableDepth()
         GlStateManager.enableAlpha()
     }

@@ -50,7 +50,7 @@ object SuperHeroFX : Module(
     private val xRotate by setting("RotateX", true, visible = { popupStyle == PopupStyle.Heaven})
     private val zRotate by setting("RotateZ", true, visible = { popupStyle == PopupStyle.Heaven})
 
-    val font by setting("Font", Font.Osaka)
+    val font by setting("Font", Font.Badaboom)
 
     private val superHeroTextsBlowup = arrayOf("KABOOM", "BOOM", "POW", "KAPOW")
     private val superHeroTextsDamageTaken = arrayOf("OUCH", "ZAP", "BAM", "WOW", "POW", "SLAP")
@@ -77,8 +77,6 @@ object SuperHeroFX : Module(
                 val fontRenderer = when (font) {
                     Font.Client -> Fonts.DEFAULT
                     Font.ClientBOLD -> Fonts.DEFAULT_BOLD
-                    Font.Osaka -> Fonts.OSAKACHIPS
-                    Font.Knight -> Fonts.KNIGHT
                     Font.Badaboom -> Fonts.BADABOOM
                 }
                 popTexts.forEach { pop ->
@@ -201,8 +199,6 @@ object SuperHeroFX : Module(
         val fontRenderer = when (font) {
             Font.Client -> Fonts.DEFAULT
             Font.ClientBOLD -> Fonts.DEFAULT_BOLD
-            Font.Osaka -> Fonts.OSAKACHIPS
-            Font.Knight -> Fonts.KNIGHT
             Font.Badaboom -> Fonts.BADABOOM
         }
         val animation = Animation({ length.toFloat() }, false, Easing.CUBIC_IN_OUT)
@@ -264,7 +260,9 @@ object SuperHeroFX : Module(
 
 
     enum class Font {
-        Osaka, Knight, Badaboom, Client, ClientBOLD
+        Badaboom,
+        Client,
+        ClientBOLD
     }
 
 }

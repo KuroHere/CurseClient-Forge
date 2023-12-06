@@ -14,6 +14,7 @@ import com.curseclient.client.manager.managers.PacketManager
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.module.modules.combat.Criticals
+import com.curseclient.client.module.modules.visual.PopChams
 import com.curseclient.client.setting.setting
 import com.curseclient.client.utility.extension.transformIf
 import com.curseclient.client.utility.math.MathUtils.clamp
@@ -27,6 +28,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Enchantments
 import net.minecraft.init.Items
 import net.minecraft.init.SoundEvents
+import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.server.SPacketSoundEffect
 import net.minecraft.util.EnumParticleTypes
@@ -127,6 +129,7 @@ object FakePlayer : Module(
                 fp.rotationYawHead = player.rotationYawHead
                 fp.setGameType(GameType.SURVIVAL)
                 fp.health = maxHealth.toFloat()
+                fp.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack(Items.TOTEM_OF_UNDYING))
 
                 if (armor) fp.addArmor()
 
@@ -158,8 +161,19 @@ object FakePlayer : Module(
                 val vec = fp.positionVector
                 fakePlayer?.let { mc.effectRenderer.emitParticleAtEntity(it, EnumParticleTypes.TOTEM, 30) };
                 world.playSound(player, vec.x, vec.y, vec.z, SoundEvents.ITEM_TOTEM_USE, player.soundCategory, 1.0f, 1.0f)
+                fp.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack(Items.TOTEM_OF_UNDYING))
+                runAsync {
+                    Thread.sleep(100L)
+
+                    onMainThreadSuspend {
+                        fp.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY)
+                        val newHealth = clamp(fp.health + 4.0f, 1.0f, maxHealth)
+                        fp.health = newHealth
+                    }
+                }
+            } else {
+                fp.health = clamp(health, 1.0f, FakePlayer.maxHealth.toFloat())
             }
-            fp.health = clamp(health, 1.0f, FakePlayer.maxHealth.toFloat())
         }
         lastDamageTime = System.currentTimeMillis()
     }

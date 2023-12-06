@@ -4,8 +4,6 @@ enum class Fonts(val path: String) {
     DEFAULT("default-normal"),
     DEFAULT_BOLD("default-bold"),
     BADABOOM("Badaboom"),
-    OSAKACHIPS("OsakaChips"),
-    KNIGHT("FoughtKnight"),
     BonIcon("bonicon"),
     BonIcon20("bonicon2.0"),
     OCR_A("OCRAEXT");

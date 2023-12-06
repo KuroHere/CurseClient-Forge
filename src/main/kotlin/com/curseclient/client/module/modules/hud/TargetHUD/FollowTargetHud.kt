@@ -80,7 +80,6 @@ object FollowTargetHud : Module(
                         val pos = it.second.subtract(viewerPos)
 
                     matrix {
-                        glPopMatrix()
                         GlStateManager.disableDepth()
                         glTranslated(pos.x, pos.y, pos.z)
                         glNormal3f(0.0f, 1.0f, 0.0f)
@@ -90,9 +89,8 @@ object FollowTargetHud : Module(
                         val distance = 1.0 + max(4.0, viewerPos.distanceTo(it.second))
                         val scaleFactor = distance * scale * 0.005
                         glScaled(-scaleFactor, -scaleFactor, scaleFactor)
-
+                        GlStateManager.enableDepth()
                         drawTargetHUD(it.first)
-                        glPushMatrix()
                     }
                 }
             }

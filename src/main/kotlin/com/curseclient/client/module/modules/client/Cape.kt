@@ -5,6 +5,7 @@ import com.curseclient.client.module.Module
 import com.curseclient.client.setting.setting
 import net.minecraft.util.ResourceLocation
 
+// TODO: ...
 object Cape : Module(
     "Cape"
     ,"Custom your cape",
@@ -26,8 +27,6 @@ object Cape : Module(
     }
     enum class CapeStyle(val location: ResourceLocation) {
         DARK(ResourceLocation("curseclient", "cape/dark.png")),
-        DARKER(ResourceLocation("curseclient", "cape/darker.png")),
-        LIGHT(ResourceLocation("curseclient", "cape/light.png")),
         SPECIAL1(ResourceLocation("curseclient", "cape/special1.png")),
         SPECIAL2(ResourceLocation("curseclient", "cape/special2.png"))
     }

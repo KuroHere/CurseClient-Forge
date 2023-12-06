@@ -11,12 +11,14 @@ import com.curseclient.client.setting.setting
 import com.curseclient.client.utility.render.ColorUtils.r
 import com.curseclient.client.utility.threads.runAsync
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.input.Keyboard
 import java.awt.Color
 
 object ClickGui : Module(
     "ClickGui",
     "sexy",
     Category.CLIENT,
+    key = Keyboard.KEY_RSHIFT,
     alwaysListenable = true
 ) {
     private val page by setting("Page", Page.General)
