@@ -40,8 +40,10 @@ object Radar : DraggableHudModule(
     // General
     private val size by setting("Size", 90, 75, 125, 1, { page == Page.General})
 
+    private val rounded by setting("RoundedRadius", 6.0, 0.0, 10.0, 0.1, { page == Page.General})
+
     private val shadow by setting("Shadow", true, { page == Page.General})
-    private val shadowSize by setting("ShadowRadius", 5, 0, 15, 1, { page == Page.General})
+    private val shadowSize by setting("ShadowRadius", 5, 0, 20, 1, { page == Page.General})
 
     private val outline by setting("Outline", true, { page == Page.General})
     private val outlineColor by setting("OutlineColor", Color.WHITE, { page == Page.General})
@@ -83,12 +85,12 @@ object Radar : DraggableHudModule(
         val c2 = HUD.getColor(10)
 
         // Shadow
-        if (shadow) RenderUtils2D.drawBlurredShadow(x, y, radarSize, radarSize, shadowSize.toInt(), c1.setDarkness(darkness1.toInt()))
+        if (shadow) RenderUtils2D.drawBlurredShadow(x - 1, y - 1, radarSize + 1, radarSize + 1, shadowSize.toInt(), c1.setDarkness(darkness1.toInt()))
 
-        RoundedUtil.drawGradientRound(x, y, radarSize, radarSize, 6f, c1.setDarkness(darkness1.toInt()).setAlpha(alpha.toInt()), c1.setDarkness(darkness1.toInt()).setAlpha(alpha.toInt()), c2.setDarkness(darkness2.toInt()).setAlpha(alpha.toInt()), c2.setDarkness(darkness2.toInt()).setAlpha(alpha.toInt()))
+        RoundedUtil.drawGradientRound(x, y, radarSize, radarSize, rounded.toFloat(), c1.setDarkness(darkness1.toInt()).setAlpha(alpha.toInt()), c1.setDarkness(darkness1.toInt()).setAlpha(alpha.toInt()), c2.setDarkness(darkness2.toInt()).setAlpha(alpha.toInt()), c2.setDarkness(darkness2.toInt()).setAlpha(alpha.toInt()))
 
         // Outline
-        if (outline) RoundedUtil.drawRoundOutline(x - 1f, y - 1f, radarSize + 1.9f, radarSize + 1.9f, 6f, thickness.toFloat(), Color.BLACK.setAlpha(0), outlineColor)
+        if (outline) RoundedUtil.drawRoundOutline(x - 1f, y - 1f, radarSize + 1.9f, radarSize + 1.9f, rounded.toFloat(), thickness.toFloat(), Color.BLACK.setAlpha(0), outlineColor)
 
         // Stencil
         initStencilToWrite()
