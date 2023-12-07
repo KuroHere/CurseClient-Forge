@@ -10,6 +10,7 @@ import com.curseclient.client.setting.type.DoubleSetting
 import com.curseclient.client.setting.type.EnumSetting
 import com.curseclient.client.setting.type.UnitSetting
 import com.curseclient.client.utility.render.ColorUtils
+import com.curseclient.client.utility.render.ColorUtils.setAlpha
 import com.curseclient.client.utility.render.ColorUtils.setAlphaD
 import com.curseclient.client.utility.render.ColorUtils.toColor
 import com.curseclient.client.utility.render.DockingH
@@ -73,9 +74,10 @@ abstract class DraggableHudModule(
         animation.setAnimation(100f, 12.0)
 
         RectBuilder(pos, pos.plus(getWidth(), getHeight())).apply {
-            color(Color.WHITE.setAlphaD(0.1 * animation.value / 500f))
-            outlineColor(Color.WHITE.setAlphaD(0.7))
-            width(0.5)
+            color(Color.WHITE.setAlpha((0.1 * animation.value / 500).toInt()))
+            outlineColor(Color.WHITE)
+            radius(2.0)
+            width(0.8)
             draw()
         }
         if (animation.value > 0.1f)

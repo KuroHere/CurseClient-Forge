@@ -32,7 +32,7 @@ import kotlin.math.abs
 
 object Radar : DraggableHudModule(
     "Radar",
-    "Draw radar on your screen.",
+    "Draw sexy radar on your screen.",
     HudCategory.HUD
 ) {
     private val page by setting("Page", Page.General)
