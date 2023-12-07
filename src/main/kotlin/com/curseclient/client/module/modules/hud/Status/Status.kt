@@ -193,7 +193,7 @@ object Status: DraggableHudModule(
         RenderUtils2D.glScissor(
             pos1.x.toFloat(),
             pos1.y.toFloat(),
-            (pos1.x + screenWidth - serverTextWidth / 2).toFloat(), // Scissor width adjustment
+            (pos1.x + (getWidth() / 2) - serverTextWidth / 2).toFloat(), // Scissor width adjustment
             (pos1.y + getHeight()).toFloat(),
             sr
         )

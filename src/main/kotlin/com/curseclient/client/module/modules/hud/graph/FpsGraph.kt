@@ -35,8 +35,8 @@ object FpsGraph: DraggableHudModule(
 
     override fun onRender() {
         super.onRender()
-        val c1 =  HUD.getColor(0)
-        val c2 =  HUD.getColor(5)
+        val c1 = HUD.getColor(0)
+        val c2 = HUD.getColor(5)
         if (Helper.mc.player != null && Helper.mc.world != null) {
             val sr = ScaledResolution(Helper.mc)
             val decimalFormat = DecimalFormat("###.##")

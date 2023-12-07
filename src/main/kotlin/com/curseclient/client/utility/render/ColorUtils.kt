@@ -1,5 +1,6 @@
 package com.curseclient.client.utility.render
 
+import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.interpolateFloat
 import com.curseclient.client.utility.math.MathUtils.interpolateInt
@@ -10,7 +11,6 @@ import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-
 
 object ColorUtils {
 
@@ -287,6 +287,14 @@ object ColorUtils {
 
     fun Color.setAlpha(amount: Int): Color {
         return Color(this.red, this.green, this.blue, amount)
+    }
+
+    fun Color.setDarkness(amount: Int): Color {
+        val darkerRed = (this.red * (1 - amount / 255.0)).toInt()
+        val darkerGreen = (this.green * (1 - amount / 255.0)).toInt()
+        val darkerBlue = (this.blue * (1 - amount / 255.0)).toInt()
+
+        return Color(darkerRed, darkerGreen, darkerBlue)
     }
 
     val icon_singleplayer = ResourceLocation("curseclient", "icons/singleplayer.png")

@@ -25,6 +25,7 @@ import org.lwjgl.input.Keyboard
 object ModuleManager: Manager("ModuleManager") {
 
     fun getHudModules() = arrayListOf(
+        Radar,
         Model,
         NewOverlay,
         Status,

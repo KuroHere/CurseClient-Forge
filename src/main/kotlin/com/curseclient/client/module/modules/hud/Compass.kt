@@ -48,13 +48,13 @@ object Compass: DraggableHudModule(
             RenderUtils2D.drawLine((pos.x - rotationYaw + this.getWidth() / 2 + zeroZeroYaw).toFloat(), (pos.y + 2).toFloat(), (pos.x - rotationYaw + this.getWidth() / 2 + zeroZeroYaw).toFloat(), (pos.y + this.getHeight() - 2).toFloat(), 2f, c1.rgb)
 
             // South west
-            RenderUtils2D.drawLine((pos.x - rotationYaw + this.getWidth() / 2 + 45).toFloat(), (pos.y + 2).toFloat(), (pos.x - rotationYaw + this.getWidth() / 2 + 45).toFloat(), (pos.y + this.getHeight() - 2).toFloat(), 2f, -0x1)
+            RenderUtils2D.drawLine((pos.x - rotationYaw + this.getWidth() / 2 + 45).toFloat(), (pos.y + 2).toFloat(), (pos.x - rotationYaw + this.getWidth() / 2 + 45).toFloat(), (pos.y + this.getHeight() - 2).toFloat(), 1f, -0x1)
             // South eastf
-            RenderUtils2D.drawLine((pos.x - rotationYaw + this.getWidth() / 2 - 45).toFloat(), (pos.y + 2).toFloat(), (pos.x - rotationYaw + this.getWidth() / 2 - 45).toFloat(), (pos.y + this.getHeight() - 2).toFloat(), 2f, -0x1)
+            RenderUtils2D.drawLine((pos.x - rotationYaw + this.getWidth() / 2 - 45).toFloat(), (pos.y + 2).toFloat(), (pos.x - rotationYaw + this.getWidth() / 2 - 45).toFloat(), (pos.y + this.getHeight() - 2).toFloat(), 1f, -0x1)
             // North west
-            RenderUtils2D.drawLine((pos.x - rotationYaw + this.getWidth() / 2 + 135).toFloat(), (pos.y + 2).toFloat(), (pos.x - rotationYaw + this.getWidth() / 2 + 135).toFloat(), (pos.y + this.getHeight() - 2).toFloat(), 2f, -0x1)
+            RenderUtils2D.drawLine((pos.x - rotationYaw + this.getWidth() / 2 + 135).toFloat(), (pos.y + 2).toFloat(), (pos.x - rotationYaw + this.getWidth() / 2 + 135).toFloat(), (pos.y + this.getHeight() - 2).toFloat(), 1f, -0x1)
             // North east
-            RenderUtils2D.drawLine((pos.x - rotationYaw + this.getWidth() / 2 - 135).toFloat(), (pos.y + 2).toFloat(), (pos.x - rotationYaw + this.getWidth() / 2 - 135).toFloat(), (pos.y + this.getHeight() - 2).toFloat(), 2f, -0x1)
+            RenderUtils2D.drawLine((pos.x - rotationYaw + this.getWidth() / 2 - 135).toFloat(), (pos.y + 2).toFloat(), (pos.x - rotationYaw + this.getWidth() / 2 - 135).toFloat(), (pos.y + this.getHeight() - 2).toFloat(), 1f, -0x1)
 
             // Text
             Fonts.DEFAULT_BOLD.drawString("N", Vec2d((pos.x - rotationYaw + this.getWidth() / 2 + 180 - Fonts.DEFAULT_BOLD.getStringWidth("N") / 2.0f).toInt(), pos.y.toInt() + 5), color = c1)
