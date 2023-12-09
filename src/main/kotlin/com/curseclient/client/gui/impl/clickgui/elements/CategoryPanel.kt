@@ -113,8 +113,10 @@ class CategoryPanel(
             else -> ClickGui.buttonColor2
         }
         RectBuilder(pos, pos.plus(width, height + windowHeight)).apply {
-            outlineColor(c1, c2, c1, c2)
-            width(ClickGui.outlineWidth)
+            if (ClickGui.outline) {
+                outlineColor(ClickGui.outlineColor, c2, c1, ClickGui.outlineColor)
+                width(ClickGui.outlineWidth)
+            }
             color(ClickGui.backgroundColor)
             radius(radius)
             draw()
@@ -155,14 +157,14 @@ class CategoryPanel(
             }
         }
         RectBuilder(p1, p2).apply {
-            shadow(pos.x, pos.y, width, 15.0, 10, Color.BLACK)
+            shadow(pos.x, pos.y + 3, width , 15.0, 10, Color.BLACK)
             shadow(pos.x, pos.y + height + windowHeight - radius, width, 5.0, 10, Color.BLACK)
         }
         toggleScissor(false)
 
-        val dragText = "•••"
-        val dragTextPos = pos.plus(width / 2.0 - Fonts.DEFAULT_BOLD.getStringWidth(dragText) * 0.5, height + windowHeight - radius)
-        Fonts.DEFAULT_BOLD.drawString(dragText, dragTextPos, color = (if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2).setAlphaD(windowHeight / targetWindowHeight))
+        //val dragText = "•••"
+        //val dragTextPos = pos.plus(width / 2.0 - Fonts.DEFAULT_BOLD.getStringWidth(dragText) * 0.5, height + windowHeight - radius)
+        //Fonts.DEFAULT_BOLD.drawString(dragText, dragTextPos, color = (if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2).setAlphaD(windowHeight / targetWindowHeight))
     }
 
     // I just accidentally found it interesting, so I added it

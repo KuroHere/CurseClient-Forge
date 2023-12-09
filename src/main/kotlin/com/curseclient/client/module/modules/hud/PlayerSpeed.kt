@@ -11,6 +11,7 @@ import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getHeight
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
+import com.curseclient.client.utility.render.shader.RectBuilder
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.awt.Color
 import kotlin.math.hypot
@@ -21,6 +22,9 @@ object PlayerSpeed: DraggableHudModule(
     HudCategory.HUD
 ){
     private val size by setting("Size", 1.0, 0.5, 3.0, 0.05)
+    private val background by setting("BackGround", Color(35, 35, 35, 50))
+    private val radius by setting("Radius", 1.0, 0.0, 5.0, 0.1)
+
     private val averageTicks by setting("Average ticks", 5.0, 1.0, 50.0, 1.0)
     private val places by setting("Round Places", 1.0, 1.0, 5.0, 1.0)
 
@@ -32,8 +36,19 @@ object PlayerSpeed: DraggableHudModule(
         val c1 = HUD.getColor(0)
         val c2 = Color(230, 230, 230)
 
-        Fonts.DEFAULT.drawString(text1, Vec2d(pos.x + margin * size / 2.0, pos.y + getHeight() / 2.0), true, c2, size)
-        Fonts.DEFAULT.drawString(text2, Vec2d(pos.x + margin * size / 2.0 + Fonts.DEFAULT.getStringWidth(text1, size), pos.y + getHeight() / 2.0), true, c1, size)
+        val totalWidth = margin * size / 2 + Fonts.DEFAULT.getStringWidth("${text1} ${text2}", size)
+        val totalHeight = Fonts.DEFAULT.getHeight(size) + getHeight() / 3
+
+        RectBuilder(pos, pos.plus(totalWidth, totalHeight)).apply {
+            shadow(pos.x, pos.y, totalWidth, totalHeight, 5, background)
+            color(background)
+            radius(radius)
+            draw()
+        }
+
+        Fonts.DEFAULT.drawString(text1, Vec2d(pos.x + margin * size / 2.0, pos.y + getHeight() / 2.0), true, c1, size)
+        Fonts.DEFAULT.drawString(text2, Vec2d(pos.x + margin * size / 2.0 + Fonts.DEFAULT.getStringWidth(text1, size), pos.y + getHeight() / 2.0), true, c2, size)
+
     }
 
     override fun getWidth() = Fonts.DEFAULT.getStringWidth(text1, size) + Fonts.DEFAULT.getStringWidth(text2, size) + margin * size

@@ -80,9 +80,21 @@ class DoubleSlider(val setting: DoubleSetting, gui: AbstractGui, baseButton: Mod
             return
         } else {
             //if (sliding) {
-            RectBuilder(sliderBegin, sliderFull).color(Color(150, 150, 150, 110)).radius(2.3).draw()
-            RectBuilder(sliderBegin, sliderEnd).color(Color(210, 210, 210)).radius(2.3).draw()
-            RectBuilder(sliderEnd.minus(3.0, 3.0), sliderEnd.plus(1.0, 1.0)).color(Color(210, 210, 210)).radius(1.8).draw()
+            RectBuilder(sliderBegin, sliderFull).apply {
+                color(Color(150, 150, 150, 110))
+                radius(2.3)
+                draw()
+            }
+            RectBuilder(sliderBegin, sliderEnd).apply {
+                color(Color(210, 210, 210))
+                radius(2.3)
+                draw()
+            }
+            RectBuilder(sliderEnd.minus(3.0, 3.0), sliderEnd.plus(1.0, 1.0)).apply {
+                color(Color(210, 210, 210))
+                radius(1.8)
+                draw()
+            }
 
             val text1 = setting.name
             val text2 = formattedName

@@ -15,7 +15,6 @@ import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
 import java.awt.Color
 
-// TODO: ResetAnimation not actually work well, need fix
 class DescriptionDisplay(description: String, pos: Vec2d, gui: AbstractGui) : InteractiveElement(pos, 0.0, 0.0, gui) {
     private var description: String = description
     private var draw: Boolean = false
@@ -41,18 +40,27 @@ class DescriptionDisplay(description: String, pos: Vec2d, gui: AbstractGui) : In
         if (rectAlpha < 180) {
             rectAlpha += 5
         }
-        val c1 = if (ClickGui.colorMode == ClickGui.ColorMode.Client)
-            HUD.getColor(0)
-        else if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
 
-        BlurUtil.drawBlurryRect(
+        RectBuilder(pos1.minus(2.0, 4.0), pos2).apply {
+            shadow(
+                pos1.x - 2.0,
+                pos1.y - 4.0,
+                10.0 + fr.getStringWidth(description),
+                fr.getHeight() - 16.0,
+                10,
+                ClickGui.buttonColor1.setAlpha(rectAlpha)
+            )
+            color(ClickGui.buttonColor1.setAlpha(rectAlpha))
+            radius(3.0)
+            draw()
+        }
+        /*BlurUtil.drawBlurry(
             (pos1.x - 2.0).toFloat(),
             (pos1.y - 4.0).toFloat(),
             pos2.x.toFloat(),
             pos2.y.toFloat(),
-            15f,
-            Color(c1.setAlpha(10).rgb)
-        )
+            15f
+        )*/
 
         val animatedDescription = if (charsToShow > this.description.length) {
             this.description

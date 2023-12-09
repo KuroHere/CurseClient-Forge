@@ -45,13 +45,11 @@ object Status: DraggableHudModule(
     private val serverText = "Server: "
     private var isScrolling = false
 
-    private const val progress = 0.0f
-
     var startTime = System.currentTimeMillis()
     var endTime:Long = -1
     var gamesPlayed = 0
 
-    val circleShader: ShaderUtils = ShaderUtils("shaders/client/circle-arc.frag")
+    //val circleShader: ShaderUtils = ShaderUtils("shaders/client/circle-arc.frag")
 
     override fun onRender() {
         super.onRender()
@@ -76,7 +74,7 @@ object Status: DraggableHudModule(
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST)
 
-        updateMemoryUsage()
+        //updateMemoryUsage()
         renderPlayerInfo()
         renderOnlineTime()
         renderServerInfo()
@@ -118,7 +116,7 @@ object Status: DraggableHudModule(
         }
     }
 
-    fun updateMemoryUsage(): Float {
+    /*fun updateMemoryUsage(): Float {
         val runtime = Runtime.getRuntime()
         val totalMemory = runtime.totalMemory()
         val freeMemory = runtime.freeMemory()
@@ -135,14 +133,10 @@ object Status: DraggableHudModule(
 
 
     private fun drawCircleWithMemoryUsage(memoryUsage: Float) {
-        // Gọi hàm vẽ vòng cung (drawCircle) với giá trị progress mới
-        // Bạn cần chuyển đổi giá trị memoryUsage sao cho phù hợp với range của shader trước khi truyền vào hàm drawCircle
-        // Ví dụ: Chuyển đổi từ 0-1 sang 0-255 để đồng bộ với màu sắc (RGB)
         val convertedValue = (memoryUsage * 255).roundToInt()
 
-        // Gọi hàm drawCircle với giá trị progress được cập nhật
         drawCircle(pos.x.toFloat(), pos.y.toFloat(),30f, convertedValue.toFloat(), 10, Color.WHITE, 10f)
-    }
+    }*/
 
 
     private fun renderPlayerHead() {
@@ -310,7 +304,7 @@ object Status: DraggableHudModule(
 
     }
 
-    fun drawCircle(x: Float, y: Float, radius: Float, progress: Float, change: Int, color: Color, smoothness: Float) {
+    /*fun drawCircle(x: Float, y: Float, radius: Float, progress: Float, change: Int, color: Color, smoothness: Float) {
         startBlend()
         val borderThickness = 1f
         circleShader.init()
@@ -327,7 +321,7 @@ object Status: DraggableHudModule(
         ShaderUtils.drawQuads(x, y, wh, wh)
         circleShader.unload()
         endBlend()
-    }
+    }*/
 
     fun reset() {
         startTime = System.currentTimeMillis()

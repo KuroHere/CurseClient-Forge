@@ -53,6 +53,7 @@ object ModuleManager: Manager("ModuleManager") {
         HudEditor,
         MenuShader,
         PerformancePlus,
+        Welcome,
 
         //combat
         AntiBot,

@@ -48,14 +48,7 @@ object BlurUtil {
         lastScaleHeight = heightFactor
     }
 
-    fun drawBlurryRect(x: Float, y: Float, x1: Float, y1: Float, intensity: Float, color: Color) {
-        rect(
-            x,
-            y,
-            x1 - 0.5f,
-            y1 - 0.5f,
-            Color(color.rgb)
-        )
+    fun drawBlurry(x: Float, y: Float, x1: Float, y1: Float, intensity: Float) {
         blur(
             x,
             y,
@@ -64,26 +57,6 @@ object BlurUtil {
             y1 - y,
             intensity
         )
-    }
-
-    fun rect(startX: Float, startY: Float, endX: Float, endY: Float, color: Color) {
-        val alpha = color.alpha.toFloat() / 255.0f
-        val red = color.red.toFloat() / 255.0f
-        val green = color.green.toFloat() / 255.0f
-        val blue = color.blue.toFloat() / 255.0f
-        val tessellator = Tessellator.getInstance()
-        val bufferbuilder = tessellator.buffer
-        GlStateManager.enableBlend()
-        GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR)
-        bufferbuilder.pos(startX.toDouble(), endY.toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
-        bufferbuilder.pos(endX.toDouble(), endY.toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
-        bufferbuilder.pos(endX.toDouble(), startY.toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
-        bufferbuilder.pos(startX.toDouble(), startY.toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
-        tessellator.draw()
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
     }
 
     fun blur(x: Float, y: Float, width: Float, height: Float, intensity: Float) {

@@ -41,6 +41,8 @@ object Notifications : DraggableHudModule(
     private val volume by setting("Volume", 0.5, 0.1, 2.0, 0.1, visible = { sound })
 
     val notificationList = ArrayList<Notification>()
+    private var lastNotificationTime: Long = 0L
+    private val delayTime: Long = 500L
 
     private enum class Mode {
         Classic,
@@ -82,8 +84,11 @@ object Notifications : DraggableHudModule(
 
         fun spawn() {
             notificationList.add(this)
-            if (sound)
-                SoundUtils.playSound(volume) { "pop.wav" }
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastNotificationTime > delayTime) {
+            if (sound) SoundUtils.playSound(volume) { "pop.wav" }
+            }
+            lastNotificationTime = currentTime
         }
 
         fun draw(position: Vec2d) {

@@ -5,7 +5,6 @@ import com.curseclient.client.Client
 import com.curseclient.client.gui.impl.maingui.elements.GeneralButton
 import com.curseclient.client.gui.impl.maingui.elements.MusicButton
 import com.curseclient.client.gui.impl.particles.mouse.OsuLightTrail
-import com.curseclient.client.gui.impl.particles.mouse.ParticleManager
 import com.curseclient.client.manager.managers.SongManager
 import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.module.modules.client.MenuShader
@@ -35,7 +34,6 @@ class MainGui: GuiScreen() {
     private val musicButton = ArrayList<MusicButton>()
     private val songManager = SongManager
     private var scaledResolution: ScaledResolution? = null
-    private val particleMang: ParticleManager = ParticleManager()
     private val trailMang: OsuLightTrail = OsuLightTrail()
     override fun initGui() {
 

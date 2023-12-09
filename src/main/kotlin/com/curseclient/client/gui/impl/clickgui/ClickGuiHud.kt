@@ -79,9 +79,6 @@ class ClickGuiHud : AbstractGui() {
     private fun someEffect() {
         if (ClickGui.darkness )
             RenderUtils2D.drawRect(0f, 0f, width.toFloat(), height.toFloat(), Color(15, 15, 15, 160).rgb)
-        if (ClickGui.clean)
-            // For science
-            RenderUtils2D.renderColoredQuads(0f, 0f, width.toFloat(), height.toFloat())
         if (ClickGui.flowParticle)
             fpm.render()
         if (ClickGui.particle)

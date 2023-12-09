@@ -6,8 +6,10 @@ import com.curseclient.client.setting.setting
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.font.FontUtils.drawString
+import com.curseclient.client.utility.render.font.FontUtils.getHeight
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
+import com.curseclient.client.utility.render.shader.RectBuilder
 import net.minecraft.item.ItemStack
 import java.awt.Color
 import kotlin.math.round
@@ -19,7 +21,9 @@ object Armor: DraggableHudModule(
 ) {
 
     private val mode by setting("Mode", Mode.Horizon)
-
+    private val background by setting("BackGround", Color(35, 35, 35, 50))
+    private val radius by setting("Radius", 1.0, 0.0, 5.0, 0.1)
+    private val flip by setting("Flip", false, { mode == Mode.Vertical})
     var w = 0.0
     var h = 0.0
 
@@ -31,13 +35,20 @@ object Armor: DraggableHudModule(
     override fun onRender() {
         val horizontal = mode == Mode.Horizon
         val startingPos = if (horizontal) Vec2d(20.0, 0.0) else Vec2d(0.0, 20.0)
-        val dimension = if (horizontal) Vec2d(76.0, 22.0) else Vec2d(20.0, 81.0)
+        val dimension = if (horizontal) Vec2d(76.0, 22.0) else Vec2d(16.0, 76.0)
 
+        RectBuilder(pos, pos.plus(dimension)).apply {
+            shadow(pos.x, pos.y, dimension.x, dimension.y, 5, background)
+            color(background)
+            radius(radius)
+            draw()
+        }
         mc.player.armorInventoryList.reversed().forEachIndexed { index, item ->
             drawItem(item, pos.plus(startingPos * index.toDouble()))
             w = dimension.x
             h = dimension.y
         }
+
     }
 
     private fun drawItem(item: ItemStack, pos: Vec2d) {
@@ -52,11 +63,20 @@ object Armor: DraggableHudModule(
         val color = Color.getHSBColor(hue, 1f, 1f)
         val text = "${round(duraMultiplier * 100.0)}%"
 
+        val textScale = if (mode == Mode.Vertical) 1.0 else 0.75
+        val xOffset = if (mode == Mode.Vertical) {
+            if (flip) -12.0 - Fonts.DEFAULT.getStringWidth(text, 1.0) / 2.0
+            else 8.0 + Fonts.DEFAULT.getStringWidth(text, 1.0) / 2.0
+        } else 8.0 - Fonts.DEFAULT.getStringWidth(text, 0.75) / 2.0
+
+        val yOffset = if (mode == Mode.Vertical) 3.0 + Fonts.DEFAULT.getHeight(1.0) / 2
+        else 18.0
+
         Fonts.DEFAULT.drawString(
             text,
-            Vec2d(pos.x + 8.0 - Fonts.DEFAULT.getStringWidth(text, 0.75) / 2.0, pos.y + 18.0),
+            Vec2d(pos.x + xOffset, pos.y + yOffset),
             color = color,
-            scale = 0.75
+            scale = textScale
         )
     }
 

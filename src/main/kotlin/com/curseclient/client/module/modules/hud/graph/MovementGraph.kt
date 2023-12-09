@@ -140,7 +140,7 @@ object MovementGraph: DraggableHudModule(
         for (i in movementNodes.size - 1 downTo 1) {
             val movementNode = movementNodes[i]
             if (movementNodes.size > 11) {
-                if (movementNode != null && i > movementNodes.size - 10) {
+                if (i > movementNodes.size - 10) {
                     totalSpeed += movementNode.speed
                 }
             }

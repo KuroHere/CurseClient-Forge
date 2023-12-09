@@ -749,56 +749,6 @@ object RenderUtils2D {
         GlStateManager.disableBlend()
     }
 
-    fun renderColoredQuads(startX: Float, startY: Float, endX: Float, endY: Float) {
-        Tessellator.getInstance().buffer
-
-        val offset = (System.currentTimeMillis() % 3000) / 3000.0f
-        val hsv2p = 0.25f + offset
-        val hsv3p = 0.5f + offset
-        val hsv4p = 0.75f + offset
-
-        val hsv1 = Color.getHSBColor((offset % 1), 0.6f, 1f)
-        val hsv2 = Color.getHSBColor((hsv2p % 1), 0.6f, 1f)
-        val hsv3 = Color.getHSBColor((hsv3p % 1), 0.6f, 1f)
-        val hsv4 = Color.getHSBColor((hsv4p % 1), 0.6f, 1f)
-
-        glEnable(GL_BLEND)
-        glDisable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glBegin(GL_QUADS)
-        glColor4f(
-            hsv1.red.toFloat() / 255,
-            hsv1.green.toFloat() / 255,
-            hsv1.blue.toFloat() / 255,
-            0.6f
-        )
-        glVertex2f(startX, startY)
-        glColor4f(
-            hsv2.red.toFloat() / 255,
-            hsv2.green.toFloat() / 255,
-            hsv2.blue.toFloat() / 255,
-            0.6f
-        )
-        glVertex2f(startX, endY)
-        glColor4f(
-            hsv3.red.toFloat() / 255,
-            hsv3.green.toFloat() / 255,
-            hsv3.blue.toFloat() / 255,
-            0.6f
-        )
-        glVertex2f(endX, endY)
-        glColor4f(
-            hsv4.red.toFloat() / 255,
-            hsv4.green.toFloat() / 255,
-            hsv4.blue.toFloat() / 255,
-            0.6f
-        )
-        glVertex2f(endX, startY)
-        glEnd()
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-    }
-
     fun drawGradientRect(posBegin: Vec2d, posEnd: Vec2d, colorLeftTop: Color, colorRightTop: Color, colorLeftBottom: Color, colorRightBottom: Color) {
         drawGradientRect(posBegin.toVec2f(), posEnd.toVec2f(), colorLeftTop, colorRightTop, colorLeftBottom, colorRightBottom)
     }
@@ -1065,5 +1015,4 @@ object RenderUtils2D {
             glEnable(GL_CULL_FACE)
         }
     }
-
 }

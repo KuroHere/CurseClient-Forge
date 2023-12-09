@@ -40,7 +40,7 @@ object Radar : DraggableHudModule(
     // General
     private val size by setting("Size", 90, 75, 125, 1, { page == Page.General})
 
-    private val rounded by setting("RoundedRadius", 6.0, 0.0, 10.0, 0.1, { page == Page.General})
+    private val rounded by setting("RoundedRadius", 6.0, 0.0, 40.0, 0.1, { page == Page.General})
 
     private val shadow by setting("Shadow", true, { page == Page.General})
     private val shadowSize by setting("ShadowRadius", 5, 0, 20, 1, { page == Page.General})
@@ -96,7 +96,7 @@ object Radar : DraggableHudModule(
         initStencilToWrite()
         RectBuilder(Vec2d(x.toDouble(), y.toDouble()), Vec2d(pos.x + radarSize, pos.y + radarSize)).apply {
             color(Color.BLACK)
-            radius(6.0)
+            radius(rounded)
             draw()
         }
         readStencilBuffer(1)

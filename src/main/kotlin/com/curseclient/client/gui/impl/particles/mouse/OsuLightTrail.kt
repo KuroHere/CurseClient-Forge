@@ -31,7 +31,7 @@ class OsuLightTrail {
     }
 
     fun renderTrail() {
-        val currentTime = System.currentTimeMillis()
+        System.currentTimeMillis()
         for (i in 0 until trail.size - 1) {
             val start = trail[i]
             val end = trail[i + 1]

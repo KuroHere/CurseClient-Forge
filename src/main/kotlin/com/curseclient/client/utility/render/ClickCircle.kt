@@ -28,10 +28,10 @@ class ClickCircle(var x: Float, var y: Float, private var seconds: Int, var radi
             val radius: Double = (radius * animation.value / 100).toDouble()
             val alpha = (255 - 255 * animation.value / 100).toInt()
             val arc: Double = (360 * animation.value / 100).toDouble()
-            val color: Int = Color(color).setAlpha((alpha)).rgb
+            val arcColor: Int = Color(color).setAlpha((alpha)).rgb
 
             if (GuiClickCircle.isEnabled()) {
-                drawArc(x, y, radius, color, 0, arc, 2)
+                drawArc(x, y, radius, arcColor, 0, arc, 2)
             }
         }
     }

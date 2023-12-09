@@ -21,14 +21,12 @@ abstract class HudModule(
     val enabledByDefault: Boolean = false
 ) {
 
-    private var isEnabled = false // TODO: make as setting
+    private var isEnabled = false
     val isDisabled: Boolean get() = !isEnabled
     val isVisible get() = getHudSetting<BooleanSetting>("Visible")?.value ?: true
 
     var settings = ArrayList<Setting<*>>()
-
     val mc: Minecraft = Minecraft.getMinecraft()
-
     init {
         settings.add(BooleanSetting("Visible", true, visibility = { this !is HudModule }))
     }
@@ -76,7 +74,7 @@ abstract class HudModule(
             if (!alwaysListenable) EventBus.subscribe(this)
 
             EventBus.post(CurseClientEvent.HudModuleToggleEvent(this))
-            NotificationUtils.notify(name, "Module has been enable", NotificationType.INFO, descriptionColor = Color.LIGHT_GRAY)
+            NotificationUtils.notify(name, "Has been enable", NotificationType.INFO, descriptionColor = Color.LIGHT_GRAY)
 
             onEnable()
         }
@@ -89,7 +87,7 @@ abstract class HudModule(
             if (this is DraggableHudModule) isDragging = false
 
             EventBus.post(CurseClientEvent.HudModuleToggleEvent(this))
-            NotificationUtils.notify(name, "Module has been disable", NotificationType.INFO, descriptionColor = Color.LIGHT_GRAY)
+            NotificationUtils.notify(name, "Has been disable", NotificationType.INFO, descriptionColor = Color.LIGHT_GRAY)
 
             onDisable()
         }

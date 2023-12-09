@@ -25,12 +25,13 @@ object ClickGui : Module(
 
     // General
     val scale by setting("Scale", 1.0, 0.5, 1.5, 0.01, { page == Page.General })
-    val width by setting("Panel Width", 100.0, 100.0, 140.0, 1.0, { page == Page.General })
-    val panelRound by setting("Panel Radius", 2.7, 0.0, 10.0, 0.1, { page == Page.General })
-    val height by setting("Button Height", 15.0, 12.0, 20.0, 0.5, { page == Page.General })
-    val buttonRound by setting("Button Radius", 1.4, 0.0, 10.0, 0.1, { page == Page.General })
-    val outlineWidth by setting("Outline Width", 0.0, 0.0, 3.0, 0.1, { page == Page.General })
-    val space by setting("Space", 4.5, 3.0, 8.0, 0.1, { page == Page.General })
+    val width by setting("Panel Width", 103.0, 100.0, 140.0, 1.0, { page == Page.General })
+    val panelRound by setting("Panel Radius", 3.0, 0.0, 10.0, 0.1, { page == Page.General })
+    val height by setting("Button Height", 17.5, 12.0, 20.0, 0.5, { page == Page.General })
+    val buttonRound by setting("Button Radius", 1.0, 0.0, 10.0, 0.1, { page == Page.General })
+    val outline by setting("Outline", false, { page == Page.General })
+    val outlineWidth by setting("Outline Width", 0.0, 0.0, 3.0, 0.1, { outline && page == Page.General })
+    val space by setting("Space", 3.0, 3.0, 8.0, 0.1, { page == Page.General })
     val sorting by setting("Sorting", SortingMode.Alphabetical, { page == Page.General })
     val reverse by setting("Reverse", false, { page == Page.General })
 
@@ -41,7 +42,6 @@ object ClickGui : Module(
 
     //Background
     val darkness by setting("Darkness ", false, { page == Page.BackGround })
-    val clean by setting("Clean", false, { page == Page.BackGround })
     val imageParticle by setting("ImageParticle", false, { page == Page.BackGround })
     val flowParticle by setting("FlowParticle", false, { page == Page.BackGround })
     val particle by setting("Particle", false, { page == Page.BackGround })
@@ -63,6 +63,7 @@ object ClickGui : Module(
 
     val pulse by setting("Pulse Color", false, { page == Page.Colors && listOf(ColorMode.Static, ColorMode.Vertical, ColorMode.Horizontal).contains(colorMode)})
 
+    val outlineColor by setting("OutlineColor", Color(35, 35, 35, 255), { outline && page == Page.Colors })
     val backgroundColor by setting("Background Color", Color(20, 20, 20), { page == Page.Colors })
     val backgroundShader by setting("Shader Background", false, { page == Page.Colors })
     val disabledColor by setting("Disabled Color", Color(255, 255, 255, 30), { page == Page.Colors })

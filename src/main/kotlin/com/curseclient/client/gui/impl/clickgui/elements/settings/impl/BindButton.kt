@@ -8,11 +8,15 @@ import com.curseclient.client.module.Module
 import com.curseclient.client.module.modules.client.ClickGui
 import com.curseclient.client.utility.player.ChatUtils
 import com.curseclient.client.utility.render.font.FontUtils.drawString
+import com.curseclient.client.utility.render.font.FontUtils.getHeight
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
+import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
 import org.lwjgl.input.Keyboard
 import java.awt.Color
+import java.awt.Font
+import java.util.*
 
 class BindButton(val module: Module, gui: AbstractGui, baseButton: ModuleButton) : SettingButton(gui, baseButton) {
     override fun onRegister() {}
@@ -27,11 +31,29 @@ class BindButton(val module: Module, gui: AbstractGui, baseButton: ModuleButton)
 
     override fun onRender() {
         super.onRender()
-        fr.drawString("Binding:", pos.plus(ClickGui.space, height / 2.0), scale = ClickGui.settingFontSize)
+        fr.drawString("Bind", pos.plus(ClickGui.space, height / 2.0), scale = ClickGui.settingFontSize)
 
         val text = if (binding) "..." else Keyboard.getKeyName(module.key)
-        val color = if (binding) Color.GREEN else Color.WHITE
-        fr.drawString(text, pos.plus(width - fr.getStringWidth(text, ClickGui.settingFontSize) - ClickGui.space, height / 2.0), color = color, scale = ClickGui.settingFontSize)
+        val color = Color.WHITE
+        val textWidth = Fonts.DEFAULT_BOLD.getStringWidth(text, ClickGui.settingFontSize)
+        val textHeight = Fonts.DEFAULT_BOLD.getHeight(ClickGui.settingFontSize)
+        val buttonHeight = ClickGui.height
+
+        val rectStart = Vec2d(pos.x + width - textWidth - ClickGui.space - 3, pos.y - 6 + buttonHeight - textHeight)
+        val rectEnd = Vec2d(pos.x + width - ClickGui.space, pos.y + buttonHeight - 4)
+
+        RectBuilder(rectStart, rectEnd).apply {
+            color(ClickGui.disabledColor)
+            radius(2.3)
+            draw()
+        }
+
+        Fonts.DEFAULT_BOLD.drawString(
+            text.uppercase(Locale.getDefault()),
+            pos.plus(width - textWidth - ClickGui.space - 2, buttonHeight / 2.0),
+            color = color,
+            scale = ClickGui.settingFontSize
+        )
     }
 
     override fun onMouseAction(action: MouseAction, button: Int) {

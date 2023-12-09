@@ -21,12 +21,17 @@ import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.ScissorUtils.scissor
 import com.curseclient.client.utility.render.animation.EaseUtils.ease
 import com.curseclient.client.utility.render.animation.NewEaseType
+import com.curseclient.client.utility.render.font.FontRenderer
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
+import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.graphic.GLUtils
+import com.curseclient.client.utility.render.graphic.GlStateUtils
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
+import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.*
 
@@ -135,7 +140,6 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
         //        SoundUtils.playSound { "scroll.wav" }
         //}
         //prevHovered = hovered;
-
         val hoveredModule = (gui as ClickGuiHud).panels.flatMap { it.modules }.firstOrNull { it.isHovered(gui.mouse) }
         val descriptionDisplay = gui.descriptionDisplay
 
@@ -164,25 +168,21 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
         val bindPos = pos.plus(
             ClickGui.space.plus(hoverProgress.ease(NewEaseType.OutBack).times(2.0)) + fr.getStringWidth(module.name, ClickGui.settingFontSize) + fr.getStringWidth(Keyboard.getKeyName(module.key).toString(), 0.3) + 5,
             (height / 2) - 2)
+
         val charPos = pos.plus(width - 10, height / 2)
 
-        val show_bind = ClickGui.detailPage == ClickGui.Details.Bind
-        val show_characters = ClickGui.detailPage == ClickGui.Details.Characters
-
         var char: String? = null
-
-        if (subOpen)
+        if (subOpen) {
             char = ClickGui.open
-        if (extended)
+        }
+        if (extended) {
             char = ClickGui.close
+        }
+        when (ClickGui.detailPage.name) {
+            "Characters" -> if (module.settings.size > 1) fr.drawString(char.toString(), charPos, color = Color.WHITE, scale = 0.8)
+            "Bind" -> if (module.key != Keyboard.KEY_NONE) fr.drawString("[" + Keyboard.getKeyName(module.key).toString() + "]", bindPos, shadow = true, color = Color.WHITE, scale = 0.6)
+        }
 
-        if (show_characters)
-            if (module.settings.size > 1)
-                fr.drawString(char.toString(), charPos, color = Color.WHITE, scale = 0.8)
-
-        if (show_bind)
-            if (module.key != Keyboard.KEY_NONE)
-                fr.drawString("[" + Keyboard.getKeyName(module.key).toString() + "]", bindPos, shadow = true, color = Color.WHITE, scale = 0.6)
     }
 
 

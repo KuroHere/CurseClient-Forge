@@ -1,5 +1,6 @@
 package com.curseclient.client.module
 
+import baritone.api.utils.Helper.mc
 import com.curseclient.client.gui.GuiUtils
 import com.curseclient.client.gui.api.other.MouseAction
 import com.curseclient.client.module.modules.client.HudEditor
@@ -9,20 +10,18 @@ import com.curseclient.client.setting.setting
 import com.curseclient.client.setting.type.DoubleSetting
 import com.curseclient.client.setting.type.EnumSetting
 import com.curseclient.client.setting.type.UnitSetting
-import com.curseclient.client.utility.render.ColorUtils
+import com.curseclient.client.utility.render.*
 import com.curseclient.client.utility.render.ColorUtils.setAlpha
 import com.curseclient.client.utility.render.ColorUtils.setAlphaD
 import com.curseclient.client.utility.render.ColorUtils.toColor
-import com.curseclient.client.utility.render.DockingH
-import com.curseclient.client.utility.render.DockingV
 import com.curseclient.client.utility.render.HoverUtils.isHovered
-import com.curseclient.client.utility.render.Screen
 import com.curseclient.client.utility.render.animation.SimpleAnimation
 import com.curseclient.client.utility.render.font.BonIcon
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
+import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
 
 abstract class DraggableHudModule(
@@ -31,10 +30,10 @@ abstract class DraggableHudModule(
     category: HudCategory,
     alwaysListenable: Boolean = false,
 ) : HudModule(name, description, category, alwaysListenable) {
+
     var isDragging = false
     var dragX = 0.0
     var dragY = 0.0
-    private val animation = SimpleAnimation(0.0f)
 
     init {
         settings.add(UnitSetting("Reset Position", {
@@ -65,23 +64,20 @@ abstract class DraggableHudModule(
         if (!HudEditor.isEnabled() || !isDragging || !isEnabled()) return
         val cornerPos = Vec2d(dockingH.modifier * Screen.width / 2.0, dockingV.modifier * Screen.height / 2.0)
         pos = GuiUtils.hudEditorGui!!.mouse.minus(dragX, dragY).minus(cornerPos)
-
     }
 
     fun onRenderPost() {
         if (!HudEditor.isEnabled() || !isEnabled()) return
 
-        animation.setAnimation(100f, 12.0)
-
-        RectBuilder(pos, pos.plus(getWidth(), getHeight())).apply {
-            color(Color.WHITE.setAlpha((0.1 * animation.value / 500).toInt()))
+        RectBuilder(pos.minus(3.0), pos.plus(3.0).plus(getWidth(), getHeight())).apply {
+            color(Color.WHITE.setAlpha(0))
             outlineColor(Color.WHITE)
-            radius(2.0)
+            radius(3.5)
             width(0.8)
             draw()
         }
-        if (animation.value > 0.1f)
-            Fonts.BonIcon20.drawString(BonIcon.LEFT_MOUSE, Vec2d(pos.x + getWidth(), pos.y + getHeight()), true, ColorUtils.toRGBA(255, 255, 255, (animation.value).toInt() / 100).toColor())
+
+        Fonts.BonIcon20.drawString(BonIcon.LEFT_MOUSE, Vec2d(pos.x + getWidth(), pos.y + getHeight()), true, Color.WHITE, 1.2)
 
     }
 

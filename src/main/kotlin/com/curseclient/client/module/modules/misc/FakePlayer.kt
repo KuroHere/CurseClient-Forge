@@ -155,9 +155,8 @@ object FakePlayer : Module(
         if (System.currentTimeMillis() - lastDamageTime < 500L) return
 
         runSafe {
-            var health = fp.health - amount
+            val health = fp.health - amount
             if (health < 0.0f) {
-                health = 2.0f
                 val vec = fp.positionVector
                 fakePlayer?.let { mc.effectRenderer.emitParticleAtEntity(it, EnumParticleTypes.TOTEM, 30) };
                 world.playSound(player, vec.x, vec.y, vec.z, SoundEvents.ITEM_TOTEM_USE, player.soundCategory, 1.0f, 1.0f)

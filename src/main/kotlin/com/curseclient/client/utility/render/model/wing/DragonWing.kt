@@ -1,8 +1,6 @@
-package com.curseclient.client.utility.render.model
+package com.curseclient.client.utility.render.model.wing
 
-import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.module.modules.visual.CustomModel
-import com.curseclient.client.utility.render.shader.GradientUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
@@ -12,14 +10,23 @@ import net.minecraft.client.renderer.entity.layers.LayerRenderer
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 
-import com.curseclient.client.utility.render.shader.RoundedUtil.setAlphaLimit
-import net.minecraft.client.renderer.GlStateManager.resetColor
 import kotlin.math.cos
 import kotlin.math.sin
 
-class WingModel : ModelBase(), LayerRenderer<AbstractClientPlayer> {
-    private val mc: Minecraft = Minecraft.getMinecraft()
-    private val location: ResourceLocation = ResourceLocation("textures/model/wings.png")
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
+
+
+@SideOnly(Side.CLIENT)
+class DragonWing : ModelBase(), LayerRenderer<AbstractClientPlayer> {
+    private val wingTextures = textures.values().associateWith { ResourceLocation(it.texture) }
+
+    enum class textures(val texture: String) {
+        Wing("textures/cosmetic/wings.png"),
+        Wing1("textures/cosmetic/gwings.png"),
+        Wing2("textures/cosmetic/gwings1.png")
+    }
+
     private val wing: ModelRenderer
     private val wingTip: ModelRenderer
 
@@ -54,8 +61,10 @@ class WingModel : ModelBase(), LayerRenderer<AbstractClientPlayer> {
             GL11.glRotated(180.0, 0.0, 1.0, 0.0)
 
             GlStateManager.color(CustomModel.color.red / 255.0f, CustomModel.color.green / 255.0f, CustomModel.color.blue / 255.0f, 1.0f)
-            mc.textureManager.bindTexture(location)
-
+            val selectedWingTexture = wingTextures[CustomModel.dragon]
+            if (selectedWingTexture != null) {
+                Minecraft.getMinecraft().textureManager.bindTexture(selectedWingTexture)
+            }
             for (j in 0..1) {
                 GL11.glEnable(2884)
                 val f11: Float = (System.currentTimeMillis() % 1000L / 1000.0f * 3.1415927f * 2.0f)
@@ -82,13 +91,13 @@ class WingModel : ModelBase(), LayerRenderer<AbstractClientPlayer> {
 
     override fun doRenderLayer(
         entitylivingbaseIn: AbstractClientPlayer,
-        p_177141_2_: Float,
-        p_177141_3_: Float,
+        limbSwing: Float,
+        limbSwingAmount: Float,
         partialTicks: Float,
-        p_177141_5_: Float,
-        p_177141_6_: Float,
-        p_177141_7_: Float,
-        scale: Float
-    ) {
+        ageInTicks: Float,
+        netHeadYaw: Float,
+        headPitch: Float,
+        scale: Float) {
+
     }
 }

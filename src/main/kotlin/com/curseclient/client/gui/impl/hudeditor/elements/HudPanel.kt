@@ -118,20 +118,10 @@ class HudPanel(
         }
 
         RectBuilder(pos, pos.plus(width, height + windowHeight)).apply {
-            // too ugly
-            /*if (ClickGui.colorMode == ClickGui.ColorMode.Shader) {
-                RenderUtils2D.roundedOutlineGuiTex(
-                    pos.x.toFloat(),
-                    pos.y.toFloat(),
-                    (width).toFloat(),
-                    (height + windowHeight).toFloat(),
-                    ClickGui.panelRound.toFloat(),
-                    ClickGui.outlineWidth.toFloat(),
-                    Color.WHITE
-                )
-            } else {*/
-            outlineColor(c1, c2, c1, c2)
-            width(ClickGui.outlineWidth)
+            if (ClickGui.outline) {
+                outlineColor(ClickGui.outlineColor, c2, c1, ClickGui.outlineColor)
+                width(ClickGui.outlineWidth)
+            }
             color(ClickGui.backgroundColor)
             radius(radius)
             draw()
@@ -165,19 +155,12 @@ class HudPanel(
                 if (!checkCulling(it.pos, it.pos.plus(it.width, it.getButtonHeight()), p1, p2)) return@forEach
                 it.onRender()
             }
-            RenderUtils2D.drawBlurredShadow(
-                pos.x.toFloat(),
-                pos.y.toFloat(),
-                (width).toFloat(),
-                15f,
-                10, Color.BLACK
-            )
+            RectBuilder(p1, p2).apply {
+                shadow(pos.x, pos.y + 2, width + ClickGui.height, 15.0, 10, Color.BLACK)
+                shadow(pos.x, pos.y + height + windowHeight - radius, width, 5.0, 10, Color.BLACK)
+            }
         }
         toggleScissor(false)
-
-        val dragText = "•••"
-        val dragTextPos = pos.plus(width / 2.0 - Fonts.DEFAULT_BOLD.getStringWidth(dragText) * 0.5, height + windowHeight - radius)
-        Fonts.DEFAULT_BOLD.drawString(dragText, dragTextPos, color = (if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2).setAlphaD(windowHeight / targetWindowHeight))
     }
 
     private fun scroll() {

@@ -30,19 +30,19 @@ import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
-
 object Trails : Module(
     "Breadcrumbs",
     "Draws a walking path",
     Category.VISUAL
 ) {
     private val mode by setting("Mode", Mode.Normal)
-    private val seeThroughWalls by setting("Walls", true)
+    private val drawMode by setting("Draw Mode", DrawMode.Self)
+
     private val length by setting("Length", 10.0, 5.0, 50.0, 1.0)
     private val lineWidth by setting("Width", 1.0, 1.0, 8.0, 1.0)
-    private val onlyThirdPerson by setting("Only Third Person", true)
-
-    private val positions = ArrayList<TrailPoint>()
+    private val seeThroughWalls by setting("Walls", true)
+    private val onlyThirdPerson by setting("OnlyThirdPerson", true)
+    private val positions = HashMap<String, ArrayList<TrailPoint>>()
 
     private var dimension = -100
 
@@ -51,9 +51,10 @@ object Trails : Module(
         Line
     }
 
-    enum class ModeC {
-        Custom,
-        Client,
+    private enum class DrawMode {
+        Self,
+        Others,
+        Both
     }
 
     override fun onEnable() {
@@ -62,43 +63,92 @@ object Trails : Module(
 
     init {
         safeListener<MoveEvent> {
-            positions.add(TrailPoint(player.positionVector.add(0.0, 0.1, 0.0)))
+            if (drawMode == DrawMode.Others || drawMode == DrawMode.Both) {
+                val otherPlayers = mc.world.playerEntities ?: return@safeListener
+                otherPlayers.forEach { player ->
+                    if (player != mc.player) {
+                        val playerPositions = positions.getOrPut(player.name) { ArrayList() }
+                        playerPositions.add(TrailPoint(player.positionVector.add(0.0, 0.1, 0.0)))
+                    }
+                }
+            }
+            if (drawMode == DrawMode.Self || drawMode == DrawMode.Both) {
+                positions.getOrPut(mc.player.name) { ArrayList() }
+                    .add(TrailPoint(mc.player.positionVector.add(0.0, 0.1, 0.0)))
+            }
         }
 
         listener<TickEvent.ClientTickEvent> {
-            positions.removeIf { it.shouldRemove() }
+            val iterator = positions.entries.iterator()
+            while (iterator.hasNext()) {
+                val entry = iterator.next()
+                val key = entry.key
+                val value = entry.value
+
+                value.removeIf { it.shouldRemove() }
+
+                if (value.isEmpty()) {
+                    iterator.remove()
+                }
+            }
         }
 
         safeListener<Render3DEvent> {
-            if (dimension != player.dimension) {
-                dimension = player.dimension
-                positions.clear()
-                return@safeListener
+            if (drawMode == DrawMode.Others || drawMode == DrawMode.Both) {
+                renderOtherPlayersTrails()
             }
 
-            if (mc.gameSettings.thirdPersonView == 0 && onlyThirdPerson) return@safeListener
-
-            renderGL {
-                glDisable(GL_ALPHA_TEST)
-                glLineWidth(lineWidth.toFloat())
-
-                val posList = ArrayList(positions)
-                posList.add(TrailPoint(player.interpolatedPosition.add(0.0, 0.1, 0.0)))
-
-                when (mode) {
-                    Mode.Normal -> drawNormal(posList)
-                    Mode.Line -> drawLine(posList)
-                }
-
-                glEnable(GL_ALPHA_TEST)
+            if (drawMode == DrawMode.Self || drawMode == DrawMode.Both) {
+                renderPlayerTrails(mc.player.name)
             }
         }
     }
 
-    private fun drawNormal(trailList: ArrayList<TrailPoint>) {
+    private fun renderOtherPlayersTrails() {
+        positions.entries.filter { it.key != mc.player.name }.forEach { entry ->
+            val posList = entry.value
+            if (posList.size > 1) {
+                renderTrail(posList)
+            }
+        }
+    }
+
+    private fun renderPlayerTrails(playerName: String) {
+        val posList = positions[playerName]
+        if (posList != null && posList.size > 1) {
+            renderTrail(posList)
+        }
+    }
+
+    private fun renderTrail(posList: ArrayList<TrailPoint>) {
         if (seeThroughWalls) {
             GlStateManager.disableDepth()
         }
+        if (dimension != mc.player.dimension) {
+            dimension = mc.player.dimension
+            positions.clear()
+            return
+        }
+
+        if (mc.gameSettings.thirdPersonView == 0 && onlyThirdPerson) return
+
+        renderGL {
+            glDisable(GL_ALPHA_TEST)
+            glLineWidth(lineWidth.toFloat())
+
+            when (mode) {
+                Mode.Normal -> drawNormal(posList)
+                Mode.Line -> drawLine(posList)
+            }
+
+            glEnable(GL_ALPHA_TEST)
+        }
+        if (seeThroughWalls) {
+            GlStateManager.enableDepth()
+        }
+    }
+
+    private fun drawNormal(trailList: ArrayList<TrailPoint>) {
         // main
         draw(GL_QUAD_STRIP) {
             trailList.forEach { point ->
@@ -151,42 +201,17 @@ object Trails : Module(
                 vertex(point.pos.add(0.0, -width, 0.0))
             }
         }
-        if (seeThroughWalls) {
-            GlStateManager.enableDepth()
-        }
+
     }
 
     private fun drawLine(posList: ArrayList<TrailPoint>) {
-        if (seeThroughWalls) {
-            GlStateManager.disableDepth()
-        }
         draw(GL_LINE_STRIP) {
             posList.forEach { point ->
                 point.setColor(1.0)
                 vertex(point.pos)
             }
         }
-        if (seeThroughWalls) {
-            GlStateManager.enableDepth()
-        }
-    }
 
-    //From rise, alan gave me this
-    private fun drawFilledCircleNoGL(x: Int, y: Int, r: Double, c: Int, quality: Int) {
-        resetColor()
-        setAlphaLimit(0f)
-        startBlend()
-        GlStateManager.disableTexture2D();
-        color(c)
-        glBegin(GL_TRIANGLE_FAN)
-        for (i in 0..360 / quality) {
-            val x2 = sin(i * quality * Math.PI / 180) * r
-            val y2 = cos(i * quality * Math.PI / 180) * r
-            glVertex2d(x + x2, y + y2)
-        }
-        glEnd()
-        GlStateManager.enableTexture2D();
-        endBlend();
     }
 
     private fun vertex(vec3d: Vec3d) {
@@ -206,8 +231,9 @@ object Trails : Module(
         }
 
         fun shouldRemove(): Boolean {
-            if (mc.player == null) return true
-            if (mc.player.isDead) return true
+            if (mc.player == null || mc.player.isDead) {
+                return true
+            }
             return (mc.player.ticksExisted - initTick).toDouble() > length + 10.0
         }
 

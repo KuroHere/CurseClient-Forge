@@ -131,7 +131,7 @@ object FpsGraph: DraggableHudModule(
         for (i in fpsNodes.size - 1 downTo 1) {
             val fpsNode = fpsNodes[i]
             if (fpsNodes.size > 11) {
-                if (fpsNode != null && i > fpsNodes.size - 10) {
+                if (i > fpsNodes.size - 10) {
                     totalSpeed += fpsNode.speed
                 }
             }
