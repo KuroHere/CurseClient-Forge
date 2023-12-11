@@ -35,6 +35,7 @@ object SimsESP: Module(
 
     private val color by setting("Color", Color(0, 255, 0))
     private val seeThroughWalls by setting("ThroughWalls", false)
+    private val top by setting("Top", false)
     private val players by setting("Players", true)
     private val items by setting("Items", true)
     private val hostiles by setting("Hostiles", false)
@@ -137,22 +138,48 @@ object SimsESP: Module(
     fun onRender(i: Float, entity: Entity) {
         var color = Color(color.r, color.g, color.b)
         if (entity.hurtResistantTime > 0) color = Color.RED
-        GL11.glBegin(GL11.GL_TRIANGLE_STRIP)
-        color(color.rgb)
+
         val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosX
         val y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosY + entity.getEyeHeight() + .4 + sin((System.currentTimeMillis() % 1000000 / 333f + i).toDouble()) / 10
         val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * Helper.mc.timer.renderPartialTicks - Helper.mc.renderManager.viewerPosZ
-        color(color.darker().darker().rgb)
+
+        val topColor = color
+        val bottomColor = color
+
+        renderCone(x, y + 0.3, z, topColor)
+        if (top)
+            renderInvertedCone(x, y + 0.9, z, bottomColor)
+    }
+
+    private fun renderCone(x: Double, y: Double, z: Double, color: Color) {
+        GL11.glBegin(GL11.GL_TRIANGLE_STRIP)
+        color(color.rgb)
         GL11.glVertex3d(x, y, z)
         GL11.glVertex3d(x - 0.1, y + 0.3, z - 0.1)
         GL11.glVertex3d(x - 0.1, y + 0.3, z + 0.1)
         color(color.rgb)
         GL11.glVertex3d(x + 0.1, y + 0.3, z)
-        color(color.darker().darker().rgb)
+        color(color.rgb)
         GL11.glVertex3d(x, y, z)
-        color(color.darker().darker().darker().rgb)
+        color(color.rgb)
         GL11.glVertex3d(x + 0.1, y + 0.3, z)
         GL11.glVertex3d(x - 0.1, y + 0.3, z - 0.1)
+        GL11.glEnd()
+    }
+
+    private fun renderInvertedCone(x: Double, y: Double, z: Double, color: Color) {
+        GL11.glBegin(GL11.GL_TRIANGLE_STRIP)
+        color(color.rgb)
+        GL11.glVertex3d(x, y, z)
+        GL11.glVertex3d(x - 0.1, y - 0.3, z - 0.1)
+        GL11.glVertex3d(x - 0.1, y - 0.3, z + 0.1)
+        color(color.rgb)
+        GL11.glVertex3d(x + 0.1, y - 0.3, z)
+        color(color.rgb)
+        GL11.glVertex3d(x, y, z)
+        color(color.rgb)
+        GL11.glVertex3d(x + 0.1, y - 0.3, z)
+        GL11.glVertex3d(x - 0.1, y - 0.3, z - 0.1)
         GL11.glEnd()
     }
 

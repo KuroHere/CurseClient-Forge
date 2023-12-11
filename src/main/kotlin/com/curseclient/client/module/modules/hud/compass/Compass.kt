@@ -100,7 +100,7 @@ object Compass: DraggableHudModule(
         GlStateManager.popMatrix()
         RenderUtils2D.uninitStencilBuffer()
 
-        RenderUtils2D.drawTriangle((pos.x + getWidth() / 2).toFloat(), pos.y.toFloat() + getHeight().toFloat() - 3, 4f, c1.setAlpha(130).rgb)
+        RenderUtils2D.drawTriangle((pos.x + getWidth() / 2).toFloat(), pos.y.toFloat() + getHeight().toFloat() - 3, 4f, c1.brighter().setAlpha(130).rgb, true, 5, 200)
         RectBuilder(pos1.plus(getWidth() / 2.0 - 7, getHeight() + 2), pos1.plus(getWidth() / 2.0 + 7, getHeight() + 10)).apply {
             shadow(pos.x + getWidth() / 2.0 - 7, pos.y + getHeight() + 2, 14.0, 8.0, 5, Color.BLACK.setAlpha(150))
             color(Color.BLACK.setAlpha(100))
@@ -124,7 +124,7 @@ object Compass: DraggableHudModule(
             "S", "SW", "W", "NW", "N", "NE", "E", "SE" -> c2.brighter()
             else -> Color.WHITE
         }
-        fr.drawString(yaw, Vec2d((pos.x + getWidth() / 2 - fr.getStringWidth(yaw, 0.42)), pos.y + fr.getHeight(0.8) + 7 + getHeight() / 2), true, textColor, 0.8)
+        fr.drawString(yaw, Vec2d((pos.x + getWidth() / 2 - fr.getStringWidth(yaw, 0.42)), pos.y + fr.getHeight(0.8) + 6.5 + getHeight() / 2), true, textColor, 0.8)
     }
 
     private fun Float.unwrap(): Float {

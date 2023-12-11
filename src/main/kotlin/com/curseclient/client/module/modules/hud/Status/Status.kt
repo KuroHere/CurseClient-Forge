@@ -9,14 +9,12 @@ import com.curseclient.client.utility.math.MathUtils
 import com.curseclient.client.utility.render.ColorUtils
 import com.curseclient.client.utility.render.ColorUtils.setAlpha
 import com.curseclient.client.utility.render.RenderUtils2D
+import com.curseclient.client.utility.render.animation.AstolfoAnimation
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getHeight
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.shader.RectBuilder
-import com.curseclient.client.utility.render.shader.RoundedUtil.endBlend
-import com.curseclient.client.utility.render.shader.RoundedUtil.startBlend
-import com.curseclient.client.utility.render.shader.ShaderUtils
 import com.curseclient.client.utility.render.vector.Vec2d
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
@@ -26,8 +24,9 @@ import net.minecraft.stats.StatList
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import kotlin.math.cos
 import kotlin.math.min
-import kotlin.math.roundToInt
+import kotlin.math.sin
 
 
 object Status: DraggableHudModule(
@@ -36,20 +35,28 @@ object Status: DraggableHudModule(
     HudCategory.HUD
 ) {
 
-    val Swidth by setting("Width", 160, 150, 200, 1)
+    private var astolfo = AstolfoAnimation()
+    private val Swidth by setting("Width", 160, 150, 200, 1)
+    private val Lwidth by setting("CircleWidth", 3.0, 0.0, 5.0, 0.1)
+    private val colorType by setting("ColorType", Mode.State)
+    private val circleColor by setting("CircleColor", Color.WHITE, { colorType == Mode.Custom })
 
     private var info = StatusInfo.SELF
     val sr: ScaledResolution = ScaledResolution(mc)
 
     private var scrollingTextPos = 0.0
-    private val serverText = "Server: "
+    private const val serverText = "Server: "
     private var isScrolling = false
 
     var startTime = System.currentTimeMillis()
     var endTime:Long = -1
     var gamesPlayed = 0
 
-    //val circleShader: ShaderUtils = ShaderUtils("shaders/client/circle-arc.frag")
+    enum class Mode {
+        State,
+        Custom,
+        Astolfo
+    }
 
     override fun onRender() {
         super.onRender()
@@ -74,10 +81,22 @@ object Status: DraggableHudModule(
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST)
 
-        //updateMemoryUsage()
+        GL11.glPushMatrix()
+        drawCircle("Memory", pos1.x + getWidth() / 1.3, pos1.y + getHeight() / 1.5, 2.0, Lwidth.toFloat(), getProgress())
+        GL11.glPopMatrix()
+
         renderPlayerInfo()
         renderOnlineTime()
         renderServerInfo()
+    }
+
+    private fun getProgress(): Double {
+        val runtime = Runtime.getRuntime()
+        //return (runtime.totalMemory() - runtime.freeMemory()) * 100L / runtime.maxMemory()
+        val total = runtime.totalMemory()
+        val free = runtime.freeMemory()
+        val delta = total - free
+        return delta / runtime.maxMemory().toDouble()
     }
 
     private fun renderCard() {
@@ -85,7 +104,7 @@ object Status: DraggableHudModule(
         val pos2 = Vec2d(pos.x + getWidth(), pos.y + getHeight())
 
         val c1 = HUD.getColor(0)
-        val c2 = HUD.getColor(5)
+        val c2 = HUD.getColor(10)
 
         RenderUtils2D.drawBlurredShadow(
             pos.x.toFloat(),
@@ -97,9 +116,9 @@ object Status: DraggableHudModule(
         )
 
         RectBuilder(pos1, pos2).apply {
-            outlineColor(c1.brighter(),c2.setAlpha(0), c1.setAlpha(0), c2.brighter())
+            outlineColor(c1.brighter(),c2.setAlpha(0), c2.setAlpha(0), c1.brighter())
             width(2.0)
-            color(c1, c2, c2, c1)
+            color(c1, c2, c1, c2)
             radius(6.0)
             draw()
         }
@@ -115,29 +134,6 @@ object Status: DraggableHudModule(
             draw()
         }
     }
-
-    /*fun updateMemoryUsage(): Float {
-        val runtime = Runtime.getRuntime()
-        val totalMemory = runtime.totalMemory()
-        val freeMemory = runtime.freeMemory()
-        val maxMemory = runtime.maxMemory()
-
-        val memoryUsage = ((totalMemory - freeMemory).toFloat() / maxMemory.toFloat()) * 100.0f
-
-        val convertedProgress = memoryUsage / 100.0f
-
-        drawCircleWithMemoryUsage(convertedProgress)
-
-        return convertedProgress
-    }
-
-
-    private fun drawCircleWithMemoryUsage(memoryUsage: Float) {
-        val convertedValue = (memoryUsage * 255).roundToInt()
-
-        drawCircle(pos.x.toFloat(), pos.y.toFloat(),30f, convertedValue.toFloat(), 10, Color.WHITE, 10f)
-    }*/
-
 
     private fun renderPlayerHead() {
         val pos1 = Vec2d(pos.x, pos.y)
@@ -180,7 +176,7 @@ object Status: DraggableHudModule(
     private fun renderServerInfo() {
         val fr: Fonts = Fonts.DEFAULT_BOLD
         val pos1 = Vec2d(pos.x, pos.y)
-        val screenWidth = (pos.x + getWidth() / 2).toFloat()
+        val screenWidth = (pos1.x + getWidth() / 2).toFloat()
         val serverTextWidth = fr.getStringWidth(serverText)
 
         GL11.glEnable(GL11.GL_SCISSOR_TEST)
@@ -195,7 +191,7 @@ object Status: DraggableHudModule(
         fr.drawString(serverText, pos1.plus(8.0, (fr.getHeight() * 7) + 8))
 
         val serverIP = info.getServerIP()
-        val stringWidth = fr.getStringWidth(serverIP)
+        val stringWidth = pos1.x + fr.getStringWidth(serverIP)
 
         val scrollSpeed = 0.01
 
@@ -299,29 +295,71 @@ object Status: DraggableHudModule(
         }
 
         private fun getTimeDiff(): Long {
-            return (if (endTime.toInt() === -1) System.currentTimeMillis() else endTime) - startTime
+            return (if (endTime.toInt() == -1) System.currentTimeMillis() else endTime) - startTime
         }
 
     }
 
-    /*fun drawCircle(x: Float, y: Float, radius: Float, progress: Float, change: Int, color: Color, smoothness: Float) {
-        startBlend()
-        val borderThickness = 1f
-        circleShader.init()
-        circleShader.setUniformf("radialSmoothness", smoothness)
-        circleShader.setUniformf("radius", radius)
-        circleShader.setUniformf("borderThickness", borderThickness)
-        circleShader.setUniformf("progress", progress)
-        circleShader.setUniformi("change", change)
-        circleShader.setUniformf("color", color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f)
-        val wh = radius + 10
-        val sr = ScaledResolution(Helper.mc)
-        circleShader.setUniformf("pos", (x + (wh / 2f - (radius + borderThickness) / 2f)) * sr.scaleFactor,
-            Minecraft.getMinecraft().displayHeight - (radius + borderThickness) * sr.scaleFactor - (y + (wh / 2f - (radius + borderThickness) / 2f)) * sr.scaleFactor)
-        ShaderUtils.drawQuads(x, y, wh, wh)
-        circleShader.unload()
-        endBlend()
-    }*/
+    private fun drawCircle(name: String, x: Double, y: Double, scale: Double, width: Float, offset: Double) {
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        val oldState = GL11.glIsEnabled(GL11.GL_BLEND)
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GL11.glShadeModel(GL11.GL_SMOOTH)
+        GL11.glLineWidth(2 + width)
+        GL11.glColor4f(0.1f, 0.1f, 0.1f, 0.5f)
+        GL11.glPushMatrix()
+        GL11.glTranslated(x, y, 1.0)
+        GL11.glScaled(scale, scale, scale)
+
+        GL11.glBegin(GL11.GL_LINE_STRIP)
+        for (i in 0 until 360) {
+            val x = cos(Math.toRadians(i.toDouble())) * 11
+            val z = sin(Math.toRadians(i.toDouble())) * 11
+            GL11.glVertex2d(x, z)
+        }
+        GL11.glEnd()
+        GL11.glBegin(GL11.GL_LINE_STRIP)
+        for (i in -90 until (-90 + (360 * offset)).toInt()) {
+            var red = circleColor.red
+            var green = circleColor.green
+            var blue = circleColor.blue
+            when (colorType.name) {
+                "State" -> {
+                    val buffer = getRG(offset.toInt())
+                    red = buffer[0]
+                    green = buffer[1]
+                    blue = buffer[2]
+                }
+                "Astolfo" -> {
+                    val stage = (i + 90) / 360.0
+                    val clr = astolfo.getColor(stage)
+                    red = ((clr shr 16) and 255)
+                    green = ((clr shr 8) and 255)
+                    blue = (clr and 255)
+                }
+            }
+            GL11.glColor4f(red / 255f, green / 255f, blue / 255f, 1f)
+            val x = cos(Math.toRadians(i.toDouble())) * 11
+            val z = sin(Math.toRadians(i.toDouble())) * 11
+            GL11.glVertex2d(x, z)
+        }
+        GL11.glEnd()
+        GL11.glPopMatrix()
+
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        if (!oldState)
+            GL11.glDisable(GL11.GL_BLEND)
+        GL11.glEnable(GL11.GL_TEXTURE_2D)
+        GL11.glColor4f(1f, 1f, 1f, 1f)
+        Fonts.DEFAULT.drawString((offset * 100).toInt().toString() + "%", Vec2d(x + 4.5 - Fonts.DEFAULT.getStringWidth((offset * 100).toInt().toString() + "%", 0.8), y - 0.8), color = Color(200, 200, 200, 255), scale = 1.0)
+        //Fonts.DEFAULT.drawString(name, Vec2d(x - Fonts.DEFAULT.getStringWidth(name, 1.0), y - 20.0), color = Color.WHITE, scale = 1.0)
+    }
+
+    private fun getRG(input: Int): IntArray {
+        return intArrayOf(255 - 255 * input, 255 * input, 100 * input)
+    }
 
     fun reset() {
         startTime = System.currentTimeMillis()

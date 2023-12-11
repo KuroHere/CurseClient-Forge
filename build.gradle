@@ -185,6 +185,6 @@ tasks.register('refmapper', Exec) {
             "build/libs/${archivesBaseName}-${version}.jar",
             "build/libs/${archivesBaseName}-${version}-refmap.jar",
             "refmapper/tiny",
-            "/home/ksmn/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.12.2-14.23.5.2860_mapped_stable_39-1.12/forge-1.12.2-14.23.5.2860_mapped_stable_39-1.12.jar"
+            "/Users/bangb/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.12.2-14.23.5.2860_mapped_stable_39-1.12/forge-1.12.2-14.23.5.2860_mapped_stable_39-1.12.jar"
     )
 }

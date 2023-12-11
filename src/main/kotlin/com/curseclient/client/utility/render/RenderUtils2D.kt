@@ -8,9 +8,10 @@ import com.curseclient.client.utility.render.graphic.GLUtils.matrix
 import com.curseclient.client.utility.render.graphic.GlStateUtils
 import com.curseclient.client.utility.render.shader.GradientShader.finish
 import com.curseclient.client.utility.render.shader.GradientShader.setup
-import com.curseclient.client.utility.render.shader.RoundedUtil.color
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.jhlabs.image.GaussianFilter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
@@ -32,7 +33,6 @@ import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
 import org.lwjgl.opengl.GL11.*
-import sun.plugin2.util.ColorUtil
 import java.awt.Color
 import java.awt.image.BufferedImage
 import kotlin.math.*
@@ -868,6 +868,12 @@ object RenderUtils2D {
         GlStateManager.color(red, green, blue, alpha)
     }
 
+    fun drawTriangle(x: Float, y: Float, size: Float, color: Int, blur: Boolean, blurRadius: Int, blurAlpha: Int) {
+        if (blur)
+            drawBlurredShadow((x - size * 0.85).toFloat(), y, ((x + size * 0.85) - (x - size * 0.85)).toFloat(), size, blurRadius, ColorUtils.injectAlpha(Color(color), blurAlpha));
+        drawTriangle(x, y, size, color)
+    }
+
     fun drawTriangle(x: Float, y: Float, size: Float, color: Int) {
         val blend = glIsEnabled(GL_BLEND)
         glEnable(GL_BLEND)
@@ -1026,4 +1032,70 @@ object RenderUtils2D {
             glEnable(GL_CULL_FACE)
         }
     }
+
+    fun drawBlurredShadow2(x: Float, y: Float, width: Float, height: Float, blurRadius: Int, color: Color) {
+        glAlphaFunc(GL_GREATER, 0.01f)
+
+        val newWidth = width + blurRadius * 2
+        val newHeight = height + blurRadius * 2
+        val newX = x - blurRadius
+        val newY = y - blurRadius
+
+        val _X = newX - 0.25f
+        val _Y = newY + 0.25f
+
+        val identifier = BlurData(newWidth, newHeight, blurRadius)
+
+        val text2d = glIsEnabled(GL_TEXTURE_2D)
+        val cface = glIsEnabled(GL_CULL_FACE)
+        val atest = glIsEnabled(GL_ALPHA_TEST)
+        val blend = glIsEnabled(GL_BLEND)
+
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_CULL_FACE)
+        glEnable(GL_ALPHA_TEST)
+        glEnable(GL_BLEND)
+
+        var texId = -1
+        if (blurCache.containsKey(identifier)) {
+            texId = blurCache[identifier]!!
+            glBindTexture(GL_TEXTURE_2D, texId)
+        } else {
+            val original = BufferedImage(newWidth.toInt(), newHeight.toInt(), BufferedImage.TYPE_INT_ARGB)
+
+            val g = original.graphics
+            g.color = color
+            g.fillRect(blurRadius, blurRadius, (newWidth - blurRadius * 2).toInt(), (newHeight - blurRadius * 2).toInt())
+            g.dispose()
+
+            val op = GaussianFilter(blurRadius.toFloat())
+            val blurred = op.filter(original, null)
+
+            texId = TextureUtil.uploadTextureImageAllocate(TextureUtil.glGenTextures(), blurred, true, false)
+            blurCache[identifier] = texId
+        }
+
+        glColor4f(1f, 1f, 1f, 1f)
+        glBegin(GL_QUADS)
+        glTexCoord2f(0f, 0f)
+        glVertex2f(_X, _Y)
+        glTexCoord2f(0f, 1f)
+        glVertex2f(_X, _Y + newHeight)
+        glTexCoord2f(1f, 1f)
+        glVertex2f(_X + newWidth, _Y + newHeight)
+        glTexCoord2f(1f, 0f)
+        glVertex2f(_X + newWidth, _Y)
+        glEnd()
+
+        GlStateManager.resetColor()
+        if (!blend)
+            glDisable(GL_BLEND)
+        if (!atest)
+            glDisable(GL_ALPHA_TEST)
+        if (!cface)
+            glEnable(GL_CULL_FACE)
+        if (!text2d)
+            glDisable(GL_TEXTURE_2D)
+    }
+
 }

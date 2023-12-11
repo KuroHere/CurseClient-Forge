@@ -31,7 +31,6 @@ object ModuleManager: Manager("ModuleManager") {
         NewOverlay,
         Status,
         Compass,
-        Compass,
         MovementGraph,
         FpsGraph,
         ModuleList,
