@@ -8,6 +8,7 @@ import com.curseclient.client.utility.render.graphic.GLUtils.matrix
 import com.curseclient.client.utility.render.graphic.GlStateUtils
 import com.curseclient.client.utility.render.shader.GradientShader.finish
 import com.curseclient.client.utility.render.shader.GradientShader.setup
+import com.curseclient.client.utility.render.shader.RoundedUtil.color
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.jhlabs.image.GaussianFilter
 import net.minecraft.client.Minecraft
@@ -31,6 +32,7 @@ import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
 import org.lwjgl.opengl.GL11.*
+import sun.plugin2.util.ColorUtil
 import java.awt.Color
 import java.awt.image.BufferedImage
 import kotlin.math.*
@@ -282,31 +284,6 @@ object RenderUtils2D {
         glTranslatef(-x, -y, -z)
         block()
         glPopMatrix()
-    }
-
-    fun drawTriangle(x: Float, y: Float, size: Float, theta: Float, color: Int) {
-        glTranslated(x.toDouble(), y.toDouble(), 0.0)
-        glRotatef(180 + theta, 0f, 0f, 1.0f)
-        val alpha = (color shr 24 and 255).toFloat() / 255.0f
-        val red = (color shr 16 and 255).toFloat() / 255.0f
-        val green = (color shr 8 and 255).toFloat() / 255.0f
-        val blue = (color and 255).toFloat() / 255.0f
-        glColor4f(red, green, blue, alpha)
-        glEnable(GL_BLEND)
-        glDisable(GL_TEXTURE_2D)
-        glEnable(GL_LINE_SMOOTH)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glLineWidth(1f)
-        glBegin(GL_TRIANGLE_FAN)
-        glVertex2d(0.0, (1.0f * size).toDouble())
-        glVertex2d((1 * size).toDouble(), -(1.0f * size).toDouble())
-        glVertex2d(-(1 * size).toDouble(), -(1.0f * size).toDouble())
-        glEnd()
-        glDisable(GL_LINE_SMOOTH)
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-        glRotatef(-180 - theta, 0f, 0f, 1.0f)
-        glTranslated(-x.toDouble(), -y.toDouble(), 0.0)
     }
 
     fun drawItem(itemStack: ItemStack, x: Double, y: Double, text: String? = null, drawOverlay: Boolean = true) {
@@ -891,6 +868,40 @@ object RenderUtils2D {
         GlStateManager.color(red, green, blue, alpha)
     }
 
+    fun drawTriangle(x: Float, y: Float, size: Float, color: Int) {
+        val blend = glIsEnabled(GL_BLEND)
+        glEnable(GL_BLEND)
+        val depth = glIsEnabled(GL_DEPTH_TEST)
+        glDisable(GL_DEPTH_TEST)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+        glPushMatrix()
+        glColor(color)
+        glBegin(7)
+        glVertex2d(x.toDouble(), y.toDouble())
+        glVertex2d(x - size * 0.85, (y + size).toDouble())
+        glVertex2d(x.toDouble(), y + size - 3.0)
+        glVertex2d(x.toDouble(), y.toDouble())
+        glEnd()
+        glBegin(7)
+        glVertex2d(x.toDouble(), y.toDouble()) //top
+        glVertex2d(x.toDouble(), y + size - 3.0) //midle
+        glVertex2d(x + size * 0.85, (y + size).toDouble()) // left right
+        glVertex2d(x.toDouble(), y.toDouble()) //top
+        glEnd()
+        glBegin(7)
+        glVertex2d(x - size * 0.85, (y + size).toDouble())
+        glVertex2d(x + size * 0.85, (y + size).toDouble()) // left right
+        glVertex2d(x.toDouble(), y + size - 3.0) //midle
+        glVertex2d(x - size * 0.85, (y + size).toDouble())
+        glEnd()
+        glPopMatrix()
+        glEnable(GL_TEXTURE_2D)
+        if (!blend) glDisable(GL_BLEND)
+        glDisable(GL_LINE_SMOOTH)
+        if (depth) glEnable(GL_DEPTH_TEST)
+    }
 
     fun drawLine(x: Float, y: Float, x1: Float, y1: Float, thickness: Float, hex: Int) {
         val red = (hex shr 16 and 0xFF) / 255.0f

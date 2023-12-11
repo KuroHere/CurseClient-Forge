@@ -1,66 +1,56 @@
-package com.curseclient.client.module.modules.hud.TargetHUD
+package com.curseclient.client.module.modules.hud.targetHUD
 
 import baritone.api.utils.Helper
 import com.curseclient.client.event.events.EventUpdate
-import com.curseclient.client.event.events.render.Render3DEvent
 import com.curseclient.client.event.listener.safeListener
-import com.curseclient.client.module.Category
-import com.curseclient.client.module.Module
+import com.curseclient.client.module.DraggableHudModule
+import com.curseclient.client.module.HudCategory
 import com.curseclient.client.module.modules.client.HUD
+import com.curseclient.client.module.modules.client.HudEditor
 import com.curseclient.client.module.modules.combat.CrystalAura
 import com.curseclient.client.module.modules.combat.KillAura
 import com.curseclient.client.setting.setting
-import com.curseclient.client.utility.extension.entity.interpolatedPosition
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.math.MathUtils.roundToPlaces
 import com.curseclient.client.utility.math.MathUtils.toIntSign
-import com.curseclient.client.utility.render.vector.Vec2d
 import com.curseclient.client.utility.render.ColorUtils.setAlphaD
-import com.curseclient.client.utility.render.graphic.GLUtils.matrix
-import com.curseclient.client.utility.render.graphic.GLUtils.renderGL
 import com.curseclient.client.utility.render.RenderUtils2D
-import com.curseclient.client.utility.render.RenderUtils3D
+import com.curseclient.client.utility.render.animation.EaseUtils.ease
+import com.curseclient.client.utility.render.animation.NewEaseType
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getHeight
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.shader.RectBuilder
+import com.curseclient.client.utility.render.vector.Vec2d
 import net.minecraft.client.entity.AbstractClientPlayer
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.EntityLivingBase
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import javax.vecmath.Vector2d
 import kotlin.math.max
 
-object FollowTargetHud : Module(
-    "FollowTargetHUD",
-    "Draw follow target info. | Don't use it's not done",
-    Category.VISUAL
-) {
 
+object TargetHUD : DraggableHudModule(
+    "TargetHUD",
+    "Draw target info on the screen",
+    HudCategory.HUD,
+) {
     private val widthSetting by setting("Width", 130.0, 90.0, 150.0, 1.0)
     private val heightSetting by setting("Height", 35.0, 25.0, 40.0, 1.0)
     private val animationSpeed by setting("Animation Speed", 1.0, 0.1, 10.0, 0.05)
 
-    private val scale by setting("Scale", 1.0, 0.5, 2.0, 0.1)
-    private val xOffset by setting("XOffset", 1.0, -5.0, 5.0, 0.1)
-    private val yOffset by setting("YOffset", 0.5, -3.0, 3.0, 0.1)
-
     private var progress = 0.0
-    private var healthProgress = 0.0
 
     var position = Vector2d(0.0, 0.0)
 
     private var info = TargetInfo.BLANK
-
+    private var healthProgress = 0.0
     private var target: EntityLivingBase? = null
-
 
     init {
         safeListener<EventUpdate> {
@@ -70,39 +60,19 @@ object FollowTargetHud : Module(
                 }
             }
         }
-        safeListener<Render3DEvent> {
-            val viewerPos = RenderUtils3D.viewerPos
-
-            renderGL {
-                target?.let { listOf(it) }?.map { it to it.interpolatedPosition.add(xOffset, it.height + yOffset, 0.0) }
-                    ?.sortedBy { -it.second.distanceTo(viewerPos) }?.forEach {
-                        val pos = it.second.subtract(viewerPos)
-
-                    matrix {
-                        GlStateManager.disableDepth()
-                        glTranslated(pos.x, pos.y, pos.z)
-                        glNormal3f(0.0f, 1.0f, 0.0f)
-                        glRotatef(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
-                        glRotatef((mc.gameSettings.thirdPersonView != 2).toIntSign().toFloat() * mc.renderManager.playerViewX, 1.0f, 0.0f, 0.0f)
-
-                        val distance = 1.0 + max(4.0, viewerPos.distanceTo(it.second))
-                        val scaleFactor = distance * scale * 0.005
-                        glScaled(-scaleFactor, -scaleFactor, scaleFactor)
-                        GlStateManager.enableDepth()
-                        drawTargetHUD(it.first)
-                    }
-                }
-            }
-        }
     }
 
-    private fun drawTargetHUD(entity: EntityLivingBase) {
+    override fun onRender() {
         update()
-        val width = getWidth()
-        val height = getHeight()
 
-        val pos1 = Vec2d(-width / 2.0, -height / 2.0)
-        val pos2 = Vec2d(width / 2.0, height / 2.0)
+        if (progress < 0.01) return
+        glTranslated(pos.x + getWidth() * 0.5, pos.y + getHeight() * 0.5, 0.0)
+
+        val p = progress.ease(NewEaseType.OutBack)
+        glScaled(p, p, 1.0)
+
+        val pos1 = Vec2d(-getWidth() * 0.5, -getHeight() * 0.5)
+        val pos2 = Vec2d(getWidth() * 0.5, getHeight() * 0.5)
 
         drawTargetHud(pos1, pos2)
     }
@@ -193,10 +163,11 @@ object FollowTargetHud : Module(
         val ka = if (KillAura.isEnabled()) KillAura.target else null
 
         val target = (ca ?: ka)?.let { TargetInfo(it) }
+        val self = if (HudEditor.isEnabled()) TargetInfo.SELF else null
 
         var shouldForceClose = false
 
-        info = target ?: run {
+        info = target ?: self ?: run {
             shouldForceClose = true
             info
         }
@@ -204,6 +175,8 @@ object FollowTargetHud : Module(
         info.entity?.let {
             info = TargetInfo(info.name, it.health.toDouble(), info.maxHealth, info.entity)
         }
+
+        if (info.name == "CurseClient  " && !HudEditor.isEnabled()) info = TargetInfo(info.name, 0.0, info.maxHealth, info.entity)
 
         val dir = (!shouldForceClose && info.health > 0.01).toIntSign().toDouble()
         progress = clamp(progress + dir * GLUtils.deltaTimeDouble() * 3.0 * animationSpeed, 0.0, 1.0)
@@ -221,6 +194,7 @@ object FollowTargetHud : Module(
 
         companion object {
             val BLANK = TargetInfo("", 0.0, 1.0, null)
+            val SELF = TargetInfo("CurseClient  ", 20.0, 20.0, null)
         }
 
         fun drawHead(pos1: Vec2d, pos2: Vec2d) {
@@ -264,6 +238,7 @@ object FollowTargetHud : Module(
         }
     }
 
-    fun getWidth() = widthSetting
-    fun getHeight() = heightSetting
+
+    override fun getWidth() = widthSetting
+    override fun getHeight() = heightSetting
 }

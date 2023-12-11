@@ -1,6 +1,7 @@
 package com.curseclient.client.utility.render.animation
 
 import java.awt.Color
+import kotlin.math.pow
 
 object Transitions {
     /**
@@ -32,6 +33,6 @@ object Transitions {
     fun easeOutBack(x: Double): Double {
         val c1 = 1.30158
         val c3 = c1 + 1
-        return 1 + c3 * Math.pow(x - 1, 3.0) + c1 * Math.pow(x - 1, 2.0)
+        return 1 + c3 * (x - 1).pow(3.0) + c1 * (x - 1).pow(2.0)
     }
 }

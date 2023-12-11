@@ -1,16 +1,17 @@
 package com.curseclient.client.utility.render
 
-import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.interpolateFloat
 import com.curseclient.client.utility.math.MathUtils.interpolateInt
 import com.curseclient.client.utility.math.MathUtils.lerp
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.math.MathHelper
 import org.lwjgl.opengl.GL11.glColor4f
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+
 
 object ColorUtils {
 
@@ -52,6 +53,9 @@ object ColorUtils {
         return intArrayOf(start, end)
     }
 
+    fun injectAlpha(color: Color, alpha: Int): Color {
+        return Color(color.red, color.green, color.blue, MathHelper.clamp(alpha, 0, 255))
+    }
 
     fun changeAlpha(origColor: Int, userInputedAlpha: Int): Int {
         var origColor = origColor
