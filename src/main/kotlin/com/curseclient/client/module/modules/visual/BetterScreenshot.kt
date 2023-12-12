@@ -89,7 +89,7 @@ object BetterScreenshot : Module(
 
                 RenderUtils2D.drawRect(
                     Vec2d(selectionX, selectionY),
-                    Vec2d(selectionWidth, selectionHeight),
+                    Vec2d(selectionX + selectionWidth, selectionY + selectionHeight),
                     selectionColor
                 )
                 RenderUtils2D.drawBorder(

@@ -3,7 +3,7 @@ package com.curseclient.mixin.render;
 import com.curseclient.client.event.EventBus;
 import com.curseclient.client.event.events.render.RenderEntityEvent;
 import com.curseclient.client.event.events.render.ShouldSetupTerrainEvent;
-import com.curseclient.client.events.EventRenderSky;
+import com.curseclient.client.event.events.world.EventRenderSky;
 import com.curseclient.client.module.modules.client.PerformancePlus;
 import com.curseclient.client.module.modules.visual.SelectionHighlight;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -34,7 +34,7 @@ public class MixinRenderGlobal {
         final EventRenderSky event = new EventRenderSky();
         EventBus.INSTANCE.post(event);
 
-        return event.isCancelled();
+        return event.getCancelled();
     }
 
     @Inject(method = "renderEntities", at = @At("HEAD"))

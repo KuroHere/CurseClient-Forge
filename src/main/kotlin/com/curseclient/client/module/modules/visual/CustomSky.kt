@@ -1,7 +1,7 @@
 package com.curseclient.client.module.modules.visual
 
+import com.curseclient.client.event.events.world.EventRenderSky
 import com.curseclient.client.event.listener.safeListener
-import com.curseclient.client.events.EventRenderSky
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.setting.setting
@@ -31,8 +31,8 @@ object CustomSky : Module(
         safeListener<EventRenderSky> { event ->
             if (skyMode != SkyMode.NORMAL) {
                 event.cancel()
-                renderSky()
             }
+            renderSky()
         }
     }
 
@@ -47,19 +47,23 @@ object CustomSky : Module(
         RenderHelper.disableStandardItemLighting()
         GlStateManager.depthMask(false)
         var needsTexture = false
-        when (skyMode.name) {
-            "CURSE" -> {
+        when (skyMode) {
+            SkyMode.CURSE -> {
                 RenderUtils2D.bind(curseSkyTexture)
                 needsTexture = true
             }
-            "RAINBOW" -> {
+            SkyMode.RAINBOW -> {
                 RenderUtils2D.bind(rainbowSkyTexture)
                 needsTexture = true
             }
-            "END" -> {
+            SkyMode.END -> {
                 mc.renderManager.renderEngine.bindTexture(END_SKY_TEXTURES)
                 needsTexture = true
             }
+
+            SkyMode.NORMAL -> null
+            SkyMode.COLOR -> null
+            SkyMode.NONE -> null
         }
         val tessellator = Tessellator.getInstance()
         val bufferbuilder = tessellator.buffer
@@ -86,31 +90,33 @@ object CustomSky : Module(
                 bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR)
             }
 
-            when (skyMode.name) {
-                "CURSE", "RAINBOW" -> {
+            when (skyMode) {
+                SkyMode.CURSE, SkyMode.RAINBOW -> {
                     bufferbuilder.pos(-100.0, -100.0, -100.0).tex(0.0, 0.0).color(skyGamma.toFloat(), skyGamma.toFloat(), skyGamma.toFloat(), 255f).endVertex()
                     bufferbuilder.pos(-100.0, -100.0, 100.0).tex(0.0, 2.0).color(skyGamma.toFloat(), skyGamma.toFloat(), skyGamma.toFloat(), 255f).endVertex()
                     bufferbuilder.pos(100.0, -100.0, 100.0).tex(2.0, 2.0).color(skyGamma.toFloat(), skyGamma.toFloat(), skyGamma.toFloat(), 255f).endVertex()
                     bufferbuilder.pos(100.0, -100.0, -100.0).tex(2.0, 0.0).color(skyGamma.toFloat(), skyGamma.toFloat(), skyGamma.toFloat(), 255f).endVertex()
                 }
-                "COLOR" -> {
+                SkyMode.COLOR -> {
                     bufferbuilder.pos(-100.0, -100.0, -100.0).color(skyColor.red, skyColor.green, skyColor.blue, 255).endVertex()
                     bufferbuilder.pos(-100.0, -100.0, 100.0).color(skyColor.red, skyColor.green, skyColor.blue, 255).endVertex()
                     bufferbuilder.pos(100.0, -100.0, 100.0).color(skyColor.red, skyColor.green, skyColor.blue, 255).endVertex()
                     bufferbuilder.pos(100.0, -100.0, -100.0).color(skyColor.red, skyColor.green, skyColor.blue, 255).endVertex()
                 }
-                "END" -> {
+                SkyMode.END -> {
                     bufferbuilder.pos(-100.0, -100.0, -100.0).tex(0.0, 0.0).color(skyGammaEnd.toFloat(), skyGammaEnd.toFloat(), skyGammaEnd.toFloat(), 255f).endVertex()
                     bufferbuilder.pos(-100.0, -100.0, 100.0).tex(0.0, 16.0).color(skyGammaEnd.toFloat(), skyGammaEnd.toFloat(), skyGammaEnd.toFloat(), 255f).endVertex()
                     bufferbuilder.pos(100.0, -100.0, 100.0).tex(16.0, 16.0).color(skyGammaEnd.toFloat(), skyGammaEnd.toFloat(), skyGammaEnd.toFloat(), 255f).endVertex()
                     bufferbuilder.pos(100.0, -100.0, -100.0).tex(16.0, 0.0).color(skyGammaEnd.toFloat(), skyGammaEnd.toFloat(), skyGammaEnd.toFloat(), 255f).endVertex()
                 }
-                "NONE" -> {
+                SkyMode.NONE -> {
                     bufferbuilder.pos(-100.0, -100.0, -100.0).color(10, 10, 10, 255).endVertex()
                     bufferbuilder.pos(-100.0, -100.0, 100.0).color(10, 10, 10, 255).endVertex()
                     bufferbuilder.pos(100.0, -100.0, 100.0).color(10, 10, 10, 255).endVertex()
                     bufferbuilder.pos(100.0, -100.0, -100.0).color(10, 10, 10, 255).endVertex()
                 }
+
+                SkyMode.NORMAL -> null
             }
 
             tessellator.draw()
