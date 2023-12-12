@@ -1,15 +1,10 @@
 package com.curseclient.client.utility.render
 
-import com.curseclient.CurseClient
 import com.curseclient.client.event.SafeClientEvent
-import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.utility.extension.mixins.renderPosX
 import com.curseclient.client.utility.extension.mixins.renderPosY
 import com.curseclient.client.utility.extension.mixins.renderPosZ
 import com.curseclient.client.utility.extension.mixins.timer
-import com.curseclient.client.utility.render.ColorUtils.b
-import com.curseclient.client.utility.render.ColorUtils.g
-import com.curseclient.client.utility.render.ColorUtils.r
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -22,8 +17,6 @@ import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL32
 import java.awt.Color
-import kotlin.math.cos
-import kotlin.math.sin
 
 
 object RenderUtils3D {
@@ -179,7 +172,6 @@ object RenderUtils3D {
         val blue = (color and 0xFF) / 255.0f
         drawBoundingBox(bb, width, red, green, blue, alpha)
     }
-
 
     fun renderFaceMesh(bb: AxisAlignedBB, face: EnumFacing, stepSize: Double, width: Float, hex: Int) {
         when (face) {

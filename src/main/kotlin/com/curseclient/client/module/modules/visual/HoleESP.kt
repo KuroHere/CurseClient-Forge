@@ -1,4 +1,4 @@
-package com.curseclient.client.module.modules.combat
+package com.curseclient.client.module.modules.visual
 
 import com.curseclient.client.event.events.render.Render3DEvent
 import com.curseclient.client.event.listener.onMainThread
@@ -20,11 +20,15 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import java.awt.Color
 
+
 object HoleESP : Module(
     "HoleESP",
     "Draws esp for holes",
-    Category.COMBAT
+    Category.VISUAL
 ){
+    private val mode by setting("Mode", Mode.Flat)
+    private val depth by setting("Depth", false, {mode == Mode.Box})
+
     private val obsidianColor by setting("Obsidian Color", Color(160, 20, 255))
     private val bedrockColor by setting("Bedrock Color", Color(255, 20, 20))
     private val doubleColor by setting("Double Color", Color(160, 20, 255))
@@ -38,6 +42,11 @@ object HoleESP : Module(
 
     private var toRender = emptyList<Pair<BlockPos, HoleType>>()
     private val renderer = ESPRenderer()
+
+    enum class Mode {
+        Flat,
+        Box
+    }
 
     private val tickThread = DelayedLoopThread("Hole ESP Thread", { isEnabled() && mc.world != null }, { updateDelay.toLong() }) {
         runSafe {
@@ -97,6 +106,13 @@ object HoleESP : Module(
     }
 
     private fun put(box: ESPBox, color: Color) {
-        renderer.put(box, color.setAlphaD(filledAlpha), color.setAlphaD(outlineAlpha), listOf(EnumFacing.DOWN))
+        val list = when (mode) {
+            Mode.Flat -> listOf(EnumFacing.DOWN)
+            Mode.Box -> if (depth)
+                listOf(EnumFacing.UP, EnumFacing.DOWN, EnumFacing.EAST, EnumFacing.WEST, EnumFacing.NORTH, EnumFacing.SOUTH)
+            else
+                listOf(EnumFacing.EAST, EnumFacing.WEST, EnumFacing.NORTH, EnumFacing.SOUTH)
+        }
+        list.let { renderer.put(box, color.setAlphaD(filledAlpha), color.setAlphaD(outlineAlpha), it) }
     }
 }
