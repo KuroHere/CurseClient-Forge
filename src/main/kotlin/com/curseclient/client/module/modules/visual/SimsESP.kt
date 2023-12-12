@@ -94,7 +94,6 @@ object SimsESP: Module(
                     mc.renderManager.renderEntityStatic(entity, ticks, false)
                     renderNameTags = true
                 } catch (e: Exception) {
-                    CurseClient.LOG.debug("Crash rồi nhớ gửi crash log cho Kuro_Here nhé")
                     e.printStackTrace()
                 }
             }

@@ -34,6 +34,7 @@ object ModuleManager: Manager("ModuleManager") {
         MovementGraph,
         FpsGraph,
         ModuleList,
+        PvpResources,
         Armor,
         FPS,
         Notifications,

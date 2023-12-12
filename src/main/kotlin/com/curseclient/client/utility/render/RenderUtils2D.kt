@@ -2,6 +2,8 @@ package com.curseclient.client.utility.render
 
 import baritone.api.utils.Helper.mc
 import com.curseclient.client.utility.render.ColorUtils.glColor
+import com.curseclient.client.utility.render.font.FontRenderer
+import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.graphic.GLUtils.draw
 import com.curseclient.client.utility.render.graphic.GLUtils.glColor
 import com.curseclient.client.utility.render.graphic.GLUtils.matrix
@@ -286,7 +288,7 @@ object RenderUtils2D {
         glPopMatrix()
     }
 
-    fun drawItem(itemStack: ItemStack, x: Double, y: Double, text: String? = null, drawOverlay: Boolean = true) {
+    fun drawItem(itemStack: ItemStack, x: Double, y: Double, text: String? = null, drawOverlay: Boolean = true, color: Color = Color.WHITE, scale: Float = 1f) {
         glPushMatrix()
 
         GlStateManager.enableBlend()
@@ -297,7 +299,8 @@ object RenderUtils2D {
 
         mc.renderItem.zLevel = 0.0f
         mc.renderItem.renderItemAndEffectIntoGUI(itemStack, 0, 0)
-        if (drawOverlay) mc.renderItem.renderItemOverlayIntoGUI(mc.fontRenderer, itemStack, 0, 0, text)
+        if (drawOverlay)
+            renderItemOverlayIntoGUI(FontRenderer, itemStack, 0, 0, text, color, scale)
         mc.renderItem.zLevel = 0.0f
 
         RenderHelper.disableStandardItemLighting()
@@ -307,6 +310,23 @@ object RenderUtils2D {
         GlStateManager.disableDepth()
         GlStateManager.enableTexture2D()
         glPopMatrix()
+    }
+
+    private fun renderItemOverlayIntoGUI(fr: FontRenderer, stack: ItemStack, xPosition: Int, yPosition: Int, text: String?, color: Color, scale: Float) {
+        if (!stack.isEmpty) {
+            if (stack.count != 1 || text != null) {
+                val s = text ?: stack.count.toString()
+                GlStateManager.disableLighting()
+                GlStateManager.disableDepth()
+                GlStateManager.disableBlend()
+                fr.drawString(s, (xPosition + 19 - 2 - fr.getStringWidth(s, Fonts.DEFAULT)), (yPosition + 6 + 3).toFloat(), true, color, scale, Fonts.DEFAULT)
+                GlStateManager.enableLighting()
+                GlStateManager.enableDepth()
+                // Fixes opaque cooldown overlay a bit lower
+                // TODO: check if enabled blending still screws things up down the line.
+                GlStateManager.enableBlend()
+            }
+        }
     }
 
     fun drawRect(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
