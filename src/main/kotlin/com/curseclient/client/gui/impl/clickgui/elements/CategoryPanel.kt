@@ -9,6 +9,7 @@ import com.curseclient.client.manager.managers.ModuleManager
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.modules.client.ClickGui
 import com.curseclient.client.module.modules.client.HUD
+import com.curseclient.client.module.modules.hud.PvpResources
 import com.curseclient.client.utility.extension.transformIf
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
@@ -24,7 +25,9 @@ import com.curseclient.client.utility.render.font.BonIcon
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
+import com.curseclient.client.utility.render.shader.GaussianBlur
 import com.curseclient.client.utility.render.shader.RectBuilder
+import com.curseclient.client.utility.render.shader.RoundedUtil
 import com.curseclient.client.utility.render.vector.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
@@ -148,23 +151,27 @@ class CategoryPanel(
         Fonts.BonIcon.drawString(icon, iconPos, scale = ClickGui.titleFontSize, color = if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2)
 
         toggleScissor(true)
+        GlStateManager.pushMatrix()
         scissor(p1, p2.minus(0.0, radius), gui.currentScale * 2.0) {
-            if (ClickGui.backgroundShader)
-                bgShader()
+            if (ClickGui.backgroundShader) {
+                //bgShader()
+                GaussianBlur.startBlur()
+                RoundedUtil.drawGradientRound(pos.x.toFloat(), pos.y.toFloat(), 600f, 600f, radius.toFloat(), Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK)
+                GaussianBlur.endBlur(ClickGui.blurRadius, ClickGui.compression)
+            }
             modules.forEach {
                 if (!checkCulling(it.pos, it.pos.plus(it.width, it.getButtonHeight()), p1, p2)) return@forEach
                 it.onRender()
             }
         }
+        GlStateManager.popMatrix()
+
         RectBuilder(p1, p2).apply {
             shadow(pos.x, pos.y + 3, width , 15.0, 10, Color.BLACK)
             shadow(pos.x, pos.y + height + windowHeight - radius, width, 5.0, 10, Color.BLACK)
         }
         toggleScissor(false)
 
-        //val dragText = "•••"
-        //val dragTextPos = pos.plus(width / 2.0 - Fonts.DEFAULT_BOLD.getStringWidth(dragText) * 0.5, height + windowHeight - radius)
-        //Fonts.DEFAULT_BOLD.drawString(dragText, dragTextPos, color = (if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2).setAlphaD(windowHeight / targetWindowHeight))
     }
 
     // I just accidentally found it interesting, so I added it

@@ -7,6 +7,7 @@ import com.curseclient.client.gui.impl.clickgui.ClickGuiHud
 import com.curseclient.client.manager.managers.data.DataManager
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
+import com.curseclient.client.module.modules.hud.Armor
 import com.curseclient.client.setting.setting
 import com.curseclient.client.utility.render.ColorUtils.r
 import com.curseclient.client.utility.threads.runAsync
@@ -62,10 +63,12 @@ object ClickGui : Module(
     val speed by setting("Speed", 1.0, 0.1, 5.0, 0.1, { page == Page.Colors && listOf(ColorMode.Shader).contains(colorMode) })
 
     val pulse by setting("Pulse Color", false, { page == Page.Colors && listOf(ColorMode.Static, ColorMode.Vertical, ColorMode.Horizontal).contains(colorMode)})
+    val backgroundShader by setting("ShaderBackground", false, { page == Page.Colors })
+    val blurRadius by setting("BlurRadius", 20, 5, 50, 1, { page == Page.Colors && backgroundShader })
+    val compression by setting("Compression", 2, 1, 5, 1, { page == Page.Colors && backgroundShader })
 
     val outlineColor by setting("OutlineColor", Color(35, 35, 35, 255), { outline && page == Page.Colors })
     val backgroundColor by setting("Background Color", Color(20, 20, 20), { page == Page.Colors })
-    val backgroundShader by setting("Shader Background", false, { page == Page.Colors })
     val disabledColor by setting("Disabled Color", Color(255, 255, 255, 30), { page == Page.Colors })
 
     val buttonAlpha by setting("Button Alpha", 0.7, 0.05, 1.0, 0.01, { page == Page.Colors })
