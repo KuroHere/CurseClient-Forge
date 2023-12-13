@@ -5,19 +5,21 @@ import com.curseclient.client.module.modules.client.FontSettings
 import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.module.modules.hud.modulelist.ModuleList.animationMode
 import com.curseclient.client.module.modules.hud.modulelist.ModuleList.font
-import com.curseclient.client.utility.render.animation.EaseUtils
-import com.curseclient.client.utility.render.vector.Vec2d
 import com.curseclient.client.utility.render.ColorUtils.setAlpha
 import com.curseclient.client.utility.render.ColorUtils.setAlphaD
-import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.Screen
+import com.curseclient.client.utility.render.animation.EaseUtils
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getHeight
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
+import com.curseclient.client.utility.render.graphic.GLUtils
+import com.curseclient.client.utility.render.shader.GaussianBlur
+import com.curseclient.client.utility.render.vector.Vec2d
 import net.minecraft.client.Minecraft
 import java.awt.Color
 import kotlin.math.max
+
 
 class ModuleListElement(val module: Module, var y: Double, var pos: Int) {
     var shouldRemoved = false
@@ -58,12 +60,17 @@ class ModuleListElement(val module: Module, var y: Double, var pos: Int) {
         val bgColor = HUD.bgColor.setAlphaD(ModuleList.bgAlpha)
         val fontColor1 = HUD.getColor(pos).setAlpha(if (animationMode != ModuleList.ModuleListAnimationMode.Scale) 255 else (255.0 * p).toInt())
         val fontColor2 = HUD.getColor(pos + 1).setAlpha(if (animationMode != ModuleList.ModuleListAnimationMode.Scale) 255 else (255.0 * p).toInt())
+
         //background
+        if (ModuleList.bgBlur)
+            GaussianBlur.startBlur()
         RenderUtils2D.drawRect(
             Vec2d(sr.scaledWidth + offset, y),
             Vec2d(sr.scaledWidth - 5.0 - font.getStringWidth(text, ModuleList.size) + offset, y + getHeight()),
             bgColor
         )
+        if (ModuleList.bgBlur)
+            GaussianBlur.endBlur(ModuleList.radius.toFloat(), ModuleList.compression.toFloat())
 
         //right line
         if (ModuleList.line) RenderUtils2D.drawGradientRect(

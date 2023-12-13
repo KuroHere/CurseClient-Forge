@@ -19,8 +19,6 @@ import com.curseclient.client.utility.render.shader.GradientUtil
 import com.curseclient.client.utility.render.shader.RoundedUtil
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.curseclient.client.utility.misc.Song.Companion.song_name
-import com.curseclient.client.utility.render.animation.Transitions
-import com.curseclient.client.utility.render.shader.RectBuilder
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -28,7 +26,6 @@ import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import kotlin.math.pow
 
 
 class MainGui: GuiScreen() {

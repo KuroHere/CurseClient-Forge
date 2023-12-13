@@ -1,4 +1,4 @@
-package com.curseclient.client.utility.render
+package com.curseclient.client.utility.render.shader
 
 import baritone.api.utils.Helper
 import com.curseclient.client.module.modules.visual.MotionBlur.amount

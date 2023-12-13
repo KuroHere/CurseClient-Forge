@@ -4,9 +4,14 @@ import baritone.api.utils.Helper
 import com.curseclient.client.module.DraggableHudModule
 import com.curseclient.client.module.HudCategory
 import com.curseclient.client.setting.setting
+import com.curseclient.client.utility.render.ColorUtils.setAlpha
+import com.curseclient.client.utility.render.ColorUtils.setDarkness
 import com.curseclient.client.utility.render.RenderUtils2D
+import com.curseclient.client.utility.render.shader.GaussianBlur
 import com.curseclient.client.utility.render.shader.RectBuilder
+import com.curseclient.client.utility.render.shader.RoundedUtil
 import com.curseclient.client.utility.render.vector.Vec2d
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -20,6 +25,10 @@ object PvpResources : DraggableHudModule(
     private val mode by setting("Mode", Mode.Horizon)
     private val textColor by setting("TextColor", Color(255, 255, 255, 255))
     private val background by setting("BackGround", Color(35, 35, 35, 50))
+    private val bgBlur by setting("Blur", false)
+    private val bRadius by setting("BlurRadius", 20, 5, 50, 1, { bgBlur })
+    private val compression by setting("Compression", 2, 1, 5, 1, { bgBlur })
+
     private val radius by setting("Radius", 1.0, 0.0, 5.0, 0.1)
 
     var w = 0.0
@@ -32,6 +41,25 @@ object PvpResources : DraggableHudModule(
         val vertical = mode == Mode.Vertical
         val quad = mode == Mode.Quad
         val dimension = if (horizontal) Vec2d(80.0, 20.0) else if (vertical) Vec2d(20.0, 80.0) else Vec2d(40.0, 40.0)
+
+        GlStateManager.pushMatrix()
+        if (bgBlur) {
+            GaussianBlur.startBlur()
+            RoundedUtil.drawGradientRound(pos.x.toFloat(), pos.y.toFloat(), dimension.x.toFloat(), dimension.y.toFloat(), radius.toFloat(), background, background, background, background)
+            GaussianBlur.endBlur(bRadius, compression)
+        }
+        GlStateManager.popMatrix()
+
+        RenderUtils2D.initStencilToWrite()
+        RectBuilder(pos, pos.plus(dimension)).apply {
+            color(background)
+            radius(radius)
+            draw()
+        }
+        RenderUtils2D.readStencilBuffer(1)
+        RenderUtils2D.uninitStencilBuffer()
+
+        GlStateManager.pushMatrix()
 
         RectBuilder(pos, pos.plus(dimension)).apply {
             shadow(pos.x, pos.y, dimension.x, dimension.y, 5, background)
@@ -51,6 +79,8 @@ object PvpResources : DraggableHudModule(
             val indexPos = Vec2d(pos.x + n7 + 2, pos.y + n8 + 2)
             drawItem(itemStack, indexPos)
         }
+        GlStateManager.popMatrix()
+
 
         w = dimension.x
         h = dimension.y

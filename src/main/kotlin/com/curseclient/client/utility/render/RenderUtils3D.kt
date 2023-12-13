@@ -87,7 +87,7 @@ object RenderUtils3D {
         if (outline) {
             glLineWidth(1f)
             enableGlCap(GL_LINE_SMOOTH)
-            glColor(color.red, color.green, color.blue, 95);
+            glColor(color.red, color.green, color.blue, 95)
             drawSelectionBoundingBox(axisAlignedBB)
         }
         glColor(color.red, color.green, color.blue, (if (outline) 26 else 35))
@@ -373,14 +373,14 @@ object RenderUtils3D {
         GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         GlStateManager.disableTexture2D()
         GlStateManager.disableDepth()
-        //GlStateManager.disableLighting();
+        //GlStateManager.disableLighting()
         glEnable(GL_LINE_SMOOTH)
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
     }
 
     fun end3D() {
         glDisable(GL_LINE_SMOOTH)
-        //GlStateManager.enableLighting();
+        //GlStateManager.enableLighting()
         GlStateManager.enableDepth()
         GlStateManager.enableTexture2D()
         GlStateManager.enableBlend()

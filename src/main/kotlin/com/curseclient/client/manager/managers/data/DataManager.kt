@@ -4,13 +4,11 @@ import com.curseclient.CurseClient
 import com.curseclient.client.event.events.ConnectionEvent
 import com.curseclient.client.event.listener.listener
 import com.curseclient.client.manager.Manager
-import com.curseclient.client.manager.managers.data.controllers.Alts.AltsDataController
 import com.curseclient.client.manager.managers.data.controllers.HudData.HudModuleDataController
 import com.curseclient.client.manager.managers.data.controllers.HudData.HudSettingsDataController
 import com.curseclient.client.manager.managers.data.controllers.ModuleDataController
 import com.curseclient.client.manager.managers.data.controllers.SettingsDataController
 import java.io.File
-import java.io.IOException
 
 
 object DataManager : Manager("DataManager") {
@@ -24,8 +22,6 @@ object DataManager : Manager("DataManager") {
         listener<ConnectionEvent.Disconnect> {
             saveConfig()
         }
-
-        controllers.add(AltsDataController)
 
         controllers.add(HudModuleDataController)
         controllers.add(HudSettingsDataController)

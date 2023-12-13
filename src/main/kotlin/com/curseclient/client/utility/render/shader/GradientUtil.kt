@@ -2,7 +2,9 @@ package com.curseclient.client.utility.render.shader
 
 import baritone.api.utils.Helper
 import com.curseclient.client.utility.render.ColorUtils
-import com.curseclient.client.utility.render.shader.RoundedUtil.*
+import com.curseclient.client.utility.render.shader.RoundedUtil.endBlend
+import com.curseclient.client.utility.render.shader.RoundedUtil.setAlphaLimit
+import com.curseclient.client.utility.render.shader.RoundedUtil.startBlend
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager.resetColor
@@ -12,6 +14,7 @@ import java.awt.Color
 object GradientUtil {
     private val gradientMaskShader: ShaderUtils = ShaderUtils("gradientMask")
     private val gradientShader: ShaderUtils = ShaderUtils("gradient")
+
     fun drawGradient(x: Float, y: Float, width: Float, height: Float, alpha: Float, bottomLeft: Color, topLeft: Color, bottomRight: Color, topRight: Color) {
         val sr = ScaledResolution(Helper.mc)
         setAlphaLimit(0f)

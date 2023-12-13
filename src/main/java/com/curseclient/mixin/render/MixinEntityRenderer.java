@@ -6,7 +6,7 @@ import com.curseclient.client.manager.managers.ModuleManager;
 import com.curseclient.client.module.modules.client.PerformancePlus;
 import com.curseclient.client.module.modules.player.NoEntityTrace;
 import com.curseclient.client.module.modules.visual.*;
-import com.curseclient.client.utility.render.MotionBlurUtil;
+import com.curseclient.client.utility.render.shader.MotionBlurUtil;
 import com.curseclient.client.utility.render.ProjectionUtils;
 import com.curseclient.client.utility.render.Screen;
 import com.curseclient.mixin.accessor.render.AccessorEntityRenderer;

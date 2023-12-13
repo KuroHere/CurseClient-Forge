@@ -4,6 +4,7 @@ import baritone.api.utils.Helper
 import com.curseclient.client.module.DraggableHudModule
 import com.curseclient.client.module.HudCategory
 import com.curseclient.client.module.modules.client.HUD
+import com.curseclient.client.module.modules.hud.modulelist.ModuleList
 import com.curseclient.client.setting.setting
 import com.curseclient.client.utility.extension.mixins.timer
 import com.curseclient.client.utility.math.MathUtils
@@ -16,6 +17,7 @@ import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.RenderUtils2D.initStencilToWrite
 import com.curseclient.client.utility.render.RenderUtils2D.readStencilBuffer
 import com.curseclient.client.utility.render.RenderUtils2D.uninitStencilBuffer
+import com.curseclient.client.utility.render.shader.GaussianBlur
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.shader.RoundedUtil
 import com.curseclient.client.utility.render.vector.Vec2d
@@ -44,6 +46,10 @@ object Radar : DraggableHudModule(
 
     private val shadow by setting("Shadow", true, { page == Page.General})
     private val shadowSize by setting("ShadowRadius", 5, 0, 20, 1, { page == Page.General})
+
+    private val bgBlur by setting("Blur", false)
+    val radius by setting("BlurRadius", 20, 5, 50, 1, { bgBlur })
+    private val compression by setting("Compression", 2, 1, 5, 1, { bgBlur })
 
     private val outline by setting("Outline", true, { page == Page.General})
     private val outlineColor by setting("OutlineColor", Color.WHITE, { page == Page.General})
@@ -87,6 +93,15 @@ object Radar : DraggableHudModule(
         // Shadow
         if (shadow) RenderUtils2D.drawBlurredShadow(x - 1, y - 1, radarSize + 1, radarSize + 1, shadowSize.toInt(), c1.setDarkness(darkness1.toInt()))
 
+        // Base
+        GlStateManager.pushMatrix()
+        if (bgBlur) {
+            GaussianBlur.startBlur()
+            RoundedUtil.drawGradientRound(x, y, radarSize, radarSize, rounded.toFloat(), c1.setDarkness(darkness1.toInt()).setAlpha(alpha.toInt()), c1.setDarkness(darkness1.toInt()).setAlpha(alpha.toInt()), c2.setDarkness(darkness2.toInt()).setAlpha(alpha.toInt()), c2.setDarkness(darkness2.toInt()).setAlpha(alpha.toInt()))
+            GaussianBlur.endBlur(radius.toFloat(), compression.toFloat())
+        }
+        GlStateManager.popMatrix()
+
         RoundedUtil.drawGradientRound(x, y, radarSize, radarSize, rounded.toFloat(), c1.setDarkness(darkness1.toInt()).setAlpha(alpha.toInt()), c1.setDarkness(darkness1.toInt()).setAlpha(alpha.toInt()), c2.setDarkness(darkness2.toInt()).setAlpha(alpha.toInt()), c2.setDarkness(darkness2.toInt()).setAlpha(alpha.toInt()))
 
         // Outline
@@ -102,7 +117,7 @@ object Radar : DraggableHudModule(
         readStencilBuffer(1)
 
         // Point
-        GlStateManager.pushMatrix();
+        GlStateManager.pushMatrix()
         GlStateManager.translate(middleX.toDouble(), middleY.toDouble(), 0.0)
         GlStateManager.rotate(mc.player.rotationYaw, 0f, 0f, -1f)
         GlStateManager.translate(-middleX.toDouble(), -middleY.toDouble(), 0.0)
@@ -120,9 +135,8 @@ object Radar : DraggableHudModule(
             }
         }
 
-        GlStateManager.popMatrix();
+        GlStateManager.popMatrix()
         uninitStencilBuffer()
-
     }
 
     private fun getEntities() {

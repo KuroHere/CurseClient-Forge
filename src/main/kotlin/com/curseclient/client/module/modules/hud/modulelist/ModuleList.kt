@@ -20,6 +20,9 @@ object ModuleList : HudModule(
     val animationSpeed by setting("Animation Speed", 2.0, 0.5, 3.0, 0.1)
     val textShadow by setting("Text Shadow", true)
     val bgAlpha by setting("Background Alpha", 0.0, 0.0, 1.0, 0.05)
+    val bgBlur by setting("Blur", false)
+    val radius by setting("BlurRadius", 20, 5, 50, 1, { bgBlur })
+    val compression by setting("Compression", 2, 1, 5, 1, { bgBlur })
     val line by setting("Line", false)
 
     val size get() = sizeSetting

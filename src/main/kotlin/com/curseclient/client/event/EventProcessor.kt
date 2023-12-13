@@ -46,9 +46,9 @@ internal object EventProcessor {
         }
 
         if (Status.endTime.toInt() == -1 && ((!mc.isSingleplayer && mc.currentServerData == null) || mc.currentScreen is GuiMainMenu || mc.currentScreen is GuiMultiplayer || mc.currentScreen is GuiDisconnected)) {
-            Status.endTime = System.currentTimeMillis();
+            Status.endTime = System.currentTimeMillis()
         } else if (Status.endTime.toInt() != -1 && (mc.isSingleplayer || mc.currentServerData != null)) {
-            Status.reset();
+            Status.reset()
         }
     }
 

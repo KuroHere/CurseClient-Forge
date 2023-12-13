@@ -4,9 +4,11 @@ import com.curseclient.client.gui.impl.altmanager.AltGui
 import com.curseclient.client.gui.impl.maingui.MainGui
 import com.curseclient.client.gui.impl.maingui.MainGuiElement
 import com.curseclient.client.module.modules.client.HUD
+import com.curseclient.client.module.modules.hud.compass.Compass
 import com.curseclient.client.utility.render.animation.EaseUtils
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.render.ColorUtils
+import com.curseclient.client.utility.render.ColorUtils.setAlpha
 import com.curseclient.client.utility.render.ColorUtils.toColor
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.font.FontRenderer
@@ -14,6 +16,7 @@ import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getHeight
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
+import com.curseclient.client.utility.render.shader.GaussianBlur
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
 import net.minecraft.client.gui.GuiMultiplayer
@@ -54,7 +57,7 @@ class  GeneralButton(xCenter: Int, yCenter: Int, width: Int, height: Int, val te
         val leftTop = Vec2d(getLeftTop().x.toDouble() - (getHoverProgress() * 2), getLeftTop().y.toDouble())
         val rightBottom = Vec2d(getRightBottom().x.toDouble() + (getHoverProgress() * 2), getRightBottom().y.toDouble())
 
-        RenderUtils2D.drawRect(leftTop, rightBottom, Color(color, color, color, 100))
+        GaussianBlur.glBlur({ RenderUtils2D.drawRect(leftTop, rightBottom, Color(color, color, color, 100)) }, 30f)
         RenderUtils2D.drawGradientRect(
             leftTop, rightBottom,
             Color(color, color, color, 255),

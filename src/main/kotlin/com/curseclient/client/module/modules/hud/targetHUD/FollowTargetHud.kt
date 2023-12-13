@@ -54,10 +54,7 @@ object FollowTargetHud : Module(
     private var progress = 0.0
     private var healthProgress = 0.0
 
-    var position = Vector2d(0.0, 0.0)
-
     private var info = TargetInfo.BLANK
-
     private var target: EntityLivingBase? = null
 
 
@@ -78,7 +75,6 @@ object FollowTargetHud : Module(
                         val pos = it.second.subtract(viewerPos)
 
                     matrix {
-                        GlStateManager.disableDepth()
                         glTranslated(pos.x, pos.y, pos.z)
                         glNormal3f(0.0f, 1.0f, 0.0f)
                         glRotatef(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
@@ -87,7 +83,6 @@ object FollowTargetHud : Module(
                         val distance = 1.0 + max(4.0, viewerPos.distanceTo(it.second))
                         val scaleFactor = distance * scale * 0.005
                         glScaled(-scaleFactor, -scaleFactor, scaleFactor)
-                        GlStateManager.enableDepth()
                         drawTargetHUD(it.first)
                     }
                 }
@@ -103,10 +98,6 @@ object FollowTargetHud : Module(
         val pos1 = Vec2d(-width / 2.0, -height / 2.0)
         val pos2 = Vec2d(width / 2.0, height / 2.0)
 
-        drawTargetHud(pos1, pos2)
-    }
-
-    private fun drawTargetHud(pos1: Vec2d, pos2: Vec2d) {
         val highlightColor1 = HUD.getColor().setAlphaD(0.06)
         val highlightColor2 = highlightColor1.setAlphaD(0.0)
 

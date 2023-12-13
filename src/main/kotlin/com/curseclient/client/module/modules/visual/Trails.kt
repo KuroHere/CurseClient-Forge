@@ -8,7 +8,6 @@ import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.setting.setting
-import com.curseclient.client.utility.extension.entity.interpolatedPosition
 import com.curseclient.client.utility.math.MathUtils.normalize
 import com.curseclient.client.utility.render.ColorUtils.b
 import com.curseclient.client.utility.render.ColorUtils.g
@@ -20,15 +19,11 @@ import com.curseclient.client.utility.render.RenderUtils3D
 import com.curseclient.client.utility.render.graphic.GLUtils.draw
 import com.curseclient.client.utility.render.graphic.GLUtils.glVertex
 import com.curseclient.client.utility.render.graphic.GLUtils.renderGL
-import com.curseclient.client.utility.render.shader.RoundedUtil.*
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
-import kotlin.math.cos
-import kotlin.math.sin
 
 object Trails : Module(
     "Breadcrumbs",

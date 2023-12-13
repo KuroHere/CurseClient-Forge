@@ -48,17 +48,6 @@ object BlurUtil {
         lastScaleHeight = heightFactor
     }
 
-    fun drawBlurry(x: Float, y: Float, x1: Float, y1: Float, intensity: Float) {
-        blur(
-            x,
-            y,
-
-            x1 - x,
-            y1 - y,
-            intensity
-        )
-    }
-
     fun blur(x: Float, y: Float, width: Float, height: Float, intensity: Float) {
         val resolution = ScaledResolution(mc)
         val currentScale = resolution.scaleFactor

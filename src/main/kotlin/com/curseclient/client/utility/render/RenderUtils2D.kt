@@ -12,8 +12,6 @@ import com.curseclient.client.utility.render.shader.GradientShader.finish
 import com.curseclient.client.utility.render.shader.GradientShader.setup
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.jhlabs.image.GaussianFilter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
@@ -1118,4 +1116,19 @@ object RenderUtils2D {
             glDisable(GL_TEXTURE_2D)
     }
 
+    fun createFrameBuffer(framebuffer: Framebuffer?): Framebuffer? {
+        return createFrameBuffer(framebuffer, false)
+    }
+
+    fun createFrameBuffer(framebuffer: Framebuffer?, depth: Boolean): Framebuffer? {
+        if (needsNewFramebuffer(framebuffer)) {
+            framebuffer?.deleteFramebuffer()
+            return Framebuffer(mc.displayWidth, mc.displayHeight, depth)
+        }
+        return framebuffer
+    }
+
+    private fun needsNewFramebuffer(framebuffer: Framebuffer?): Boolean {
+        return framebuffer == null || framebuffer.framebufferWidth != mc.displayWidth || framebuffer.framebufferHeight != mc.displayHeight
+    }
 }

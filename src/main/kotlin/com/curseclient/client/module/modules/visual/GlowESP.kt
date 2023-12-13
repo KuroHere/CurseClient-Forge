@@ -14,10 +14,13 @@ import com.curseclient.client.utility.render.ColorUtils.g
 import com.curseclient.client.utility.render.ColorUtils.r
 import com.curseclient.client.utility.render.animation.Animation
 import com.curseclient.client.utility.render.animation.DecelerateAnimation
+import com.curseclient.client.utility.render.shader.RoundedUtil.setAlphaLimit
+import com.curseclient.client.utility.render.shader.RoundedUtil.startBlend
 import com.curseclient.client.utility.render.shader.ShaderUtils
 import com.curseclient.client.utility.render.shader.ShaderUtils.drawQuads
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.OpenGlHelper.glUniform1
 import net.minecraft.client.renderer.culling.Frustum
@@ -30,12 +33,13 @@ import net.minecraft.entity.passive.EntityAnimal
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL11.GL_TEXTURE_2D
-import org.lwjgl.opengl.GL11.glBindTexture
+import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL13
+import org.lwjgl.opengl.GL14
 import java.awt.Color
 import java.nio.FloatBuffer
 import java.util.*
+import kotlin.math.pow
 
 
 object GlowESP : Module(
@@ -44,8 +48,10 @@ object GlowESP : Module(
     Category.VISUAL
 ) {
 
+    private val glowMode by setting("GlowMode", GlowMode.Glow)
     private val radius by setting("Radius", 2, 1, 30, 1)
     private val exposure by setting("Exposure", 2.2, 1.0, 3.5, 0.1)
+    private val offsetSetting by setting("Offset", 4, 2, 10, 1, { glowMode == GlowMode.Bloom})
     private val separate by setting("Seperate Texture", false)
 
     private val color by setting("Color", Color(70, 100, 255))
@@ -67,12 +73,21 @@ object GlowESP : Module(
     private val outlineShader = ShaderUtils("shaders/client/outline.frag")
     private val glowShader = ShaderUtils("shaders/client/glow.frag")
 
+    private val kawaseGlowShader: ShaderUtils = ShaderUtils("kawaseDownBloom")
+    private val kawaseGlowShader2: ShaderUtils = ShaderUtils("kawaseUpGlow")
+    private var currentIterations = 0
+    private val framebufferList: MutableList<Framebuffer> = ArrayList()
     var framebuffer: Framebuffer? = null
     private var outlineFrameBuffer: Framebuffer? = null
     private var glowFrameBuffer: Framebuffer? = null
     private val frustum2 = Frustum()
 
     private val entities = ArrayList<Entity>()
+
+    private enum class GlowMode {
+        Glow,
+        Bloom
+    }
 
     override fun onEnable() {
         super.onEnable()
@@ -95,55 +110,135 @@ object GlowESP : Module(
                 renderEntities(event.partialTicks)
                 it.unbindFramebuffer()
             }
-            Helper.mc.framebuffer.bindFramebuffer(true)
+            mc.framebuffer.bindFramebuffer(true)
             GlStateManager.disableLighting()
         }
         safeListener<Render2DEvent> {
             ScaledResolution(mc)
             if (framebuffer != null && outlineFrameBuffer != null && entities.size > 0) {
-                GlStateManager.enableAlpha()
-                GlStateManager.alphaFunc(516, 0.0f)
-                GlStateManager.enableBlend()
-                OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
+                when (glowMode) {
+                    GlowMode.Glow -> {
+                        GlStateManager.enableAlpha()
+                        GlStateManager.alphaFunc(516, 0.0f)
+                        GlStateManager.enableBlend()
+                        OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
 
-                outlineFrameBuffer?.let {
-                    it.framebufferClear()
-                    it.bindFramebuffer(true)
-                    outlineShader.init()
-                    setupOutlineUniforms(0F, 1F)
-                    bindTexture(framebuffer!!.framebufferTexture)
-                    drawQuads()
-                    outlineShader.init()
-                    setupOutlineUniforms(1F, 0F)
-                    bindTexture(framebuffer!!.framebufferTexture)
-                    drawQuads()
-                    outlineShader.unload()
-                    it.unbindFramebuffer()
-                }
+                        outlineFrameBuffer?.let {
+                            it.framebufferClear()
+                            it.bindFramebuffer(true)
+                            outlineShader.init()
+                            setupOutlineUniforms(0F, 1F)
+                            bindTexture(framebuffer!!.framebufferTexture)
+                            drawQuads()
+                            outlineShader.init()
+                            setupOutlineUniforms(1F, 0F)
+                            bindTexture(framebuffer!!.framebufferTexture)
+                            drawQuads()
+                            outlineShader.unload()
+                            it.unbindFramebuffer()
+                        }
+                        GlStateManager.color(1F, 1F, 1F, 1F)
+                        glowFrameBuffer?.let {
+                            it.framebufferClear()
+                            it.bindFramebuffer(true)
+                            glowShader.init()
+                            setupGlowUniforms(1F, 0F)
+                            bindTexture(outlineFrameBuffer!!.framebufferTexture)
+                            drawQuads()
+                            glowShader.unload()
+                            it.unbindFramebuffer()
+                        }
 
-                GlStateManager.color(1F, 1F, 1F, 1F)
-                glowFrameBuffer?.let {
-                    it.framebufferClear()
-                    it.bindFramebuffer(true)
-                    glowShader.init()
-                    setupGlowUniforms(1F, 0F)
-                    bindTexture(outlineFrameBuffer!!.framebufferTexture)
-                    drawQuads()
-                    glowShader.unload()
-                    it.unbindFramebuffer()
-                }
+                        mc.framebuffer.bindFramebuffer(true)
+                        glowShader.init()
+                        setupGlowUniforms(0F, 1F)
+                        if (separate) {
+                            GL13.glActiveTexture(GL13.GL_TEXTURE16)
+                            bindTexture(framebuffer!!.framebufferTexture)
+                        }
+                        GL13.glActiveTexture(GL13.GL_TEXTURE0)
+                        bindTexture(glowFrameBuffer!!.framebufferTexture)
+                        drawQuads()
+                        glowShader.unload()
+                    }
 
-                mc.framebuffer.bindFramebuffer(true)
-                glowShader.init()
-                setupGlowUniforms(0F, 1F)
-                if (separate) {
-                    GL13.glActiveTexture(GL13.GL_TEXTURE16)
-                    bindTexture(framebuffer!!.framebufferTexture)
+                    GlowMode.Bloom -> {
+                        setAlphaLimit(0f)
+                        startBlend()
+                        /*RenderUtil.bindTexture(framebuffer.framebufferTexture)
+                          ShaderUtil.drawQuads()
+                          framebuffer.framebufferClear()
+                          mc.getFramebuffer().bindFramebuffer(false)
+                          if(true) return*/
+
+                        outlineFrameBuffer!!.framebufferClear()
+                        outlineFrameBuffer!!.bindFramebuffer(false)
+                        outlineShader.init()
+                        setupOutlineUniforms(0f, 1f)
+                        bindTexture(framebuffer!!.framebufferTexture)
+                        drawQuads()
+                        outlineShader.init()
+                        setupOutlineUniforms(1f, 0f)
+                        bindTexture(framebuffer!!.framebufferTexture)
+                        drawQuads()
+                        outlineShader.unload()
+                        outlineFrameBuffer!!.unbindFramebuffer()
+
+                        val offset = offsetSetting.toFloat()
+                        val iterations = 3
+
+                        if (framebufferList.isEmpty() || currentIterations != iterations || (framebuffer!!.framebufferWidth != mc.displayWidth || framebuffer!!.framebufferHeight != mc.displayHeight)) {
+                            initFramebuffers(iterations.toFloat())
+                            currentIterations = iterations
+                        }
+                        setAlphaLimit(0f)
+
+                        glBlendFunc(GL_ONE, GL_ONE)
+
+                        glClearColor(0f, 0f, 0f, 0f)
+                        renderFBO(framebufferList[1], outlineFrameBuffer!!.framebufferTexture, kawaseGlowShader, offset)
+
+                        // Downsample
+                        for (i in 1 until iterations) {
+                            renderFBO(framebufferList[i + 1], framebufferList[i].framebufferTexture, kawaseGlowShader, offset)
+                        }
+
+                        // Upsample
+                        for (i in iterations downTo 2) {
+                            renderFBO(framebufferList[i - 1], framebufferList[i].framebufferTexture, kawaseGlowShader2, offset)
+                        }
+
+                        val lastBuffer = framebufferList[0]
+                        lastBuffer.framebufferClear()
+                        lastBuffer.bindFramebuffer(false)
+                        kawaseGlowShader2.init()
+                        kawaseGlowShader2.setUniformf("offset", offset.toFloat(), offset.toFloat())
+                        kawaseGlowShader2.setUniformi("inTexture", 0)
+                        kawaseGlowShader2.setUniformi("check", if (separate) 1 else 0)
+                        kawaseGlowShader2.setUniformf("lastPass", 1f)
+                        kawaseGlowShader2.setUniformf("exposure", (exposure.toFloat() * fadeIn.output.toFloat()))
+                        kawaseGlowShader2.setUniformi("textureToCheck", 16)
+                        kawaseGlowShader2.setUniformf("halfpixel", 1.0f / lastBuffer.framebufferWidth, 1.0f / lastBuffer.framebufferHeight)
+                        kawaseGlowShader2.setUniformf("iResolution", lastBuffer.framebufferWidth.toFloat(), lastBuffer.framebufferHeight.toFloat())
+                        GL13.glActiveTexture(GL13.GL_TEXTURE16)
+                        bindTexture(framebuffer!!.framebufferTexture)
+                        GL13.glActiveTexture(GL13.GL_TEXTURE0)
+                        bindTexture(framebufferList[1].framebufferTexture)
+
+                        drawQuads()
+                        kawaseGlowShader2.unload()
+
+                        glClearColor(0f, 0f, 0f, 0f)
+                        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+                        framebuffer!!.framebufferClear()
+                        resetColor()
+                        mc.framebuffer.bindFramebuffer(true)
+                        bindTexture(framebufferList[0].framebufferTexture)
+                        drawQuads()
+                        setAlphaLimit(0f)
+                        GlStateManager.bindTexture(0)
+                    }
                 }
-                GL13.glActiveTexture(GL13.GL_TEXTURE0)
-                bindTexture(glowFrameBuffer!!.framebufferTexture)
-                drawQuads()
-                glowShader.unload()
             }
         }
     }
@@ -158,6 +253,42 @@ object GlowESP : Module(
 
     fun bindTexture(texture: Int) {
         glBindTexture(GL_TEXTURE_2D, texture)
+    }
+
+    private fun initFramebuffers(iterations: Float) {
+        for (framebuffer in framebufferList) {
+            framebuffer.deleteFramebuffer()
+        }
+        framebufferList.clear()
+
+        //Have to make the framebuffer null so that it does not try to delete a framebuffer that has already been deleted
+        framebufferList.add(createFrameBuffer(null).also { glowFrameBuffer = it })
+        var i = 1
+        while (i <= iterations) {
+            val currentBuffer = Framebuffer((Helper.mc.displayWidth / 2.0.pow(i.toDouble())).toInt(), (Helper.mc.displayHeight / 2.0.pow(i.toDouble())).toInt(), true)
+            currentBuffer.setFramebufferFilter(GL_LINEAR)
+            GlStateManager.bindTexture(currentBuffer.framebufferTexture)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL14.GL_MIRRORED_REPEAT)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL14.GL_MIRRORED_REPEAT)
+            GlStateManager.bindTexture(0)
+            framebufferList.add(currentBuffer)
+            i++
+        }
+    }
+
+    private fun renderFBO(framebuffer: Framebuffer, framebufferTexture: Int, shader: ShaderUtils, offset: Float) {
+        framebuffer.framebufferClear()
+        framebuffer.bindFramebuffer(false)
+        shader.init()
+        bindTexture(framebufferTexture)
+        shader.setUniformf("offset", offset, offset)
+        shader.setUniformi("inTexture", 0)
+        shader.setUniformi("check", 0)
+        shader.setUniformf("lastPass", 0F)
+        shader.setUniformf("halfpixel", 1.0f / framebuffer.framebufferWidth, 1.0f / framebuffer.framebufferHeight)
+        shader.setUniformf("iResolution", framebuffer.framebufferWidth.toFloat(), framebuffer.framebufferHeight.toFloat())
+        drawQuads()
+        shader.unload()
     }
 
     private fun setupGlowUniforms(dir1: Float, dir2: Float) {

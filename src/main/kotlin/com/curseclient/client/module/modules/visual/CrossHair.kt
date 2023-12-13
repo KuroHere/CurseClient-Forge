@@ -177,8 +177,8 @@ object CrossHair : Module(
         GlStateManager.popMatrix()
     }
     
-    fun isMoving(): Boolean {
-        return Helper.mc.player.moveForward.toDouble() != 0.0 || Helper.mc.player.moveStrafing.toDouble() != 0.0
+    private fun isMoving(): Boolean {
+        return mc.player.moveForward.toDouble() != 0.0 || mc.player.moveStrafing.toDouble() != 0.0
     }
 
 }

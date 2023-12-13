@@ -22,7 +22,7 @@ object FullBright : Module(
 ) {
 
     val mode by setting("Mode", BrightnessMode.Gamma)
-    private var fadeInOutDuration by setting("FadeInOutDuration", 2000.0, 1000.0, 10000.0, 50.0)
+    private var fadeInOutDuration by setting("FadeInOutDuration", 1000.0, 1000.0, 10000.0, 50.0)
     private val fade = Animation({ fadeInOutDuration.toFloat() }, false, Easing.LINEAR)
 
     init {
