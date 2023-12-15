@@ -22,7 +22,7 @@ object Welcome: Module(
     Category.CLIENT,
     alwaysListenable = true
 ) {
-    val show by setting("Don't show again", false)
+    private val show by setting("Don't show again", false)
 
     init {
         safeListener<Render2DEvent> {

@@ -7,8 +7,9 @@ import java.awt.Color
 
 object Ambience: Module(
     "Ambience",
-    "Change environment color",
+    "Change game environment",
     Category.VISUAL
 ) {
     val lightMap by setting("LightMap", Color(125, 255, 125))
+    val time by setting("Time", 0.0, 0.0, 24000.0, 600.0)
 }

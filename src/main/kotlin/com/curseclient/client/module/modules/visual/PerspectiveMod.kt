@@ -1,9 +1,7 @@
 package com.curseclient.client.module.modules.visual
 
-import baritone.api.utils.Helper.mc
 import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
-import net.minecraft.client.Minecraft
 import org.lwjgl.opengl.Display
 
 object PerspectiveMod : Module(

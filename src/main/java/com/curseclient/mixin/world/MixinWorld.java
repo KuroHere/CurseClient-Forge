@@ -1,7 +1,7 @@
 package com.curseclient.mixin.world;
 
 import com.curseclient.client.module.modules.client.PerformancePlus;
-import com.curseclient.client.module.modules.visual.WorldTime;
+import com.curseclient.client.module.modules.visual.Ambience;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinWorld {
     @Inject(method = "getWorldTime", at = @At("HEAD"), cancellable = true)
     public void onGetWorldTime(CallbackInfoReturnable<Long> cir) {
-        if (WorldTime.INSTANCE.isEnabled())
-            cir.setReturnValue((long) ((int) WorldTime.INSTANCE.getTime()));
+        if (Ambience.INSTANCE.isEnabled())
+            cir.setReturnValue((long) ((int) Ambience.INSTANCE.getTime()));
     }
 
     @Inject(method = "checkLightFor", at = @At("HEAD"), cancellable = true)

@@ -41,7 +41,7 @@ object SuperHeroFX : Module(
     private val popupStyle by setting("Popup Style", PopupStyle.Heaven)
 
     // The length of the popup animation
-    private val length by setting("Length", 400f, 100f, 500f, 10f, visible = { popupStyle == PopupStyle.BanTumLum})
+    private val length by setting("Length", 400f, 100f, 500f, 10f, visible = { popupStyle == PopupStyle.PopUp})
 
     private val explosionDelay by setting("Explosion Delay", 1.0, 0.0,5.0, 0.1, visible = { popupStyle == PopupStyle.Heaven})
     private val hitDelay by setting("Hit Delay", 1.0, 0.1,5.0, 0.1, visible = { popupStyle == PopupStyle.Heaven})
@@ -61,8 +61,7 @@ object SuperHeroFX : Module(
 
     enum class PopupStyle {
         Heaven,
-        BanTumLum //idk what should I call this
-
+        PopUp
     }
 
     init {
@@ -124,7 +123,7 @@ object SuperHeroFX : Module(
         }
 
         safeListener<EntityAttackedEvent> { event ->
-            if (popupStyle == PopupStyle.BanTumLum) {
+            if (popupStyle == PopupStyle.PopUp) {
                 for (i in 0 until ThreadLocalRandom.current().nextInt(4)) {
                     val offsetX = Random.nextFloat() * 2
                     val offsetY = Random.nextFloat() * 2

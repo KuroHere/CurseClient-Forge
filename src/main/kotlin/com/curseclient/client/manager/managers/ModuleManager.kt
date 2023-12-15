@@ -164,15 +164,14 @@ object ModuleManager: Manager("ModuleManager") {
         JumpCircles,
         Nametags,
         NoRender,
-        SelectionHighlight,
+        BlockHighlight,
         SmoothCrouch,
         TargetESP,
         ThirdPersonCamera,
         Tracers,
         Trails,
         ViewModel,
-        VisualRotations,
-        WorldTime
+        VisualRotations
     )
 
 

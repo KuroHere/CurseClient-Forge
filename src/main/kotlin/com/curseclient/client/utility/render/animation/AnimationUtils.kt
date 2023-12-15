@@ -151,8 +151,8 @@ object AnimationUtils {
 
 class AnimationFlag(private val interpolation: InterpolateFunction) {
 
-    constructor(easing: Easing, length: Float) : this({ time, prev, current ->
-        easing.incOrDec(Easing.toDelta(time, length), prev, current)
+    constructor(easing: EaseUtils, length: Float) : this({ time, prev, current ->
+        easing.incOrDec(Delta.toDelta(time, length), prev, current)
     })
 
     var prev = 0.0f; private set

@@ -15,6 +15,7 @@ import com.curseclient.client.utility.render.ColorUtils.g
 import com.curseclient.client.utility.render.ColorUtils.r
 import com.curseclient.client.utility.render.ColorUtils.setAlphaD
 import com.curseclient.client.utility.render.animation.AnimationFlag
+import com.curseclient.client.utility.render.animation.EaseUtils
 import com.curseclient.client.utility.render.shader.BlurUtil
 import me.surge.animation.Animation
 import me.surge.animation.Easing
@@ -58,7 +59,7 @@ object HUD : Module(
 
     val animHotbarValue by setting("AnimatedHotbar", true, visible = {page == Page.Game})
     val blackHotbarValue by setting("BlackHotbar", true, visible = { page == Page.Game })
-    private val hotbarAnimation = AnimationFlag(com.curseclient.client.utility.render.animation.Easing.OUT_CUBIC, 200.0f)
+    private val hotbarAnimation = AnimationFlag(EaseUtils, 200.0f)
 
     enum class Page {
         Client,
@@ -119,6 +120,12 @@ object HUD : Module(
     fun getColorByProgress(progress: Double, saturation: Double = 1.0, brightness: Double = 1.0): Color {
         val c = ColorUtils.lerp(color1.setAlphaD(1.0), color2.setAlphaD(1.0), progress)
         return Color.getHSBColor(Color(c.r, c.g, c.b, 1f).rgb.toFloat(), saturation.toFloat(), brightness.toFloat())
+    }
+
+    fun getColorByProgress(progress: Double, color1: Color, color2: Color, brightness: Float = 1.0f): Color {
+        val c = ColorUtils.lerp(color1.setAlphaD(1.0), color2.setAlphaD(1.0), progress)
+        val b = clamp(brightness, 0.0f, 1.0f)
+        return Color((c.red * b).toInt(), (c.green * b).toInt(), (c.blue * b).toInt(), c.alpha)
     }
 
     private fun getRainbow(timeOffset: Int, saturation: Double = 1.0, brightness: Double): Color {

@@ -21,17 +21,12 @@ import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.ScissorUtils.scissor
 import com.curseclient.client.utility.render.animation.EaseUtils.ease
 import com.curseclient.client.utility.render.animation.NewEaseType
-import com.curseclient.client.utility.render.font.FontRenderer
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
-import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.graphic.GLUtils
-import com.curseclient.client.utility.render.graphic.GlStateUtils
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
-import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Keyboard
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.*
 

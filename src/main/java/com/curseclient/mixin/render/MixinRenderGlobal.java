@@ -5,7 +5,7 @@ import com.curseclient.client.event.events.render.RenderEntityEvent;
 import com.curseclient.client.event.events.render.ShouldSetupTerrainEvent;
 import com.curseclient.client.event.events.world.EventRenderSky;
 import com.curseclient.client.module.modules.client.PerformancePlus;
-import com.curseclient.client.module.modules.visual.SelectionHighlight;
+import com.curseclient.client.module.modules.visual.BlockHighlight;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.entity.Entity;
@@ -61,10 +61,10 @@ public class MixinRenderGlobal {
 
     @Inject(method = "drawSelectionBox", at = @At("HEAD"), cancellable = true)
     void drawSelectionBoxInject(EntityPlayer player, RayTraceResult traceResult, int execute, float partialTicks, CallbackInfo ci) {
-        if (!SelectionHighlight.INSTANCE.isEnabled()) return;
+        if (!BlockHighlight.INSTANCE.isEnabled()) return;
         ci.cancel();
 
-        SelectionHighlight.draw(traceResult);
+        BlockHighlight.draw(traceResult);
     }
 
     @ModifyVariable(method = "setupTerrain", at = @At(value = "HEAD"))

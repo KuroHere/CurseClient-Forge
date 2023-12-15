@@ -73,8 +73,9 @@ object GlowESP : Module(
     private val outlineShader = ShaderUtils("shaders/client/outline.frag")
     private val glowShader = ShaderUtils("shaders/client/glow.frag")
 
-    private val kawaseGlowShader: ShaderUtils = ShaderUtils("kawaseDownBloom")
-    private val kawaseGlowShader2: ShaderUtils = ShaderUtils("kawaseUpGlow")
+    private val kawaseGlowShader = ShaderUtils("kawaseDownBloom")
+    private val kawaseGlowShader2 = ShaderUtils("kawaseUpGlow")
+
     private var currentIterations = 0
     private val framebufferList: MutableList<Framebuffer> = ArrayList()
     var framebuffer: Framebuffer? = null

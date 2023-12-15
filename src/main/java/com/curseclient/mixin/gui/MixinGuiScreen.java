@@ -73,7 +73,7 @@ public abstract class MixinGuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         GuiClickCircle module = (GuiClickCircle) ModuleManager.INSTANCE.getModuleByName("GuiClickCircle");
         assert module != null;
-        ScreenManager.INSTANCE.drawCircle(module.getColor().getRGB());
+        ScreenManager.INSTANCE.drawCircle(module.getColor());
 
         if(!clickEffects.isEmpty()) {
             Iterator<ClickCircle> clickEffectIterator= clickEffects.iterator();
