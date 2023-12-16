@@ -137,6 +137,8 @@ class DoubleSlider(val setting: DoubleSetting, gui: AbstractGui, baseButton: Mod
         }
     }
 
+    override fun getSettingHeight() = ClickGui.height + 2.5
+
     private fun reset() {
         sliding = false
         cancelTyping()

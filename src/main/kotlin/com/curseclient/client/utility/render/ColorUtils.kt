@@ -301,11 +301,11 @@ object ColorUtils {
         return Color(darkerRed, darkerGreen, darkerBlue)
     }
 
-    val icon_singleplayer = ResourceLocation("curseclient", "icons/singleplayer.png")
-    val icon_multiplayer = ResourceLocation("curseclient", "icons/multiplayer.png")
-    val icon_altmanager = ResourceLocation("curseclient", "icons/altmanager.png")
-    val icon_settings = ResourceLocation("curseclient", "icons/settings.png")
-    val icon_shutdown = ResourceLocation("curseclient", "icons/shutdown.png")
+    val icon_singleplayer = ResourceLocation( "textures/icons/menu/singleplayer.png")
+    val icon_multiplayer = ResourceLocation("textures/icons/menu/multiplayer.png")
+    val icon_altmanager = ResourceLocation("textures/icons/menu/altmanager.png")
+    val icon_settings = ResourceLocation("textures/icons/menu/settings.png")
+    val icon_shutdown = ResourceLocation("textures/icons/menu/shutdown.png")
 
     fun lerp(c1: Color, c2: Color, p: Double): Color {
         val r = lerp(c1.r, c2.r, p.toFloat())

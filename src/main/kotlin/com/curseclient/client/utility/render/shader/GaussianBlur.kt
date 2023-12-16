@@ -36,6 +36,7 @@ object GaussianBlur {
         glUniform1(blurShader.getUniform("weights"), weightBuffer)
     }
 
+    //First way
     fun startBlur() {
         initStencilToWrite()
     }
@@ -66,6 +67,7 @@ object GaussianBlur {
         GlStateManager.bindTexture(0)
     }
 
+    // Second way
     fun glBlur(data: Runnable, radius: Float) {
         initStencilToWrite()
         data.run()

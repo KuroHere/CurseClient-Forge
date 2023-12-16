@@ -12,6 +12,7 @@ import com.curseclient.client.utility.render.shader.GradientShader.finish
 import com.curseclient.client.utility.render.shader.GradientShader.setup
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.jhlabs.image.GaussianFilter
+import com.sun.imageio.plugins.common.ImageUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
