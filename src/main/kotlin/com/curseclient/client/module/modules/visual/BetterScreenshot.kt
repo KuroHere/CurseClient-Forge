@@ -11,7 +11,6 @@ import com.curseclient.client.utility.render.vector.Vec2d
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.threads.backgroundThread
 import com.curseclient.client.utility.threads.mainThread
-import com.curseclient.mixin.accessor.client.IScreenShotHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
