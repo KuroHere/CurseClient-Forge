@@ -6,6 +6,7 @@ import com.curseclient.client.module.Category
 import com.curseclient.client.module.Module
 import com.curseclient.client.utility.NotificationType
 import com.curseclient.client.utility.NotificationUtils
+import com.curseclient.client.utility.getTimestampedPNGFileForDirectory
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.threads.backgroundThread
@@ -123,7 +124,7 @@ object BetterScreenshot : Module(
                 }
                 val event = ForgeHooksClient.onScreenshot(
                     screenshot,
-                    IScreenShotHelper.getTimestampedPNGFileForDirectory0(
+                    getTimestampedPNGFileForDirectory(
                         File(mc.gameDir, "screenshots").also { it.mkdir() }
                     ).canonicalFile
                 )

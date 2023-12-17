@@ -9,7 +9,6 @@
     "accessor.AccessorRenderManager",
     "accessor.AccessorTimer",
     "accessor.client.AccessorKeyBinding",
-    "accessor.client.IScreenShotHelper",
     "accessor.entity.AccessorEntityPlayer",
     "accessor.entity.AccessorEntityPlayerSP",
     "accessor.entity.AccessorPlayerControllerMP",
