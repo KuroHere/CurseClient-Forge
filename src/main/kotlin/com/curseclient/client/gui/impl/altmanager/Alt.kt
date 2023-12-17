@@ -28,7 +28,7 @@ class Alt(private val login: String, private val password: String, private val a
             }
         }
         if (altSession != null) {
-            (Minecraft.getMinecraft() as AccessorMinecraft).setSession(altSession)
+            (Minecraft.getMinecraft() as AccessorMinecraft).session = altSession!!
         }
     }
 

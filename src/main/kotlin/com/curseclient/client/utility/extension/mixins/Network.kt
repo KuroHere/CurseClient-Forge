@@ -16,32 +16,32 @@ var CPacketUseEntity.useEntityId: Int
 var CPacketUseEntity.useEntityAction: CPacketUseEntity.Action
     get() = this.action
     set(value) {
-        (this as AccessorCPacketUseEntity).setAction(value)
+        (this as AccessorCPacketUseEntity).action = value
     }
 
 var SPacketEntityVelocity.entityVelocityMotionX: Int
     get() = this.motionX
     set(value) {
-        (this as AccessorSPacketEntityVelocity).setMotionX(value)
+        (this as AccessorSPacketEntityVelocity).motionX = value
     }
 var SPacketEntityVelocity.entityVelocityMotionY: Int
     get() = this.motionY
     set(value) {
-        (this as AccessorSPacketEntityVelocity).setMotionY(value)
+        (this as AccessorSPacketEntityVelocity).motionY = value
     }
 var SPacketEntityVelocity.entityVelocityMotionZ: Int
     get() = this.motionZ
     set(value) {
-        (this as AccessorSPacketEntityVelocity).setMotionZ(value)
+        (this as AccessorSPacketEntityVelocity).motionZ = value
     }
 
 var SPacketPlayerPosLook.playerPosLookYaw: Float
     get() = this.yaw
     set(value) {
-        (this as AccessorSPacketPosLook).setYaw(value)
+        (this as AccessorSPacketPosLook).yaw = value
     }
 var SPacketPlayerPosLook.playerPosLookPitch: Float
     get() = this.pitch
     set(value) {
-        (this as AccessorSPacketPosLook).setPitch(value)
+        (this as AccessorSPacketPosLook).pitch = value
     }

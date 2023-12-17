@@ -33,7 +33,7 @@ class MotionBlurUtil {
             }
         }
         if (shaderBlur != blurFactor) {
-            (shader as AccessorShaderGroup).getListShaders().forEach(Consumer { shader: Shader ->
+            (shader as AccessorShaderGroup).listShaders.forEach(Consumer { shader: Shader ->
                 val blendFactorUniform = shader.shaderManager.getShaderUniform("BlurFactor")
                 blendFactorUniform?.set(blurFactor)
             })

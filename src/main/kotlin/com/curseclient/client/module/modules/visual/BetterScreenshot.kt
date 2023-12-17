@@ -123,7 +123,7 @@ object BetterScreenshot : Module(
                 }
                 val event = ForgeHooksClient.onScreenshot(
                     screenshot,
-                    IScreenShotHelper.getTimestampedPNGFileForDirectory(
+                    IScreenShotHelper.getTimestampedPNGFileForDirectory0(
                         File(mc.gameDir, "screenshots").also { it.mkdir() }
                     ).canonicalFile
                 )

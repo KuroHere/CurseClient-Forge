@@ -33,7 +33,7 @@ object BlurUtil {
                     mc.textureManager, mc.resourceManager, mc.framebuffer, ResourceLocation("shaders/post/blur.json")
                 )
                 blurShader!!.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
-                framebuffer = (blurShader as AccessorShaderGroup?)!!.getMainFramebuffer()
+                framebuffer = (blurShader as AccessorShaderGroup?)!!.mainFramebuffer
             } catch (exception: Exception) {
                 exception.printStackTrace()
             }
@@ -52,19 +52,19 @@ object BlurUtil {
         if (OpenGlHelper.isFramebufferEnabled()) {
             RenderUtils2D.pushScissor(x, y, width, height)
 
-            (blurShader as AccessorShaderGroup?)!!.getListShaders()[0]?.shaderManager?.getShaderUniform("Radius")!!.set(
+            (blurShader as AccessorShaderGroup?)!!.listShaders[0].shaderManager.getShaderUniform("Radius")!!.set(
                 intensity
             )
 
-            (blurShader as AccessorShaderGroup?)!!.getListShaders()[1]?.shaderManager?.getShaderUniform("Radius")!!.set(
+            (blurShader as AccessorShaderGroup?)!!.listShaders[1].shaderManager.getShaderUniform("Radius")!!.set(
                 intensity
             )
 
-            (blurShader as AccessorShaderGroup?)!!.getListShaders()[0]?.shaderManager?.getShaderUniform("BlurDir")!!.set(
+            (blurShader as AccessorShaderGroup?)!!.listShaders[0].shaderManager.getShaderUniform("BlurDir")!!.set(
                 0f, 1f
             )
 
-            (blurShader as AccessorShaderGroup?)!!.getListShaders()[1]?.shaderManager?.getShaderUniform("BlurDir")!!.set(
+            (blurShader as AccessorShaderGroup?)!!.listShaders[1].shaderManager.getShaderUniform("BlurDir")!!.set(
                 1f, 1f
             )
 
