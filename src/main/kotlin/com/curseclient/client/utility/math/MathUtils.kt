@@ -78,6 +78,13 @@ object MathUtils {
         return value
     }
 
+    fun Float.unwrap(): Float {
+        var unwrappedAngle = this % 360
+        if (unwrappedAngle < 0) {
+            unwrappedAngle += 360
+        }
+        return unwrappedAngle
+    }
 
     // linearly maps value from the range (a..b) to (c..d)
     fun map(value: Double, a: Double, b: Double, c: Double, d: Double): Double {

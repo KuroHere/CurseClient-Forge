@@ -5,6 +5,8 @@ import com.curseclient.client.module.HudCategory
 import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.setting.setting
 import com.curseclient.client.utility.math.MathUtils
+import com.curseclient.client.utility.math.MathUtils.unwrap
+import com.curseclient.client.utility.player.MovementUtils.isInputting
 import com.curseclient.client.utility.render.ColorUtils.setAlpha
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.RenderUtils2D.initStencilToWrite
@@ -70,7 +72,7 @@ object Compass: DraggableHudModule(
             } else
                 1.6
 
-            if (isMoving()) {
+            if (isInputting()) {
                 val time = System.currentTimeMillis() / 100.0
                 offsetX = cos(time) * swingAmount
                 offsetY = cos(time) * swingAmount
@@ -393,18 +395,6 @@ object Compass: DraggableHudModule(
             else -> Color.WHITE
         }
         fr.drawString(yaw, Vec2d((pos.x + getWidth() / 2 - fr.getStringWidth(yaw, 0.42)), pos.y + fr.getHeight(0.8) + 6.5 + getHeight() / 2), true, textColor, 0.8)
-    }
-
-    private fun isMoving(): Boolean {
-        return mc.player.moveForward.toDouble() != 0.0 || mc.player.moveStrafing.toDouble() != 0.0
-    }
-
-    private fun Float.unwrap(): Float {
-        var unwrappedAngle = this % 360
-        if (unwrappedAngle < 0) {
-            unwrappedAngle += 360
-        }
-        return unwrappedAngle
     }
 
     override fun getWidth() = w

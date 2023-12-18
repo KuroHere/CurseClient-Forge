@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import kotlin.math.*
 
-// TODO: Player still move when using flycam
+// TODO: fix player still move when using FreeCam
 object FreeCam : Module(
     "FreeCam",
     "Allows you to fly out of player",
