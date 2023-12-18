@@ -21,7 +21,7 @@ import java.awt.Color
 import kotlin.math.max
 
 
-class ModuleListElement(val module: Module, var y: Double, var pos: Int) {
+class ModuleListElement(val module: Module, var x: Double, var y: Double, var pos: Int) {
     var shouldRemoved = false
     private var progress = 0.0f
 
@@ -106,4 +106,5 @@ class ModuleListElement(val module: Module, var y: Double, var pos: Int) {
 
     fun getHeight() =
         max(0.0, realHeight * progress)
+
 }

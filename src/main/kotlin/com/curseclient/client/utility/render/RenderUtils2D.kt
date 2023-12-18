@@ -893,6 +893,30 @@ object RenderUtils2D {
         drawTriangle(x, y, size, color)
     }
 
+    fun drawTriangle(x: Float, y: Float, size: Float, color: Int, rotateAngle: Float) {
+        val blend = glIsEnabled(GL_BLEND)
+        glEnable(GL_BLEND)
+        val depth = glIsEnabled(GL_DEPTH_TEST)
+        glDisable(GL_DEPTH_TEST)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+        glPushMatrix()
+        glColor(color)
+        glTranslatef(x, y, 0.0f)
+        glRotatef(rotateAngle, 0.0f, 0.0f, 1.0f)
+        glBegin(GL_TRIANGLE_FAN)
+        glVertex2d(0.0, 0.0)
+        glVertex2d(-size * 0.425, size * 0.75)
+        glVertex2d(size * 0.425, size * 0.75)
+        glEnd()
+        glPopMatrix()
+        glEnable(GL_TEXTURE_2D)
+        if (!blend) glDisable(GL_BLEND)
+        glDisable(GL_LINE_SMOOTH)
+        if (depth) glEnable(GL_DEPTH_TEST)
+    }
+
     fun drawTriangle(x: Float, y: Float, size: Float, color: Int) {
         val blend = glIsEnabled(GL_BLEND)
         glEnable(GL_BLEND)

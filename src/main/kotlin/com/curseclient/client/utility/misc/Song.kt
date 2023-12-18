@@ -73,12 +73,13 @@ class Song {
         var song_name: String? = null
 
         private fun getRandomSong(): String {
-            song_name = when ((MathUtils.random(1.0, 6.0)).toInt()) {
+            song_name = when ((MathUtils.random(1.0, 7.0)).toInt()) {
                 1 -> "tiredofproblems"
                 2 -> "axolotl"
                 3 -> "cant-slow-me-down"
                 4 -> "gravity-falls"
                 5 -> "aria-math"
+                6 -> "heathens"
                 else -> "unknown"
             }
 

@@ -1,6 +1,7 @@
 package com.curseclient.client.module.modules.hud.modulelist
 
 import com.curseclient.client.manager.managers.ModuleManager
+import com.curseclient.client.module.DraggableHudModule
 import com.curseclient.client.module.HudCategory
 import com.curseclient.client.module.HudModule
 import com.curseclient.client.module.Module
@@ -9,7 +10,7 @@ import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
 
 // TODO: need to make this can move pos
-object ModuleList : HudModule(
+object ModuleList : DraggableHudModule(
     "ModuleList",
     "Shows active modules",
     HudCategory.HUD,
@@ -47,9 +48,10 @@ object ModuleList : HudModule(
         elements.sortBy { font.getStringWidth(it.module.name + if(it.module.getHudInfo() != "") " " + it.module.getHudInfo() else "", size) }
         elements.reverse()
 
-        var y = 0.0
+        var y = pos.y
         for((i, e) in elements.withIndex()){
             e.y = y
+
             e.pos = i
 
             y += e.getHeight()
@@ -61,7 +63,7 @@ object ModuleList : HudModule(
     }
 
     override fun onRender() {
-        getModules().filter { !it.isAdded() && isEnabled() }.forEach { elements.add(ModuleListElement(it, 0.0, 0)) }
+        getModules().filter { !it.isAdded() && isEnabled() }.forEach { elements.add(ModuleListElement(it, 0.0, pos.y, 0)) }
 
         elements.forEach { it.update() }
         updatePositions()

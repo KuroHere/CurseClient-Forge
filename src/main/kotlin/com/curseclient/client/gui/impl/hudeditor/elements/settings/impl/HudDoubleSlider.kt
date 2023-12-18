@@ -129,6 +129,8 @@ class HudDoubleSlider(val setting: DoubleSetting, gui: AbstractGui, baseButton: 
         }
     }
 
+    override fun getSettingHeight() = ClickGui.height + 2.5
+
     private fun reset() {
         sliding = false
         cancelTyping()

@@ -131,7 +131,8 @@ class MainGui: GuiScreen() {
             "axolotl" to "axolotl.png",
             "cant-slow-me-down" to "can'tslowmedown.jpg",
             "gravity-falls" to "gravityfalls.jpg",
-            "aria-math" to "ariamath.jpg"
+            "aria-math" to "ariamath.jpg",
+            "heathens" to "heathens.jpg"
         )
 
         val albumCover = albumCovers[song_name]
@@ -155,7 +156,8 @@ class MainGui: GuiScreen() {
             "axolotl" to "C418",
             "gravity-falls" to "Gravity Falls Series",
             "aria-math" to "C418",
-            "cant-slow-me-down" to "MIRANI, IIIBOI, GROOVYROOM"
+            "cant-slow-me-down" to "MIRANI, IIIBOI, GROOVYROOM",
+            "heathens" to "TranAnh remix"
         )
 
         val sn = song_name ?: ""

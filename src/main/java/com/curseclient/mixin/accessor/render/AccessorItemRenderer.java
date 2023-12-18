@@ -20,8 +20,8 @@ public interface AccessorItemRenderer {
     @Accessor("equippedProgressOffHand") float getEquippedProgressOffHand();
     @Accessor("equippedProgressOffHand") void setEquippedProgressOffHand(float value);
 
-    @Accessor("prevEquippedProgressMainHand") float getPrevEquippedProgressOffHand();
-    @Accessor("prevEquippedProgressMainHand") void setPrevEquippedProgressOffHand(float value);
+    @Accessor("prevEquippedProgressOffHand") float getPrevEquippedProgressOffHand();
+    @Accessor("prevEquippedProgressOffHand") void setPrevEquippedProgressOffHand(float value);
 
     @Accessor("itemStackMainHand") ItemStack getItemStackMainHand();
     @Accessor("itemStackMainHand") void setItemStackMainHand(ItemStack item);

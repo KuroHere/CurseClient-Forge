@@ -42,7 +42,7 @@ class ParticleEngine {
 
             particle.draw()
 
-            val particleHeight = particle.getParticleImage().dimensions.second / 2f
+            //val particleHeight = particle.getParticleImage().dimensions.second / 2f
             val particleWidth = particle.getParticleImage().dimensions.first / 2f
 
             if (particle.xValue + particleWidth < 0 || particle.yValue > sr.scaledHeight || particle.xValue > sr.scaledWidth) {

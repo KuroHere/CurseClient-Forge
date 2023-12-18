@@ -16,20 +16,21 @@ import kotlin.math.sin
 
 class ClickCircle(var x: Float, var y: Float, private var seconds: Int, var radius: Int, private val easing: String) {
     var time: Long = System.currentTimeMillis()
-    private val animation = SimpleAnimation(0.0f)
+    private val oAnimation = SimpleAnimation(0.0f)
 
     fun draw(color: Int) {
         val value = MathHelper.clamp((System.currentTimeMillis() - time).toFloat() / (seconds * 1000f), 0f, 1f)
+        val animation: Double = EaseUtils.getEase(value.toDouble(), EaseUtils.EaseType.valueOf(easing))
         when (GuiClickCircle.mode.name) {
-            "Fill", "Outline1" -> {
-                val animation: Double = EaseUtils.getEase(value.toDouble(), EaseUtils.EaseType.valueOf(easing))
+            "Outline1" -> {
                 drawCircle(x, y, radius * animation.toFloat(), Color(color).setAlpha((255 * (1 - EaseUtils.easeInOutBack(value.toDouble()).toInt()))).rgb, 5.0)
             }
+            "Fill" -> drawFillCircle(x, y, radius * animation.toFloat(), Color(color).setAlpha((255 * (1 - EaseUtils.easeInOutBack(value.toDouble()).toInt()))).rgb)
             "Outline2" -> {
-                animation.setAnimation(100f, 12.0)
-                val radius: Double = (radius * animation.value / 100).toDouble()
-                val alpha = (255 - 255 * animation.value / 100).toInt()
-                val arc: Double = (360 * animation.value / 100).toDouble()
+                oAnimation.setAnimation(100f, 12.0)
+                val radius: Double = (radius * oAnimation.value / 100).toDouble()
+                val alpha = (255 - 255 * oAnimation.value / 100).toInt()
+                val arc: Double = (360 * oAnimation.value / 100).toDouble()
                 val arcColor: Color = Color(color).setAlpha((alpha))
 
                 if (GuiClickCircle.isEnabled()) {
@@ -40,7 +41,7 @@ class ClickCircle(var x: Float, var y: Float, private var seconds: Int, var radi
     }
 
     fun canRemove(): Boolean {
-        return animation.value > 99
+        return oAnimation.value > 99
     }
 
     private fun drawArc(x1: Float, y1: Float, r: Double, color: Int, startPoint: Int, arc: Double, linewidth: Int) {
@@ -87,6 +88,28 @@ class ClickCircle(var x: Float, var y: Float, private var seconds: Int, var radi
         GL11.glHint(3155, 4352)
     }
 
+    private fun drawFillCircle(centerX: Float, centerY: Float, radius: Float, color: Int) {
+        color(1f, 1f, 1f, 1f)
+        GlStateManager.disableAlpha()
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO)
+        color((color shr 16 and 0xFF) / 255.0f, (color shr 8 and 0xFF) / 255.0f, (color and 0xFF) / 255.0f, (color shr 24 and 0xFF) / 255.0f)
+        GL11.glBegin(GL11.GL_POLYGON)
+        for (i in 0..360) GL11.glVertex2d((centerX + MathHelper.sin(i * Math.PI.toFloat() / 180f) * radius).toDouble(), (centerY + MathHelper.cos(i * Math.PI.toFloat() / 180f) * radius).toDouble())
+        GL11.glEnd()
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glLineWidth(.5f)
+        GL11.glBegin(GL11.GL_LINE_LOOP)
+        for (i in 0..360) GL11.glVertex2d((centerX + MathHelper.sin(i * Math.PI.toFloat() / 180f) * radius).toDouble(), (centerY + MathHelper.cos(i * Math.PI.toFloat() / 180f) * radius).toDouble())
+        GL11.glEnd()
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+        GlStateManager.enableAlpha()
+        color(1.0f, 1.0f, 1.0f, 1.0f)
+    }
+
     private fun drawCircle(centerX: Float, centerY: Float, radius: Float, color: Int, step : Double = 1.0) {
         val f = (color shr 24 and 0xFF) / 255.0f
         val f1 = (color shr 16 and 0xFF) / 255.0f
@@ -96,16 +119,7 @@ class ClickCircle(var x: Float, var y: Float, private var seconds: Int, var radi
         GlStateManager.enableBlend()
         GlStateManager.disableTexture2D()
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO)
-        if (GuiClickCircle.mode == GuiClickCircle.Mode.Fill) {
-            GL11.glBegin(GL11.GL_POLYGON)
-            for (i in 0..360 step step.toInt()) {
-                val x = (centerX + MathHelper.sin(i * Math.PI.toFloat() / 180f) * radius).toDouble()
-                val y = (centerY + MathHelper.cos(i * Math.PI.toFloat() / 180f) * radius).toDouble()
-                GL11.glColor4f(f1, f2, f3, f)
-                GL11.glVertex2d(x, y)
-            }
-            GL11.glEnd()
-        }
+
         GL11.glEnable(GL11.GL_LINE_SMOOTH)
         GL11.glLineWidth(1.0f)
         GL11.glBegin(GL11.GL_LINE_LOOP)
