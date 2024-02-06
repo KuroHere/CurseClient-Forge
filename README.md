@@ -23,3 +23,6 @@ something new to do, like developing a Curse for Fabric? But ye it looks like I 
 > Thanks for reading it all.
     
 </div>
+
+### Postscript ✒️
+> This project is not done too, it have many bug that I don't want and time to fix it so, ya!
