@@ -26,3 +26,4 @@ something new to do, like developing a Curse for Fabric? But ye it looks like I 
 
 ### Postscript ✒️
 > This project is not done too, it have many bug that I don't want and time to fix it so, ya!
+> I forgor remove my webhook and hwids 💀
