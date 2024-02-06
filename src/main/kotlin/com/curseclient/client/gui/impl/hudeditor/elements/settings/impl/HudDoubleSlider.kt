@@ -2,13 +2,11 @@ package com.curseclient.client.gui.impl.hudeditor.elements.settings.impl
 
 import com.curseclient.client.gui.api.AbstractGui
 import com.curseclient.client.gui.api.other.MouseAction
-import com.curseclient.client.gui.impl.clickgui.elements.ModuleButton
-import com.curseclient.client.gui.impl.clickgui.elements.settings.SettingButton
 import com.curseclient.client.gui.impl.clickgui.elements.settings.impl.DoubleSlider
 import com.curseclient.client.gui.impl.clickgui.elements.settings.impl.StringButton
 import com.curseclient.client.gui.impl.hudeditor.elements.HudButton
 import com.curseclient.client.gui.impl.hudeditor.elements.settings.SettingHudButton
-import com.curseclient.client.module.modules.client.ClickGui
+import com.curseclient.client.module.impls.client.ClickGui
 import com.curseclient.client.setting.type.DoubleSetting
 import com.curseclient.client.utility.extension.transformIf
 import com.curseclient.client.utility.math.MathUtils.clamp
@@ -17,7 +15,6 @@ import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.math.MathUtils.roundToPlaces
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.curseclient.client.utility.render.graphic.GLUtils
-import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.shader.RectBuilder

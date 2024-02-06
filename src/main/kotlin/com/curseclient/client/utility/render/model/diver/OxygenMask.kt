@@ -1,6 +1,6 @@
 package com.curseclient.client.utility.render.model.diver
 
-import com.curseclient.client.module.modules.visual.CustomModel
+import com.curseclient.client.module.impls.visual.Cosmetic
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.model.ModelRenderer
@@ -29,7 +29,7 @@ class OxygenMask : ModelBase(), LayerRenderer<AbstractClientPlayer> {
     }
 
     fun renderMask(player: AbstractClientPlayer, scale: Double) {
-        if (CustomModel.isEnabled() && !player.isInvisible) {
+        if (Cosmetic.isEnabled() && !player.isInvisible) {
             FMLClientHandler.instance().client.renderEngine.bindTexture(location)
 
             val yawOffset = Math.toRadians(player.rotationYawHead.toDouble())

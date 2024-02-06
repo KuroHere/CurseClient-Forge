@@ -6,7 +6,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(CPacketPlayer.class)
 public interface AccessorCPacketPlayer {
-
+    @Accessor("rotating")
+    boolean isRotating();
     @Accessor("x")
     void setX(double value);
 

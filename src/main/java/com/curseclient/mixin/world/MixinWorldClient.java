@@ -1,6 +1,6 @@
 package com.curseclient.mixin.world;
 
-import com.curseclient.client.module.modules.client.PerformancePlus;
+import com.curseclient.client.module.impls.client.PerformancePlus;
 import net.minecraft.client.multiplayer.WorldClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

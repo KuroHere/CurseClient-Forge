@@ -4,17 +4,11 @@ enum class Direction {
     FORWARDS,
     BACKWARDS;
 
-    fun opposite(): Direction {
-        return if (this == FORWARDS) {
+    fun opposite() =
+        if (this == FORWARDS) {
             BACKWARDS
         } else FORWARDS
-    }
 
-    fun forwards(): Boolean {
-        return this == FORWARDS
-    }
-
-    fun backwards(): Boolean {
-        return this == BACKWARDS
-    }
+    fun forwards() = this == FORWARDS
+    fun backwards() = this == BACKWARDS
 }

@@ -1,10 +1,12 @@
 package com.curseclient.client.utility.render.font
 
 import com.curseclient.client.event.listener.tryGetOrNull
-import com.curseclient.client.module.modules.client.FontSettings
+import com.curseclient.client.module.impls.client.FontSettings
 import com.curseclient.client.utility.render.ColorUtils.glColor
+import com.curseclient.client.utility.render.font.glyph.FontGlyphs
+import com.curseclient.client.utility.render.font.glyph.GlyphChunk
+import com.curseclient.client.utility.render.font.impl.CharInfo
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.util.math.MathHelper
 import net.minecraft.util.text.TextFormatting
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
@@ -47,6 +49,10 @@ object FontRenderer {
         } ?: Font("SansSerif", Font.PLAIN, 64)
 
         return FontGlyphs(mainFont, fallbackFont)
+    }
+
+    fun drawCentreString(text: String, posXIn: Float, posYIn: Float, shadow: Boolean, colorIn: Color, scale: Float, style: Fonts) {
+        drawString(text, posXIn - getStringWidth(text, style, scale) / 2, posYIn, shadow, colorIn, scale, style)
     }
 
     fun drawString(text: String, posXIn: Float, posYIn: Float, shadow: Boolean, colorIn: Color, scale: Float, style: Fonts) {

@@ -7,6 +7,8 @@ import com.curseclient.client.manager.managers.data.DataManager
 object ManagerLoader {
 
     fun load(){
+        EventBus.subscribe(RotationManager)
+        EventBus.subscribe(RadioManager)
         EventBus.subscribe(ScreenManager)
         EventBus.subscribe(DataManager)
         EventBus.subscribe(CommandManager)

@@ -11,6 +11,7 @@ import net.minecraft.client.multiplayer.PlayerControllerMP
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.Session
 import net.minecraft.util.Timer
 
 var Timer.tickLength: Float

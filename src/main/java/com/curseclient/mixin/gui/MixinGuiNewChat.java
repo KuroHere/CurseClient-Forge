@@ -1,7 +1,6 @@
 package com.curseclient.mixin.gui;
 
-import com.curseclient.client.manager.managers.ModuleManager;
-import com.curseclient.client.module.modules.misc.ChatMod;
+import com.curseclient.client.module.impls.misc.ChatMod;
 import com.curseclient.client.utility.math.MathUtils;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.GuiNewChat;
@@ -16,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
-import java.util.Objects;
 
 import static baritone.api.utils.Helper.mc;
 import static net.minecraft.client.gui.Gui.drawRect;
@@ -40,11 +38,8 @@ public abstract class MixinGuiNewChat {
     private int lineBeingDrawn;
 
     private void updatePercentage(long diff) {
-
-        final ChatMod chatMod = ModuleManager.INSTANCE.getModuleByClass(ChatMod.class);;
         if (percentComplete < 1) {
-            assert chatMod != null;
-            percentComplete += (float) ((chatMod.getSmoothSpeed() / 1000) * (float) diff);
+            percentComplete += (float) ((ChatMod.INSTANCE.getSmoothSpeed() / 1000) * (float) diff);
         }
         percentComplete = MathUtils.INSTANCE.clamp(percentComplete, 0, 1);
     }
@@ -61,10 +56,7 @@ public abstract class MixinGuiNewChat {
     @Inject(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;pushMatrix()V", ordinal = 0, shift = At.Shift.AFTER))
     private void translate(CallbackInfo ci) {
         float y = 0;
-
-        final ChatMod chatMod = ModuleManager.INSTANCE.getModuleByClass(ChatMod.class);;
-        assert chatMod != null;
-        if (chatMod.isEnabled() && chatMod.getSmooth() && !this.isScrolled) {
+        if (ChatMod.INSTANCE.isEnabled() && ChatMod.INSTANCE.getSmooth() && !this.isScrolled) {
             y += (9 - 9 * animationPercent) * this.getChatScale();
         }
         GlStateManager.translate(0, y, 0);
@@ -72,11 +64,10 @@ public abstract class MixinGuiNewChat {
 
     @Redirect(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiNewChat;drawRect(IIIII)V", ordinal = 0))
     private void transparentBackground(int left, int top, int right, int bottom, int color) {
-
-        final ChatMod chatMod = ModuleManager.INSTANCE.getModuleByClass(ChatMod.class);;
-        assert chatMod != null;
-        boolean transparent = !chatMod.isEnabled() || (chatMod.isEnabled() &&
-            !chatMod.getTransparent());
+        boolean transparent =
+            !ChatMod.INSTANCE.isEnabled()
+            || (ChatMod.INSTANCE.isEnabled() &&
+            !ChatMod.INSTANCE.getTransparent());
 
         if (transparent) {
             drawRect(left, top, right, bottom, color);
@@ -92,8 +83,7 @@ public abstract class MixinGuiNewChat {
     @ModifyArg(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I"), index = 3)
     private int modifyTextOpacity(int original) {
 
-        final ChatMod chatMod = ModuleManager.INSTANCE.getModuleByClass(ChatMod.class);;
-        if (Objects.requireNonNull(ModuleManager.INSTANCE.getModuleByName("ChatMod")).isEnabled() && Objects.requireNonNull(chatMod).getSmooth() && lineBeingDrawn <= newLines) {
+        if (ChatMod.INSTANCE.isEnabled() && ChatMod.INSTANCE.getSmooth() && lineBeingDrawn <= newLines) {
             int opacity = (original >> 24) & 0xFF;
             opacity *= (int) animationPercent;
             return (original & ~(0xFF << 24)) | (opacity << 24);

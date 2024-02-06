@@ -3,16 +3,19 @@ package com.curseclient.client.manager.managers.data
 import com.curseclient.CurseClient
 import com.curseclient.client.event.events.ConnectionEvent
 import com.curseclient.client.event.listener.listener
+import com.curseclient.client.gui.impl.mainmenu.elements.alt.Account
 import com.curseclient.client.manager.Manager
+import com.curseclient.client.manager.managers.data.controllers.AltsDataController
 import com.curseclient.client.manager.managers.data.controllers.HudData.HudModuleDataController
 import com.curseclient.client.manager.managers.data.controllers.HudData.HudSettingsDataController
-import com.curseclient.client.manager.managers.data.controllers.ModuleDataController
-import com.curseclient.client.manager.managers.data.controllers.SettingsDataController
+import com.curseclient.client.manager.managers.data.controllers.ModuleData.ModuleDataController
+import com.curseclient.client.manager.managers.data.controllers.ModuleData.SettingsDataController
 import java.io.File
 
 
 object DataManager : Manager("DataManager") {
     private val controllers = ArrayList<DataController>()
+    var alts: MutableList<Account> = ArrayList()
 
     init {
         listener<ConnectionEvent.Connect> {
@@ -28,6 +31,8 @@ object DataManager : Manager("DataManager") {
 
         controllers.add(ModuleDataController)
         controllers.add(SettingsDataController)
+
+        controllers.add(AltsDataController)
     }
 
     fun onClientLoad(){

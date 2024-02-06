@@ -1,8 +1,5 @@
 package com.curseclient.client.event
 
-import com.curseclient.client.event.listener.AsyncListener
-import com.curseclient.client.event.listener.Listener
-
 interface Event
 
 interface ICancellable {

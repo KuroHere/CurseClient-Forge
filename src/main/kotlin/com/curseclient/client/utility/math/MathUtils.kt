@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.Vec3d
 import java.math.BigDecimal
+import java.math.MathContext
 import java.math.RoundingMode
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
@@ -29,8 +30,23 @@ object MathUtils {
         return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble()).toInt()
     }
 
+    fun calculateDistance(start: Vec2d, end: Vec2d): Double {
+        val dx = end.x - start.x
+        val dy = end.y - start.y
+        return sqrt(dx * dx + dy * dy)
+    }
+
     fun roundToHalf(d: Double): Double {
         return Math.round(d * 2) / 2.0
+    }
+
+    fun roundToDecimalPlace(value: Double, inc: Double): Double {
+        val halfOfInc = inc / 2.0
+        val floored = StrictMath.floor(value / inc) * inc
+        return if (value >= floored + halfOfInc) BigDecimal(StrictMath.ceil(value / inc) * inc, MathContext.DECIMAL64).stripTrailingZeros().toDouble()
+        else BigDecimal(floored, MathContext.DECIMAL64)
+            .stripTrailingZeros()
+            .toDouble()
     }
 
     fun round(num: Double, increment: Double): Double {
@@ -56,6 +72,10 @@ object MathUtils {
         return bd.toString()
     }
 
+    fun random(min: Int, max: Int): Int {
+        return ThreadLocalRandom.current().nextInt() * (max - min) + min
+    }
+
     fun random(min: Double, max: Double): Double {
         return ThreadLocalRandom.current().nextDouble() * (max - min) + min
     }
@@ -76,6 +96,19 @@ object MathUtils {
         if (value >= 180.0f) value -= 360.0f
         if (value < -180.0f) value += 360.0f
         return value
+    }
+
+    fun calculateRotation(var0: Float): Float {
+        var var_ = var0
+        val f = 0.0f
+        var_ %= 360.0f
+        if (f >= 180.0f) {
+            var_ -= 360.0f
+        }
+        if (var_ < -180.0f) {
+            var_ += 360.0f
+        }
+        return var_
     }
 
     fun Float.unwrap(): Float {

@@ -1,6 +1,6 @@
 package com.curseclient.mixin.render;
 
-import com.curseclient.client.module.modules.client.PerformancePlus;
+import com.curseclient.client.module.impls.client.PerformancePlus;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.util.EnumFacing;

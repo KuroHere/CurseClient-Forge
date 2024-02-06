@@ -1,7 +1,6 @@
 package com.curseclient.mixin.player;
 
-import com.curseclient.client.manager.managers.ModuleManager;
-import com.curseclient.client.module.modules.visual.CustomModel;
+import com.curseclient.client.module.impls.visual.Cosmetic;
 import com.curseclient.client.utility.render.model.wing.CrystalWings;
 import com.curseclient.client.utility.render.model.wing.DragonWing;
 import com.curseclient.client.utility.render.model.wing.LayerWings;
@@ -29,21 +28,19 @@ public class MixinModelPlayer extends ModelBiped {
     @Inject(method = "render", at = @At("RETURN"))
     public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale, CallbackInfo ci) {
         if (entityIn.equals(Minecraft.getMinecraft().player)) {
-            final CustomModel customModel = ModuleManager.INSTANCE.getModuleByClass(CustomModel.class);
             RenderPlayer renderPlayer = Minecraft.getMinecraft().getRenderManager().getSkinMap().get("default");
             layerWings = new LayerWings(renderPlayer);
-            assert customModel != null;
-            if (customModel.isEnabled()) {
-                if (customModel.getWingType() == CustomModel.Type.Crystal)
+            if (Cosmetic.INSTANCE.isEnabled()) {
+                if (Cosmetic.INSTANCE.getWingType() == Cosmetic.Type.Crystal)
                     crystalWings.render((AbstractClientPlayer) entityIn, limbSwingAmount, ageInTicks, 0.2f);
-                if (customModel.getWingType() == CustomModel.Type.Layer) {
+                if (Cosmetic.INSTANCE.getWingType() == Cosmetic.Type.Layer) {
                     layerWings.renderWing((AbstractClientPlayer) entityIn);
                 }
-                if (customModel.getOxygen())
+                if (Cosmetic.INSTANCE.getOxygen())
                     oxygenMask.renderMask((AbstractClientPlayer) entityIn, 0.75);
 
-                if (customModel.getWingType() == CustomModel.Type.Dragon)
-                    wingModel.renderWing((AbstractClientPlayer) entityIn, customModel.getScale());
+                if (Cosmetic.INSTANCE.getWingType() == Cosmetic.Type.Dragon)
+                    wingModel.renderWing((AbstractClientPlayer) entityIn, Cosmetic.INSTANCE.getScale());
 
             }
         }

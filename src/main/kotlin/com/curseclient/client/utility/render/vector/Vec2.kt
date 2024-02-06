@@ -3,7 +3,7 @@ package com.curseclient.client.utility.render.vector
 import net.minecraft.util.math.Vec2f
 
 class Vec2i(val x: Int, val y: Int)
-class Vec2d(val x: Double, val y: Double) {
+class Vec2d(var x: Double, var y: Double) {
     constructor(x: Int, y: Int) : this(x.toDouble(), y.toDouble())
 
     operator fun div(vec2d: Vec2d) = div(vec2d.x, vec2d.y)

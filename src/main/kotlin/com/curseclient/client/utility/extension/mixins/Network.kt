@@ -1,9 +1,11 @@
 package com.curseclient.client.utility.extension.mixins
 
 import com.curseclient.mixin.accessor.network.AccessorCPacketUseEntity
+import com.curseclient.mixin.accessor.network.AccessorSPacketEntityStatus
 import com.curseclient.mixin.accessor.network.AccessorSPacketEntityVelocity
 import com.curseclient.mixin.accessor.network.AccessorSPacketPosLook
 import net.minecraft.network.play.client.CPacketUseEntity
+import net.minecraft.network.play.server.SPacketEntityStatus
 import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 
@@ -17,6 +19,12 @@ var CPacketUseEntity.useEntityAction: CPacketUseEntity.Action
     get() = this.action
     set(value) {
         (this as AccessorCPacketUseEntity).setAction(value)
+    }
+
+var SPacketEntityStatus.useEntityId: Int
+    get() = (this as AccessorSPacketEntityStatus).id
+    set(value) {
+        (this as AccessorSPacketEntityStatus).id = value
     }
 
 var SPacketEntityVelocity.entityVelocityMotionX: Int

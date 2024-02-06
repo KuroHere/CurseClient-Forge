@@ -3,35 +3,33 @@ package com.curseclient.client.gui.impl.clickgui.elements
 import com.curseclient.client.gui.api.AbstractGui
 import com.curseclient.client.gui.api.elements.DraggableElement
 import com.curseclient.client.gui.api.other.MouseAction
-import com.curseclient.client.gui.impl.altmanager.AltGui
 import com.curseclient.client.gui.impl.clickgui.ClickGuiHud
+import com.curseclient.client.gui.impl.clickgui.elements.settings.misc.ThemePicker
 import com.curseclient.client.manager.managers.ModuleManager
 import com.curseclient.client.module.Category
-import com.curseclient.client.module.modules.client.ClickGui
-import com.curseclient.client.module.modules.client.HUD
-import com.curseclient.client.module.modules.hud.PvpResources
+import com.curseclient.client.module.impls.client.ClickGui
+import com.curseclient.client.module.impls.client.HUD
 import com.curseclient.client.utility.extension.transformIf
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.math.MathUtils.toInt
 import com.curseclient.client.utility.render.ColorUtils
-import com.curseclient.client.utility.render.ColorUtils.setAlphaD
-import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.HoverUtils
-import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.ScissorUtils.scissor
 import com.curseclient.client.utility.render.ScissorUtils.toggleScissor
-import com.curseclient.client.utility.render.font.BonIcon
+import com.curseclient.client.utility.render.font.impl.BonIcon
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
-import com.curseclient.client.utility.render.shader.GaussianBlur
+import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.shader.RoundedUtil
+import com.curseclient.client.utility.render.shader.blur.GaussianBlur
 import com.curseclient.client.utility.render.vector.Vec2d
+import com.curseclient.client.utility.sound.SoundUtils
 import net.minecraft.client.renderer.GlStateManager
-import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.*
 import kotlin.math.max
 import kotlin.math.sign
 
@@ -44,8 +42,6 @@ class CategoryPanel(
     val category: Category
 ) : DraggableElement(pos, width, height, gui) {
 
-    private lateinit var icon:String
-
     override fun onRegister() {
         modules.addAll(ModuleManager.getModules().filter { it.category == category }.map { ModuleButton(it, 0, true, gui as ClickGuiHud, this) })
         modules.forEach { it.onRegister() }
@@ -55,8 +51,13 @@ class CategoryPanel(
         isDraggingHeight = false
         modules.forEach { it.onGuiOpen() }
         windowHeight = 0.0
+        SoundUtils.playSound(SoundUtils.Sound.CLICK_UI, 0.8)
     }
-    override fun onGuiClose() = super.onGuiClose().also { modules.forEach { it.onGuiClose() } }
+    override fun onGuiClose() = super.onGuiClose().also { modules.forEach { it.onGuiClose() }
+    }
+
+    private lateinit var icon:String
+    private var themePicker: ThemePicker? = null
 
     val modules = ArrayList<ModuleButton>()
     var yRange = 0.0 to 0.0; private set
@@ -78,6 +79,12 @@ class CategoryPanel(
     private var draggingHovered = false
     private var isDraggingHeight = false
     private var dragPos = 0.0
+
+    private fun filterModulesByKeyword(keyword: String) {
+        val matchingModules = modules.filter { it.module.name.lowercase().startsWith(keyword.lowercase()) || it.module.name.lowercase().contains(keyword.lowercase()) || keyword.isEmpty() }
+        val matchingIndexes = matchingModules.map { it.index }
+        modules.forEach { it.isVisible = it.index in matchingIndexes }
+    }
 
     override fun onTick() {
         when (ClickGui.sorting) {
@@ -115,9 +122,10 @@ class CategoryPanel(
             ClickGui.ColorMode.Static -> if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
             else -> ClickGui.buttonColor2
         }
+
         RectBuilder(pos, pos.plus(width, height + windowHeight)).apply {
             if (ClickGui.outline) {
-                outlineColor(ClickGui.outlineColor, c2, c1, ClickGui.outlineColor)
+                outlineColor(ClickGui.outlineColor, ClickGui.outlineColor, ClickGui.outlineColor, ClickGui.outlineColor)
                 width(ClickGui.outlineWidth)
             }
             color(ClickGui.backgroundColor)
@@ -126,7 +134,7 @@ class CategoryPanel(
         }
 
         val textPos = pos.plus(width / 2.0 - Fonts.DEFAULT_BOLD.getStringWidth(category.displayName, ClickGui.titleFontSize) / 2.0 - 5, height / 2.0)
-        Fonts.DEFAULT_BOLD.drawString(category.displayName, textPos, scale = ClickGui.titleFontSize, color = if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2)
+        Fonts.DEFAULT_BOLD.drawString(category.displayName, textPos, scale = ClickGui.titleFontSize, color = c2)
 
         val p1 = pos.plus(0.0, height)
         val p2 = pos.plus(width, height + windowHeight)
@@ -144,17 +152,17 @@ class CategoryPanel(
             "Visual" -> icon =  BonIcon.VISIBILITY
             "Misc" -> icon =  BonIcon.LIST
             "Client" -> icon =  BonIcon.SETTINGS
+            "Theme" -> icon = BonIcon.INFO
         }
 
         val textWidth = Fonts.DEFAULT_BOLD.getStringWidth(category.name + " ") / 2f
         val iconPos = pos.plus(width / 2 + textWidth, (height / 2.0) + 3)
-        Fonts.BonIcon.drawString(icon, iconPos, scale = ClickGui.titleFontSize, color = if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2)
+        Fonts.BonIcon.drawString(icon, iconPos, scale = ClickGui.titleFontSize, color = c2)
 
         toggleScissor(true)
         GlStateManager.pushMatrix()
         scissor(p1, p2.minus(0.0, radius), gui.currentScale * 2.0) {
             if (ClickGui.backgroundShader) {
-                //bgShader()
                 GaussianBlur.startBlur()
                 RoundedUtil.drawGradientRound(pos.x.toFloat(), pos.y.toFloat(), 600f, 600f, radius.toFloat(), Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK)
                 GaussianBlur.endBlur(ClickGui.blurRadius, ClickGui.compression)
@@ -164,6 +172,17 @@ class CategoryPanel(
                 it.onRender()
             }
         }
+
+        if (category == Category.THEME && themePicker == null) {
+            themePicker = ThemePicker(Vec2d(pos.x, pos.y), width, ClickGui.height, gui)
+
+            themePicker!!.pos.y += themePicker!!.height
+        }
+
+        themePicker?.apply {
+            pos = Vec2d(pos.x, pos.y)
+            onRender()
+        }
         GlStateManager.popMatrix()
 
         RectBuilder(p1, p2).apply {
@@ -171,18 +190,6 @@ class CategoryPanel(
             shadow(pos.x, pos.y + height + windowHeight - radius, width, 5.0, 10, Color.BLACK)
         }
         toggleScissor(false)
-
-    }
-
-    // I just accidentally found it interesting, so I added it
-    private fun bgShader() {
-        GlStateManager.enableBlend()
-        GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0)
-        AltGui.drawBackground(0)
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
-
     }
 
     private fun scroll() {
@@ -201,15 +208,27 @@ class CategoryPanel(
         scrollSpeed *= decay
     }
 
+    fun setX(x: Int) {
+        this.pos.x = x.toDouble()
+    }
+
     private fun updateModules() {
         val x = pos.x
         var y = pos.y + height
         modules.forEachIndexed { index, it ->
+            //val text: String = gui.search.field.text
+            //filterModulesByKeyword(text)
             it.index = index
             it.pos = Vec2d(x, y + scrollShift)
             it.width = width
             it.height = height
             it.update()
+            y += it.getButtonHeight()
+        }
+        themePicker?.also {
+            it.pos = Vec2d(x, y + scrollShift)
+            it.width = width
+            it.height = height
             y += it.getButtonHeight()
         }
     }
@@ -222,6 +241,7 @@ class CategoryPanel(
 
     override fun onMouseAction(action: MouseAction, button: Int) {
         super.onMouseAction(action, button)
+        val time = System.currentTimeMillis()
 
         if (action == MouseAction.CLICK) {
             when (button) {
@@ -233,28 +253,26 @@ class CategoryPanel(
                         }
                     }
                 }
-
                 0 -> {
-                    val time = System.currentTimeMillis()
-
                     if (hovered && extended && time - lastClickTime < 400) {
                         targetWindowHeight = modules.sumOf { it.getButtonHeight() } + ClickGui.panelRound + 1.0
                     }
-
                     if (draggingHovered) {
                         dragPos = gui.mouse.y - targetWindowHeight
                         isDraggingHeight = true
                         return
                     }
-
                     lastClickTime = time
                 }
             }
         } else isDraggingHeight = false
 
-
         if (action == MouseAction.CLICK && !modulesHovered) return
         modules.filter { extended && panelFocused }.forEach { it.onMouseAction(action, button) }
+
+        if (category == Category.THEME && themePicker != null && action == MouseAction.CLICK && button == 0) {
+           themePicker?.onMouseAction(action, button)
+        }
     }
 
     override fun onKey(typedChar: Char, key: Int) = modules.filter { extended }.forEach { it.onKey(typedChar, key) }

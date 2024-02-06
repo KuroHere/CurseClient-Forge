@@ -1,6 +1,6 @@
 package com.curseclient.mixin.render;
 
-import com.curseclient.client.module.modules.client.PerformancePlus;
+import com.curseclient.client.module.impls.client.PerformancePlus;
 import net.minecraft.client.renderer.texture.TextureManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

@@ -4,6 +4,7 @@ import com.curseclient.client.event.EventBus;
 import com.curseclient.client.event.events.entity.EntityHighlightOnHitEvent;
 import com.curseclient.client.event.events.render.RenderEntityEvent;
 import com.curseclient.client.event.events.render.RenderModelEntityEvent;
+import com.curseclient.client.module.impls.visual.PlayerModel;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -19,6 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.nio.FloatBuffer;
+
+import static baritone.api.utils.Helper.mc;
 
 @Mixin(value = RenderLivingBase.class, priority = 114514)
 public abstract class MixinRenderLivingBase<T extends EntityLivingBase> {
@@ -60,6 +63,34 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> {
 
         RenderEntityEvent eventModel = new RenderEntityEvent.ModelPost(entity);
         EventBus.INSTANCE.post(eventModel);
+    }
+
+    @Inject(method = "renderModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ModelBase;render(Lnet/minecraft/entity/Entity;FFFFFF)V", shift = At.Shift.BEFORE), cancellable = true)
+    private void renderModelHook(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale, CallbackInfo info) {
+        if (PlayerModel.INSTANCE.isEnabled()) {
+            if (PlayerModel.INSTANCE.getLimbSwing()) {
+                entity.limbSwing = entity.limbSwingAmount = 0;
+            }
+            if (PlayerModel.INSTANCE.getRotationPitch()) {
+                entity.rotationPitch = 0;
+            }
+            if (PlayerModel.INSTANCE.getRotationYaw() && !entity.getName().equals(mc.getSession().getUsername())) {
+                entity.rotationYaw = 0;
+            }
+            if (PlayerModel.INSTANCE.getRotationYawHead()) {
+                entity.rotationYawHead = 0;
+            }
+            if (PlayerModel.INSTANCE.getSwingProgress()) {
+                entity.swingProgressInt = 0;
+                entity.swingProgress = 0;
+            }
+            if (PlayerModel.INSTANCE.getCameraPitch()) {
+                entity.cameraPitch = 0;
+            }
+            if (PlayerModel.INSTANCE.getSneak()) {
+                entity.setSneaking(true);
+            }
+        }
     }
 
     /**

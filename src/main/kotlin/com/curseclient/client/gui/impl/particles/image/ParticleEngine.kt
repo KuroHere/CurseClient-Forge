@@ -1,7 +1,6 @@
 package com.curseclient.client.gui.impl.particles.image
 
 import baritone.api.utils.Helper.mc
-import com.curseclient.gui.impl.particles.image.Particle
 import com.curseclient.client.utility.tuples.Pair
 import com.curseclient.client.utility.tuples.mutable.MutablePair
 import net.minecraft.client.gui.ScaledResolution

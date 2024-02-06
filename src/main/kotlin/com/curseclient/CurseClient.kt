@@ -5,12 +5,10 @@ import com.curseclient.client.Client
 import com.curseclient.client.Loader
 import com.curseclient.client.extension.Thingy
 import com.curseclient.client.extension.tracker.Tracker
-import com.curseclient.client.manager.managers.ModuleManager
+import com.curseclient.client.gui.impl.mcgui.SplashProgress
 import com.curseclient.client.manager.managers.SongManager
-import com.curseclient.client.utility.misc.SoundUtils
-import com.curseclient.client.utility.render.IconUtils
-import com.curseclient.client.utility.render.SplashProgress
-import com.curseclient.client.utility.misc.TitleUtils
+import com.curseclient.client.utility.render.DisplayUtils
+import com.curseclient.client.utility.sound.SoundUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.crash.CrashReport
 import net.minecraft.util.Util
@@ -25,7 +23,7 @@ import org.apache.logging.log4j.Logger
 import org.lwjgl.opengl.Display
 import java.io.File
 import java.nio.ByteBuffer
-
+import java.util.*
 
 @Suppress("UNUSED_PARAMETER")
 @Mod(
@@ -33,7 +31,6 @@ import java.nio.ByteBuffer
     name = Client.NAME,
     version = Client.VERSION,
     dependencies = CurseClient.DEPENDENCIES
-
 )
 class CurseClient {
     companion object {
@@ -41,13 +38,13 @@ class CurseClient {
         lateinit var directory: File
         const val DEPENDENCIES = "required-after:forge@[14.23.5.2860,);"
         const val DIR = "CurseClient"
-        var initTime: Long = 0
         val LOG: Logger = LogManager.getLogger(Client.NAME)
+        //var capes: MutableMap<UUID, String> = HashMap()
+        var initTime: Long = 0
         var instance: CurseClient? = null
-        lateinit var songManager: SongManager
-        var moduleManager: ModuleManager? = null
         var hwidManager: Thingy? = null
         var tracker: Tracker? = null
+        lateinit var songManager: SongManager
     }
 
     @Mod.EventHandler
@@ -55,10 +52,8 @@ class CurseClient {
         initTime = System.currentTimeMillis()
         LOG.info("Pre init started")
         val t = System.currentTimeMillis()
-
         tracker = Tracker()
         songManager = SongManager
-        moduleManager = ModuleManager
         Display.setTitle(Client.displayName + " Loading... ")
         instance = this
         Loader.onPreLoad()
@@ -77,10 +72,9 @@ class CurseClient {
             SplashProgress.setProgress(2, "Initializing HWID List...")
             songManager = SongManager
             SplashProgress.setProgress(3, "Initializing sounds...")
-            moduleManager = ModuleManager
             SplashProgress.setProgress(4, "Initializing Module...")
 
-            SoundUtils.playSound(.9) { "opening.wav" }
+            SoundUtils.playSound(SoundUtils.Sound.OPENING, 0.9)
             Loader.onLoad()
             LOG.info("Init completed, took: ${(System.currentTimeMillis() - t)}ms")
         }catch (t: Throwable) {
@@ -92,7 +86,7 @@ class CurseClient {
 
     private fun setCurseIcon() {
         if (Util.getOSType() != EnumOS.OSX) {
-            val icon: Array<ByteBuffer> = IconUtils.getFavicon()
+            val icon: Array<ByteBuffer> = DisplayUtils.getFavicon()
             Display.setIcon(icon)
         }
     }
@@ -112,7 +106,7 @@ class CurseClient {
         Loader.onPostLoad()
         SplashProgress.setProgress(6, "Loading completed...")
         Display.setTitle(Client.displayName + " | " + mc.session.username)
-        MinecraftForge.EVENT_BUS.register(TitleUtils())
+        MinecraftForge.EVENT_BUS.register(DisplayUtils())
         LOG.info("Post init completed, took: ${( System.currentTimeMillis() - t)}ms")
     }
 

@@ -1,17 +1,25 @@
 package com.curseclient.mixin.gui;
 
 import com.curseclient.client.gui.impl.clickgui.elements.ModuleButton;
-import com.curseclient.client.manager.managers.ModuleManager;
-import com.curseclient.client.module.modules.client.HUD;
+import com.curseclient.client.module.impls.client.HUD;
+import com.curseclient.client.module.impls.client.SoundManager;
+import com.curseclient.client.utility.DeltaTime;
 import com.curseclient.client.utility.render.RenderUtils2D;
-import com.curseclient.client.utility.render.animation.AnimationUtils;
+import com.curseclient.client.utility.render.StencilUtil;
+import com.curseclient.client.utility.render.animation.animaions.simple.SimpleUtil;
 import com.curseclient.client.utility.render.font.FontRenderer;
 import com.curseclient.client.utility.render.font.Fonts;
-import com.curseclient.client.utility.DeltaTime;
+import com.curseclient.client.utility.render.shader.RectBuilder;
+import com.curseclient.client.utility.render.shader.blur.GaussianBlur;
+import com.curseclient.client.utility.render.vector.Vec2d;
+import com.curseclient.client.utility.sound.SoundUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
@@ -59,6 +67,7 @@ public abstract class MixinGuiButton extends Gui {
     protected static ResourceLocation BUTTON_TEXTURES;
 
     private float moveX = 0F;
+    private float progress = 0f;
     private float cut;
     private float alpha;
 
@@ -75,34 +84,28 @@ public abstract class MixinGuiButton extends Gui {
             final int delta = DeltaTime.deltaTime;
             final float speedDelta = 0.01F * delta;
 
-            final HUD hud = (HUD) ModuleManager.INSTANCE.getModuleByName("HUD");
-
-            if (hud == null) return;
-
             if (enabled && hovered) {
-                // CurseClient
                 cut += 0.05F * delta;
                 if (cut >= 4) cut = 4;
                 alpha += 0.3F * delta;
                 if (alpha >= 210) alpha = 210;
 
-                // CurseClient+
-                moveX = AnimationUtils.INSTANCE.animate(this.width - 2.4F, moveX, speedDelta);
+                moveX = SimpleUtil.INSTANCE.animate(this.width - 2.4F, moveX, speedDelta);
             } else {
-                // CurseClient
                 cut -= 0.05F * delta;
                 if (cut <= 0) cut = 0;
                 alpha -= 0.3F * delta;
                 if (alpha <= 120) alpha = 120;
 
-                // CurseClient+
-                moveX = AnimationUtils.INSTANCE.animate(0F, moveX, speedDelta);
+                moveX = SimpleUtil.INSTANCE.animate(0F, moveX, speedDelta);
             }
 
-            float roundCorner = (float) Math.max(0F, 2.4F + moveX - (this.width - 2.4F));
+            float roundCorner = Math.max(0F, 2.4F + moveX - (this.width - 2.4F));
 
             Color c1 = HUD.INSTANCE.getColor(0, 255);
-            switch (hud.getGuiButtonStyle().toString().toLowerCase()) {
+            Color c2 = HUD.INSTANCE.getColor(10, 255);
+
+            switch (HUD.INSTANCE.getGuiButtonStyle().toString().toLowerCase()) {
                 case "minecraft":
                     mc.getTextureManager().bindTexture(BUTTON_TEXTURES);
                     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -116,18 +119,15 @@ public abstract class MixinGuiButton extends Gui {
                     this.mouseDragged(mc, mouseX, mouseY);
                     int j = 14737632;
 
-                    if (!this.enabled)
-                    {
+                    if (!this.enabled) {
                         j = 10526880;
-                    }
-                    else if (this.hovered)
-                    {
+                    } else if (this.hovered) {
                         j = 16777120;
                     }
 
                     this.drawCenteredString(mc.fontRenderer, this.displayString, this.x + this.width / 2, this.y + (this.height - 8) / 2, j);
                     break;
-                case "curseclient":
+                case "liquidbounce":
                     Gui.drawRect(this.x + (int) this.cut, this.y,
                         this.x + this.width - (int) this.cut, this.y + this.height,
                         this.enabled ? new Color(0F, 0F, 0F, this.alpha / 255F).getRGB() :
@@ -139,13 +139,41 @@ public abstract class MixinGuiButton extends Gui {
                         this.enabled ? new Color(0F, 0F, 0F, this.alpha / 255F).getRGB() :
                             new Color(0.5F, 0.5F, 0.5F, 0.5F).getRGB());
                     break;
-                case "curseclientplus":
+                case "liquidbounceplus":
                     RenderUtils2D.INSTANCE.drawRoundedRect(this.x, this.y, this.x + this.width, this.y + this.height, 2.4F, new Color(0, 0, 0, 150).getRGB());
                     RenderUtils2D.INSTANCE.customRounded(this.x, this.y, this.x + 2.4F + moveX, this.y + this.height, 2.4F, roundCorner, roundCorner, 2.4F, (this.enabled ? c1 : new Color(71, 71, 71)).getRGB());
                     break;
+                case "curseclient":
+                    Runnable rectTop = () -> RenderUtils2D.INSTANCE.originalRoundedRect(
+                        this.x, this.y,
+                        this.x + this.width,
+                        this.y + this.height,
+                        2F, Color.WHITE.getRGB());
+                    GaussianBlur.INSTANCE.glBlur(rectTop, 30, 2);
+                    StencilUtil.INSTANCE.glStencil(rectTop);
+
+                    GL11.glEnable(GL11.GL_BLEND);
+                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                    GL11.glPushMatrix();
+                    progress = SimpleUtil.INSTANCE.animate(alpha, progress, speedDelta);
+
+                    new RectBuilder(new Vec2d(x, y), new Vec2d(x + width, y + height / 1.4))
+                        .color(new Color(45, 45, 45, 80))
+                        .radius(0.0)
+                        .draw();
+
+                    StencilUtil.INSTANCE.uninitStencilBuffer();
+                    new RectBuilder(new Vec2d(x, y + height / 1.25), new Vec2d(x + width, y + height))
+                        .color(enabled ? c1 : Color.DARK_GRAY, enabled ? c2 : Color.DARK_GRAY, enabled ? c1 : Color.DARK_GRAY, enabled ? c2 : Color.DARK_GRAY)
+                        .radius(0.0)
+                        .draw();
+                    GlStateManager.resetColor();
+                    GL11.glPopMatrix();
+                    GL11.glDisable(GL11.GL_BLEND);
+                    break;
             }
 
-            if (hud.getGuiButtonStyle().toString().equalsIgnoreCase("minecraft")) return;
+            if (HUD.INSTANCE.getGuiButtonStyle().toString().equalsIgnoreCase("minecraft")) return;
 
             mc.getTextureManager().bindTexture(BUTTON_TEXTURES);
             mouseDragged(mc, mouseX, mouseY);
@@ -160,12 +188,12 @@ public abstract class MixinGuiButton extends Gui {
                 mc.fontRenderer.drawStringWithShadow(displayString,
                     (float) ((this.x + this.width / 2) -
                         mc.fontRenderer.getStringWidth(displayString) / 2),
-                    this.y + (this.height - 5) / 2F - 2, 14737632);
+                    this.y + (this.height - 5) / 2F - 2, Color.WHITE.getRGB());
             else
                 FontRenderer.INSTANCE.drawString(displayString,
-                    (float) ((this.x + this.width / 2) -
-                        FontRenderer.INSTANCE.getStringWidth(displayString, Fonts.DEFAULT, 1) / 2),
-                    this.y + (this.height - 5) / 2F - 2, true, new Color(14737632), 1, Fonts.DEFAULT);
+                        (this.x + (float) this.width / 2) -
+                            FontRenderer.INSTANCE.getStringWidth(displayString, Fonts.DEFAULT_BOLD, 1) / 2,
+                    this.y + (this.height - 5) / 2F - 2, true, Color.WHITE, 1, Fonts.DEFAULT_BOLD);
 
             //FontGlyphs.Companion.setAssumeNonVolatile(false);
 
@@ -173,5 +201,16 @@ public abstract class MixinGuiButton extends Gui {
             GL11.glPopMatrix();
             GL11.glDisable(GL11.GL_BLEND);
         }
+    }
+
+    /**
+     * @author Kuro_Here
+     * @reason Custom mc ui button sound
+     */
+    @Overwrite
+    public void playPressSound(SoundHandler soundHandlerIn)
+    {
+        if (SoundManager.INSTANCE.getMcButtonSound()) SoundManager.INSTANCE.playButton();
+        else soundHandlerIn.playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 }

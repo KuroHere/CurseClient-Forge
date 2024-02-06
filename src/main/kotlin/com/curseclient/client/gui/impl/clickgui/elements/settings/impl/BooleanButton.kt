@@ -4,8 +4,8 @@ import com.curseclient.client.gui.api.AbstractGui
 import com.curseclient.client.gui.api.other.MouseAction
 import com.curseclient.client.gui.impl.clickgui.elements.ModuleButton
 import com.curseclient.client.gui.impl.clickgui.elements.settings.SettingButton
-import com.curseclient.client.module.modules.client.ClickGui
-import com.curseclient.client.module.modules.client.HUD
+import com.curseclient.client.module.impls.client.ClickGui
+import com.curseclient.client.module.impls.client.HUD
 import com.curseclient.client.setting.type.BooleanSetting
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.math.MathUtils.toInt

@@ -7,7 +7,8 @@ enum class Category(val displayName: String) {
     PLAYER("Player"),
     VISUAL("Visual"),
     MISC("Misc"),
-    CLIENT("Client")
+    CLIENT("Client"),
+    THEME("Theme")
 }
 
 enum class HudCategory(val displayName: String) {

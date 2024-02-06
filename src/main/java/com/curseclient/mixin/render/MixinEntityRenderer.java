@@ -2,11 +2,10 @@ package com.curseclient.mixin.render;
 
 import com.curseclient.client.event.EventBus;
 import com.curseclient.client.event.events.render.Render2DEvent;
-import com.curseclient.client.manager.managers.ModuleManager;
-import com.curseclient.client.module.modules.client.PerformancePlus;
-import com.curseclient.client.module.modules.player.NoEntityTrace;
-import com.curseclient.client.module.modules.visual.*;
-import com.curseclient.client.utility.render.shader.MotionBlurUtil;
+import com.curseclient.client.module.impls.client.PerformancePlus;
+import com.curseclient.client.module.impls.player.NoEntityTrace;
+import com.curseclient.client.module.impls.visual.*;
+import com.curseclient.client.utility.render.shader.blur.BlurMotionUtil;
 import com.curseclient.client.utility.render.ProjectionUtils;
 import com.curseclient.client.utility.render.Screen;
 import com.curseclient.mixin.accessor.render.AccessorEntityRenderer;
@@ -39,11 +38,6 @@ import java.util.List;
 @Mixin(value = EntityRenderer.class, priority = Integer.MAX_VALUE)
 public class MixinEntityRenderer {
 
-    @Shadow
-    public float thirdPersonDistancePrev;
-    @Shadow
-    public boolean cloudFog;
-
     private final ShaderGroup theShaderGroup;
     @Shadow
     private boolean useShader;
@@ -59,12 +53,12 @@ public class MixinEntityRenderer {
     public void updateCameraAndRender(float partialTicks, long nanoTime, CallbackInfo ci) {
         ProjectionUtils.INSTANCE.updateMatrix();
         Screen.INSTANCE.pushRescale();
-        EventBus.INSTANCE.post(new Render2DEvent());
+        EventBus.INSTANCE.post(new Render2DEvent(partialTicks));
         Screen.INSTANCE.popRescale();
 
         List<ShaderGroup> shaders = new ArrayList<>();
         if (this.theShaderGroup != null && this.useShader) shaders.add(this.theShaderGroup);
-        ShaderGroup motionBlur = MotionBlurUtil.Companion.getInstance().getShader();
+        ShaderGroup motionBlur = BlurMotionUtil.Companion.getInstance().getShader();
 
         if (MotionBlur.INSTANCE.isEnabled()) {
             if (motionBlur != null) shaders.add(motionBlur);
@@ -82,7 +76,7 @@ public class MixinEntityRenderer {
     public void updateShaderGroupSize(int width, int height, CallbackInfo ci) {
         if (mc.world == null) return;
         if (OpenGlHelper.shadersSupported) {
-            ShaderGroup motionBlur = MotionBlurUtil.Companion.getInstance().getShader();
+            ShaderGroup motionBlur = BlurMotionUtil.Companion.getInstance().getShader();
             if (motionBlur != null) {
                 motionBlur.createBindFramebuffers(width, height);
             }
@@ -116,27 +110,27 @@ public class MixinEntityRenderer {
 
     @Redirect(method = "updateCameraAndRender", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;inGameHasFocus:Z"))
     public boolean updateCameraAndRender(Minecraft minecraft) {
-        return PerspectiveMod.INSTANCE.overrideMouse();
+        return FreeLook.INSTANCE.overrideMouse();
     }
 
     @Redirect(method = "orientCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;rotationYaw:F"))
     public float getRotationYaw(Entity entity) {
-        return PerspectiveMod.perspectiveToggled ? PerspectiveMod.cameraYaw : entity.rotationYaw;
+        return FreeLook.perspectiveToggled ? FreeLook.cameraYaw : entity.rotationYaw;
     }
 
     @Redirect(method = "orientCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;prevRotationYaw:F"))
     public float getPrevRotationYaw(Entity entity) {
-        return PerspectiveMod.perspectiveToggled ? PerspectiveMod.cameraYaw : entity.prevRotationYaw;
+        return FreeLook.perspectiveToggled ? FreeLook.cameraYaw : entity.prevRotationYaw;
     }
 
     @Redirect(method = "orientCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;rotationPitch:F"))
     public float getRotationPitch(Entity entity) {
-        return PerspectiveMod.perspectiveToggled ? PerspectiveMod.cameraPitch : entity.rotationPitch;
+        return FreeLook.perspectiveToggled ? FreeLook.cameraPitch : entity.rotationPitch;
     }
 
     @Redirect(method = "orientCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;prevRotationPitch:F"))
     public float getPrevRotationPitch(Entity entity) {
-        return PerspectiveMod.perspectiveToggled ? PerspectiveMod.cameraPitch : entity.prevRotationPitch;
+        return FreeLook.perspectiveToggled ? FreeLook.cameraPitch : entity.prevRotationPitch;
     }
 
     @ModifyVariable(method = "orientCamera", at = @At(value = "STORE", ordinal = 0), ordinal = 0, argsOnly = true)
@@ -190,11 +184,9 @@ public class MixinEntityRenderer {
 
     @Inject(method = "updateLightmap", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/DynamicTexture;updateDynamicTexture()V", shift = At.Shift.BEFORE))
     private void updateTextureHook(float partialTicks, CallbackInfo ci) {
-        Ambience ambience = ModuleManager.INSTANCE.getModuleByClass(Ambience.class);
-        assert ambience != null;
-        if (ambience.isEnabled()) {
+        if (Ambience.INSTANCE.isEnabled() && Ambience.INSTANCE.getCustomLight()) {
             for (int i = 0; i < this.lightmapColors.length; ++i) {
-                Color ambientColor = new Color(ambience.getLightMap().getRed(), ambience.getLightMap().getGreen(), ambience.getLightMap().getBlue());
+                Color ambientColor = new Color(Ambience.INSTANCE.getLightMap().getRed(), Ambience.INSTANCE.getLightMap().getGreen(), Ambience.INSTANCE.getLightMap().getBlue());
                 int alpha = ambientColor.getAlpha();
                 float modifier = (float) alpha / 255.0f;
                 int color = this.lightmapColors[i];
@@ -220,7 +212,7 @@ public class MixinEntityRenderer {
 
     @Inject(method = "getMouseOver", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;getPositionEyes(F)Lnet/minecraft/util/math/Vec3d;", shift = At.Shift.BEFORE), cancellable = true)
     public void getEntitiesInAABBexcluding(float partialTicks, CallbackInfo ci) {
-        if (!NoEntityTrace.isActive()) return;
+        if (!NoEntityTrace.INSTANCE.isActive()) return;
 
         ci.cancel();
         Minecraft.getMinecraft().profiler.endSection();

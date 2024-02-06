@@ -2,6 +2,8 @@ package com.curseclient.client.module
 
 import com.curseclient.client.event.EventBus
 import com.curseclient.client.event.events.CurseClientEvent
+import com.curseclient.client.module.impls.client.ClickGui
+import com.curseclient.client.module.impls.client.SoundManager
 import com.curseclient.client.setting.Setting
 import com.curseclient.client.setting.getSetting
 import com.curseclient.client.setting.type.BooleanSetting
@@ -11,7 +13,6 @@ import com.mojang.realmsclient.gui.ChatFormatting
 import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard
 import java.awt.Color
-
 
 abstract class Module(
     val name: String,
@@ -25,7 +26,6 @@ abstract class Module(
     private var isEnabled = false // TODO: make as setting
     val isDisabled: Boolean get() = !isEnabled
     val isVisible get() = getSetting<BooleanSetting>("Visible")?.value ?: true
-
     var settings = ArrayList<Setting<*>>()
 
     val mc: Minecraft = Minecraft.getMinecraft()
@@ -33,16 +33,13 @@ abstract class Module(
     init {
         settings.add(BooleanSetting("Visible", true, visibility = { this !is HudModule }))
     }
-
     protected open fun onEnable() {}
 
     protected open fun onDisable() {}
 
     protected open fun onClientLoad() {}
 
-    open fun getHudInfo():String {
-        return ""
-    }
+    open fun getHudInfo() = ""
 
     fun onInit() {
         if (alwaysListenable) EventBus.subscribe(this)
@@ -51,13 +48,13 @@ abstract class Module(
 
     fun toggle() { setEnabled(!isEnabled) }
 
-    fun isEnabled(): Boolean {
-        return isEnabled
-    }
+    fun isEnabled() = isEnabled
 
     fun setEnabled(state: Boolean){
         if (state) enable() else disable()
     }
+
+    open fun isActive() = isEnabled()
 
     private fun enable(){
         if(!isEnabled){
@@ -66,7 +63,9 @@ abstract class Module(
 
             EventBus.post(CurseClientEvent.ModuleToggleEvent(this))
             NotificationUtils.notify(name, "Module has been " + ChatFormatting.GREEN + "enable" + ChatFormatting.RESET, NotificationType.INFO, descriptionColor = Color.LIGHT_GRAY)
-
+            if (mc.world != null && !ClickGui.isEnabled()) {
+               SoundManager.playEnable()
+            }
             onEnable()
         }
     }
@@ -79,9 +78,11 @@ abstract class Module(
 
             EventBus.post(CurseClientEvent.ModuleToggleEvent(this))
             NotificationUtils.notify(name, "Module has been" + ChatFormatting.RED + " disable" + ChatFormatting.RESET, NotificationType.INFO, descriptionColor = Color.LIGHT_GRAY)
+            if (mc.world != null) {
+                SoundManager.playDisable()
+            }
 
             onDisable()
         }
     }
-
 }

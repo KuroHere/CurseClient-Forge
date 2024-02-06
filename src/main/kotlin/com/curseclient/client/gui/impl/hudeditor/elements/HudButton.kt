@@ -2,17 +2,12 @@ package com.curseclient.client.gui.impl.hudeditor.elements
 
 import com.curseclient.client.gui.api.elements.InteractiveElement
 import com.curseclient.client.gui.api.other.MouseAction
-import com.curseclient.client.gui.impl.clickgui.elements.settings.SettingButton
-import com.curseclient.client.gui.impl.clickgui.elements.settings.impl.*
 import com.curseclient.client.gui.impl.hudeditor.HudEditorGui
 import com.curseclient.client.gui.impl.hudeditor.elements.settings.SettingHudButton
 import com.curseclient.client.gui.impl.hudeditor.elements.settings.impl.*
-import com.curseclient.client.manager.managers.ModuleManager
-import com.curseclient.client.module.DraggableHudModule
 import com.curseclient.client.module.HudModule
-import com.curseclient.client.module.Module
-import com.curseclient.client.module.modules.client.ClickGui
-import com.curseclient.client.module.modules.client.HUD
+import com.curseclient.client.module.impls.client.ClickGui
+import com.curseclient.client.module.impls.client.HUD
 import com.curseclient.client.setting.Setting
 import com.curseclient.client.setting.type.*
 import com.curseclient.client.utility.math.MathUtils.clamp
@@ -22,16 +17,13 @@ import com.curseclient.client.utility.math.MathUtils.toIntSign
 import com.curseclient.client.utility.render.ColorUtils
 import com.curseclient.client.utility.render.ColorUtils.multAlpha
 import com.curseclient.client.utility.render.ColorUtils.setAlpha
-import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.ScissorUtils.scissor
-import com.curseclient.client.utility.render.animation.EaseUtils.ease
-import com.curseclient.client.utility.render.animation.NewEaseType
+import com.curseclient.client.utility.render.animation.ease.EaseUtils.ease
+import com.curseclient.client.utility.render.animation.ease.NewEaseType
 import com.curseclient.client.utility.render.font.FontUtils.drawString
-import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
-import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.max
@@ -101,32 +93,15 @@ class HudButton(val module: HudModule, var index: Int, var subOpen: Boolean, gui
         val buttonColor1 = ColorUtils.lerp(disabled, c1, p).multAlpha(a)
         val buttonColor2 = ColorUtils.lerp(disabled, c2, p).multAlpha(a)
 
-        if (ClickGui.colorMode == ClickGui.ColorMode.Shader) {
-            if (module.isEnabled())
-                RenderUtils2D.rectGuiTexSmooth(
-                    pos.x.toFloat() + 0.5f,
-                    pos.y.toFloat() + 1,
-                    width.toFloat() - 0.5f,
-                    (height + renderHeight - 1).toFloat(),
-                    ClickGui.buttonRound.toFloat(), // too ugly
-                    Color.WHITE)
+
+        RectBuilder(p1, p2).apply {
+            if (ClickGui.colorMode == ClickGui.ColorMode.Horizontal)
+                colorH(buttonColor1, buttonColor2)
             else
-                RectBuilder(p1, p2).apply {
-                    color(disabled)
-                    radius(ClickGui.buttonRound)
-                    draw()
-
-                }
-        } else
-            RectBuilder(p1, p2).apply {
-                if (ClickGui.colorMode == ClickGui.ColorMode.Horizontal)
-                    colorH(buttonColor1, buttonColor2)
-                else
-                    colorV(buttonColor1, buttonColor2)
-                radius(ClickGui.buttonRound)
-                draw()
-
-            }
+                colorV(buttonColor1, buttonColor2)
+            radius(ClickGui.buttonRound)
+            draw()
+        }
 
         val textPos = pos.plus(ClickGui.space + hoverProgress.ease(NewEaseType.OutBack) * 2.0, height / 2.0)
         fr.drawString(module.name, textPos, scale = ClickGui.fontSize)

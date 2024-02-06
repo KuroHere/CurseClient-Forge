@@ -3,8 +3,8 @@ package com.curseclient.mixin.player;
 import com.curseclient.client.event.EventBus;
 import com.curseclient.client.event.events.PushByEntityEvent;
 import com.curseclient.client.event.events.TravelEvent;
-import com.curseclient.client.module.modules.movement.KeepSprint;
-import com.curseclient.client.module.modules.visual.SmoothCrouch;
+import com.curseclient.client.module.impls.movement.Sprint;
+import com.curseclient.client.module.impls.visual.SmoothCrouch;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -65,11 +65,11 @@ public abstract class MixinEntityPlayer extends EntityLivingBase {
 
     @Inject(method = "attackTargetEntityWithCurrentItem", at = @At("HEAD"))
     public void onAttackPre(Entity targetEntity, CallbackInfo ci) {
-        KeepSprint.onHitPre();
+        Sprint.onHitPre();
     }
 
     @Inject(method = "attackTargetEntityWithCurrentItem", at = @At("RETURN"))
     public void onAttackPost(Entity targetEntity, CallbackInfo ci) {
-        KeepSprint.onHitPost();
+        Sprint.onHitPost();
     }
 }

@@ -1,10 +1,9 @@
 package com.curseclient.mixin.gui;
 
-import com.curseclient.CurseClient;
-import com.curseclient.client.module.modules.client.Animations;
-import com.curseclient.client.module.modules.client.HUD;
-import com.curseclient.client.module.modules.misc.ChestStealer;
-import com.curseclient.client.utility.render.animation.EaseUtils;
+import com.curseclient.client.module.impls.misc.Animations;
+import com.curseclient.client.module.impls.client.HUD;
+import com.curseclient.client.module.impls.misc.ChestStealer;
+import com.curseclient.client.utility.render.animation.ease.EaseUtils;
 import com.curseclient.client.utility.render.RenderUtils2D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -17,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
-import java.util.Objects;
 
 @Mixin(GuiContainer.class)
 public abstract class MixinGuiContainer extends MixinGuiScreen {
@@ -30,6 +28,8 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     private float progress = 0F;
 
     private long lastMS = 0L;
+    private boolean translated = false;
+
 
     @Inject(method = "initGui", at = @At("HEAD"), cancellable = true)
     public void injectInitGui(CallbackInfo callbackInfo){
@@ -39,33 +39,31 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
 
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     private void drawScreenHead(CallbackInfo callbackInfo) {
-        final Animations animMod = (Animations) Objects.requireNonNull(CurseClient.Companion.getModuleManager()).getModuleByName("Animations");
-        final HUD hud = (HUD) CurseClient.Companion.getModuleManager().getModuleByName("HUD");
         final Minecraft mc = Minecraft.getMinecraft();
 
         if (progress >= 1F) progress = 1F;
         else {
-            assert animMod != null;
-            progress = (float) (System.currentTimeMillis() - lastMS) / (float) animMod.getAnimTimeValue();
+            progress = (float) (System.currentTimeMillis() - lastMS) / (float) Animations.INSTANCE.getAnimTimeValue();
         }
 
-        double trueAnim = EaseUtils.easeOutQuart(progress);
+        double trueAnim = EaseUtils.INSTANCE.getEase(progress, Animations.INSTANCE.getGuiEase(), false);
+        assert mc.currentScreen != null;
 
-        assert hud != null;
-        if (hud.getContainerBackground()
+        if (HUD.INSTANCE.getContainerBackground()
             && (!(mc.currentScreen instanceof GuiChest)
             || !ChestStealer.INSTANCE.isEnabled()))
             RenderUtils2D.drawRect(0, 0, this.width, this.height, new Color(0x80101010, true));
 
-        if (animMod != null && animMod.isEnabled() && !(mc.currentScreen instanceof GuiChest)) {
+
+        if (Animations.INSTANCE.isEnabled()) {
             GL11.glPushMatrix();
-            switch (animMod.getGuiAnimations().getDisplayName()) {
+            switch (Animations.INSTANCE.getGuiAnimations().getDisplayName()) {
                 case "Zoom":
                     GL11.glTranslated((1 - trueAnim) * (width / 2D), (1 - trueAnim) * (height / 2D), 0D);
                     GL11.glScaled(trueAnim, trueAnim, trueAnim);
                     break;
                 case "Slide":
-                    switch (animMod.getHSlideValue().getDisplayName()) {
+                    switch (Animations.INSTANCE.getHSlideValue().getDisplayName()) {
                         case "Right":
                             GL11.glTranslated((1 - trueAnim) * -width, 0D, 0D);
                             break;
@@ -73,8 +71,9 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
                             GL11.glTranslated((1 - trueAnim) * width, 0D, 0D);
                             break;
                     }
-                    switch (animMod.getVSlideValue().getDisplayName()) {
+                    switch (Animations.INSTANCE.getVSlideValue().getDisplayName()) {
                         case "Upward":
+
                             GL11.glTranslated(0D, (1 - trueAnim) * height, 0D);
                             break;
                         case "Downward":
@@ -86,6 +85,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
                     GL11.glTranslated((1 - trueAnim) * -width, (1 - trueAnim) * -height / 4F, 0D);
                     break;
             }
+            translated = true;
         }
     }
 
@@ -95,11 +95,11 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     }
 
     @Inject(method = "drawScreen", at = @At("RETURN"))
-    public void drawScreenReturn(CallbackInfo callbackInfo) {
-        final Animations animMod = (Animations) Objects.requireNonNull(CurseClient.Companion.getModuleManager()).getModuleByName("Animations");
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (animMod != null && animMod.isEnabled() && !(mc.currentScreen instanceof GuiChest))
+    private void drawScreenReturn(CallbackInfo callbackInfo) {
+        if (translated) {
             GL11.glPopMatrix();
+            translated = false;
+        }
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)

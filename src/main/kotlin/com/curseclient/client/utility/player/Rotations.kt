@@ -1,7 +1,7 @@
 package com.curseclient.client.utility.player
 
-import com.curseclient.client.module.modules.combat.KillAura
-import com.curseclient.client.module.modules.combat.KillAura.maxPitch
+import com.curseclient.client.module.impls.combat.KillAura
+import com.curseclient.client.module.impls.combat.KillAura.maxPitch
 import com.curseclient.client.utility.math.GCDFix.getFixedRotation
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
@@ -95,5 +95,23 @@ object Rotations {
     private fun getDist(entity: Entity): Double {
         val vec = entity.positionVector.add(Vec3d(0.0, MathHelper.clamp(entity.posY - mc.player.posY + mc.player.getEyeHeight().toDouble(), 0.0, entity.height.toDouble()), 0.0))
         return mc.player.positionVector.add(Vec3d(0.0, (mc.player.height / 2.0f).toDouble(), 0.0)).distanceTo(vec)
+    }
+}
+
+class Rotation(var yaw: Float, var pitch: Float, val rotate: Rotate = Rotate.NONE) {
+    companion object {
+        val INVALID_ROTATION = Rotation(Float.NaN, Float.NaN)
+    }
+
+    constructor(yaw: Float, pitch: Float) : this(yaw, pitch, Rotate.NONE)
+
+    fun isValid(): Boolean {
+        return !yaw.isNaN() && !pitch.isNaN()
+    }
+
+    enum class Rotate {
+        PACKET,
+        CLIENT,
+        NONE
     }
 }

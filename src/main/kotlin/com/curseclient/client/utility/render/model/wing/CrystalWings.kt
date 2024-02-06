@@ -1,6 +1,6 @@
 package com.curseclient.client.utility.render.model.wing
 
-import com.curseclient.client.module.modules.visual.CustomModel
+import com.curseclient.client.module.impls.visual.Cosmetic
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
@@ -76,7 +76,7 @@ class CrystalWings : ModelBase(), LayerRenderer<AbstractClientPlayer> {
                 GlStateManager.alphaFunc(516, 0.003921569f)
 
                 GlStateManager.disableLighting()
-                GL11.glColor4f(CustomModel.color.red.toFloat(), CustomModel.color.green.toFloat(), CustomModel.color.blue.toFloat(), CustomModel.color.alpha.toFloat())
+                GL11.glColor4f(Cosmetic.color.red.toFloat(), Cosmetic.color.green.toFloat(), Cosmetic.color.blue.toFloat(), Cosmetic.color.alpha.toFloat())
 
                 Minecraft.getMinecraft().textureManager.bindTexture(resourceLocation)
                 if (i == 1) GlStateManager.scale(-1.0f, 1.0f, 1.0f)

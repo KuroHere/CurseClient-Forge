@@ -1,9 +1,9 @@
 package com.curseclient.client.utility.player
 
 import com.curseclient.client.manager.managers.FriendManager.isFriend
-import com.curseclient.client.module.modules.combat.AntiBot.isBot
-import com.curseclient.client.module.modules.combat.KillAura
-import com.curseclient.client.module.modules.visual.ESP
+import com.curseclient.client.module.impls.combat.AntiBot.isBot
+import com.curseclient.client.module.impls.combat.KillAura
+import com.curseclient.client.module.impls.visual.ESP
 import com.curseclient.client.utility.player.RotationUtils.getEyePosition
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity

@@ -5,9 +5,10 @@ import com.curseclient.client.gui.api.other.MouseAction
 import com.curseclient.client.gui.impl.clickgui.ClickGuiHud
 import com.curseclient.client.gui.impl.clickgui.elements.settings.SettingButton
 import com.curseclient.client.gui.impl.clickgui.elements.settings.impl.*
+import com.curseclient.client.gui.impl.clickgui.elements.settings.misc.SearchBar
 import com.curseclient.client.module.Module
-import com.curseclient.client.module.modules.client.ClickGui
-import com.curseclient.client.module.modules.client.HUD
+import com.curseclient.client.module.impls.client.ClickGui
+import com.curseclient.client.module.impls.client.HUD
 import com.curseclient.client.setting.Setting
 import com.curseclient.client.setting.type.*
 import com.curseclient.client.utility.math.MathUtils.clamp
@@ -17,10 +18,10 @@ import com.curseclient.client.utility.math.MathUtils.toIntSign
 import com.curseclient.client.utility.render.ColorUtils
 import com.curseclient.client.utility.render.ColorUtils.multAlpha
 import com.curseclient.client.utility.render.ColorUtils.setAlpha
-import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.ScissorUtils.scissor
-import com.curseclient.client.utility.render.animation.EaseUtils.ease
-import com.curseclient.client.utility.render.animation.NewEaseType
+import com.curseclient.client.utility.render.animation.ease.EaseUtils
+import com.curseclient.client.utility.render.animation.ease.EaseUtils.ease
+import com.curseclient.client.utility.render.animation.ease.NewEaseType
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.graphic.GLUtils
@@ -30,7 +31,6 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.*
 
-
 class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui: ClickGuiHud, private val basePanel: CategoryPanel) : InteractiveElement(
     Vec2d.ZERO, 0.0, 0.0, gui) {
 
@@ -39,27 +39,38 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
         settings.addAll(module.settings.mapNotNull { it.toGuiButton() })
         settings.forEach { it.onRegister() }
     }
+
     override fun onGuiOpen() = settings.forEach { it.onGuiOpen() }.also {
         subOpen = true
         extended = false
         renderHeight = 0.0
         hoverProgress = 0.0
         enabledProgress = module.isEnabled().toInt().toDouble()
+        searchBar?.onGuiOpen()
     }
 
-    override fun onGuiClose() = settings.forEach { it.onGuiClose() }
+    override fun onGuiClose() {
+        settings.forEach { it.onGuiClose() }
+        searchBar?.onGuiClose()
+    }
+
     override fun onGuiCloseAttempt() {}
 
     val settings = ArrayList<SettingButton>()
-    private var prevHovered = false
+    private val searchBar: SearchBar? = null
 
+    var isVisible: Boolean = true
     var extended = false
-    var renderHeight = 0.0
+    private var renderHeight = 0.0
     private var hoverProgress = 0.0
     private var enabledProgress = 0.0
 
     override fun onTick() {
         if (extended) settings.filter { it.isVisible() }.forEach { it.onTick() }
+    }
+
+    private fun isModuleMatchingKeyword(keyword: String): Boolean {
+        return module.name.lowercase().startsWith(keyword.lowercase()) || module.name.lowercase().contains(keyword.lowercase())
     }
 
     fun update() {
@@ -97,45 +108,26 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
         val buttonColor1 = ColorUtils.lerp(disabled, c1, p).multAlpha(a)
         val buttonColor2 = ColorUtils.lerp(disabled, c2, p).multAlpha(a)
 
-        if (ClickGui.colorMode == ClickGui.ColorMode.Shader) {
-            if (module.isEnabled())
-            RenderUtils2D.rectGuiTexSmooth(
-                pos.x.toFloat() + 0.5f,
-                pos.y.toFloat() + 1,
-                width.toFloat() - 0.5f,
-                (height + renderHeight - 1).toFloat(),
-                ClickGui.buttonRound.toFloat(), // too ugly
-                Color.WHITE)
+        RectBuilder(p1, p2).apply {
+            if (ClickGui.colorMode == ClickGui.ColorMode.Horizontal)
+                colorH(buttonColor1, buttonColor2)
             else
-                RectBuilder(p1, p2).apply {
-                color(disabled)
-                radius(ClickGui.buttonRound)
-                draw()
+                colorV(buttonColor1, buttonColor2)
+            radius(ClickGui.buttonRound)
+            draw()
+        }
 
-            }
-        } else
-            RectBuilder(p1, p2).apply {
-                if (ClickGui.colorMode == ClickGui.ColorMode.Horizontal)
-                    colorH(buttonColor1, buttonColor2)
-                else
-                    colorV(buttonColor1, buttonColor2)
-                radius(ClickGui.buttonRound)
-                draw()
+        val textPos = pos.plus(ClickGui.space + hoverProgress.ease(EaseUtils.EaseType.InOutBack) * 4.0, height / 2.0)
 
-            }
+        val text: String = (gui as ClickGuiHud).search.field.text
+        isVisible = isModuleMatchingKeyword(text)
 
-        val textPos = pos.plus(ClickGui.space + hoverProgress.ease(NewEaseType.OutBack) * 2.0, height / 2.0)
-        fr.drawString(module.name, textPos, scale = ClickGui.fontSize)
-
+        if (isVisible && gui.search.field.isFocused && gui.search.field.text.isNotEmpty()) {
+            fr.drawString(module.name, textPos, scale = ClickGui.fontSize)
+        } else if (gui.search.field.text.isEmpty())
+            fr.drawString(module.name, textPos, scale = ClickGui.fontSize)
         detail()
-
-        // 😼👌
-        //if (hovered) {
-        //    if (!prevHovered)
-        //        SoundUtils.playSound { "scroll.wav" }
-        //}
-        //prevHovered = hovered;
-        val hoveredModule = (gui as ClickGuiHud).panels.flatMap { it.modules }.firstOrNull { it.isHovered(gui.mouse) }
+        val hoveredModule = gui.panels.flatMap { it.modules }.firstOrNull { it.isHovered(gui.mouse) }
         val descriptionDisplay = gui.descriptionDisplay
 
         if (hoveredModule != null && descriptionDisplay != null) {
@@ -159,27 +151,23 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
     }
 
     private fun detail() {
-
-        val bindPos = pos.plus(
-            ClickGui.space.plus(hoverProgress.ease(NewEaseType.OutBack).times(2.0)) + fr.getStringWidth(module.name, ClickGui.settingFontSize) + fr.getStringWidth(Keyboard.getKeyName(module.key).toString(), 0.3) + 5,
-            (height / 2) - 2)
-
+        val bindPos = pos.plus(hoverProgress.ease(NewEaseType.OutBack) * 2.0 + fr.getStringWidth(module.name, ClickGui.settingFontSize) + fr.getStringWidth(Keyboard.getKeyName(module.key).toString(), 0.3) + 5, (height / 2) - 2)
         val charPos = pos.plus(width - 10, height / 2)
 
-        var char: String? = null
-        if (subOpen) {
-            char = ClickGui.open
-        }
-        if (extended) {
-            char = ClickGui.close
-        }
-        when (ClickGui.detailPage.name) {
-            "Characters" -> if (module.settings.size > 1) fr.drawString(char.toString(), charPos, color = Color.WHITE, scale = 0.8)
-            "Bind" -> if (module.key != Keyboard.KEY_NONE) fr.drawString("[" + Keyboard.getKeyName(module.key).toString() + "]", bindPos, shadow = true, color = Color.WHITE, scale = 0.6)
+        val char = when {
+            subOpen -> ClickGui.open
+            extended -> ClickGui.close
+            else -> null
         }
 
+        if (ClickGui.characters && module.settings.size > 1) {
+            fr.drawString(char ?: "", charPos, color = Color.WHITE, scale = 0.8)
+        }
+
+        if (ClickGui.bind && module.key != Keyboard.KEY_NONE) {
+            fr.drawString("[${Keyboard.getKeyName(module.key)}]", bindPos, shadow = true, color = Color.WHITE, scale = 0.6)
+        }
     }
-
 
     private fun drawSettings() {
         val x = pos.x
@@ -209,7 +197,7 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
         if (extended) settings.filter { it.isVisible() }.forEach { it.onMouseAction(action, button) }
 
         if ((action == MouseAction.CLICK && !hovered) || action == MouseAction.RELEASE) return
-
+        searchBar?.onMouseAction(action, button)
         when (button) {
             0 -> module.toggle()
             1 -> {
@@ -229,12 +217,11 @@ class ModuleButton(val module: Module, var index: Int, var subOpen: Boolean, gui
                 settings.forEach { if (extended) it.onSettingsOpen() else it.onSettingsClose() }
             }
         }
-
-
     }
 
     override fun onKey(typedChar: Char, key: Int) {
         if (extended) settings.filter { it.isVisible() }.forEach { it.onKey(typedChar, key) }
+        searchBar?.onKey(typedChar, key)
     }
 
     fun getButtonHeight() = height + renderHeight

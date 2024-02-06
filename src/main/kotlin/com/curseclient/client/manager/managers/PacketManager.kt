@@ -7,7 +7,7 @@ import com.curseclient.client.event.events.PlayerPacketEvent
 import com.curseclient.client.event.listener.listener
 import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.manager.Manager
-import com.curseclient.client.module.modules.player.FreeCam
+import com.curseclient.client.module.impls.player.FreeCam
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.network.Packet
@@ -20,7 +20,7 @@ import net.minecraft.util.math.Vec3d
 object PacketManager: Manager("PacketManager") {
     private val mc = Minecraft.getMinecraft()
 
-    // for some modules
+    // for some impls
     var prevReportedPos: Vec3d = Vec3d.ZERO; private set
 
     // for VisualRotations module

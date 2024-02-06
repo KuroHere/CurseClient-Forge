@@ -1,6 +1,7 @@
 package com.curseclient.client.utility.render.shader
 
 import com.curseclient.client.utility.render.ColorUtils
+import com.curseclient.client.utility.render.graphic.GLUtils.glColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
@@ -43,6 +44,34 @@ object RoundedUtil {
     fun drawGradientCornerRL(x: Float, y: Float, width: Float, height: Float, radius: Float, bottomLeft: Color, topRight: Color) {
         val mixedColor = ColorUtils.interpolateColorC(topRight, bottomLeft, 0.5f)
         drawGradientRound(x, y, width, height, radius, bottomLeft, mixedColor, mixedColor, topRight)
+    }
+
+    fun drawGradientRound(
+        x: Int,
+        y: Int,
+        width: Int,
+        height: Int,
+        radius: Float,
+        bottomLeft: Color,
+        topLeft: Color,
+        bottomRight: Color,
+        topRight: Color
+    ) {
+        drawGradientRound(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius, bottomLeft, topLeft, bottomRight, topRight)
+    }
+
+    fun drawGradientRound(
+        x: Double,
+        y: Double,
+        width: Double,
+        height: Double,
+        radius: Float,
+        bottomLeft: Color,
+        topLeft: Color,
+        bottomRight: Color,
+        topRight: Color
+    ) {
+        drawGradientRound(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius, bottomLeft, topLeft, bottomRight, topRight)
     }
 
     fun drawGradientRound(
@@ -146,8 +175,28 @@ object RoundedUtil {
         GlStateManager.alphaFunc(GL_GREATER, (limit * .01).toFloat())
     }
 
-    fun drawImage(resourceLocation: ResourceLocation, x: Float, y: Float, imgWidth: Float, imgHeight: Float) {
+    fun drawImage(resourceLocation: String, x: Float, y: Float, imgWidth: Float, imgHeight: Float, color: Color) {
         startBlend()
+        glColor(color)
+        Minecraft.getMinecraft().textureManager.bindTexture(ResourceLocation(resourceLocation))
+        Gui.drawModalRectWithCustomSizedTexture(x.toInt(), y.toInt(), 0f, 0f, imgWidth.toInt(), imgHeight.toInt(), imgWidth, imgHeight)
+        endBlend()
+    }
+
+    fun drawImage(resourceLocation: ResourceLocation, x: Float, y: Float, imgWidth: Float, imgHeight: Float, color: Color) {
+        startBlend()
+        glColor(color)
+        Minecraft.getMinecraft().textureManager.bindTexture(resourceLocation)
+        Gui.drawModalRectWithCustomSizedTexture(x.toInt(), y.toInt(), 0f, 0f, imgWidth.toInt(), imgHeight.toInt(), imgWidth, imgHeight)
+        endBlend()
+    }
+
+    fun drawImage(resourceLocation: ResourceLocation, x: Float, y: Float, imgWidth: Float, imgHeight: Float, color: Color, alpha: Float) {
+        val red: Float = color.red / 255f
+        val green: Float = color.green / 255f
+        val blue: Float = color.blue / 255f
+        startBlend()
+        GlStateManager.color(red, green, blue, alpha / 255f)
         Minecraft.getMinecraft().textureManager.bindTexture(resourceLocation)
         Gui.drawModalRectWithCustomSizedTexture(x.toInt(), y.toInt(), 0f, 0f, imgWidth.toInt(), imgHeight.toInt(), imgWidth, imgHeight)
         endBlend()

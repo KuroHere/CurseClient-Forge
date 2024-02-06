@@ -2,10 +2,10 @@ package com.curseclient.mixin.entity;
 
 import com.curseclient.client.event.EventBus;
 import com.curseclient.client.event.events.StepEvent;
-import com.curseclient.client.module.modules.client.PerformancePlus;
-import com.curseclient.client.module.modules.movement.SafeWalk;
-import com.curseclient.client.module.modules.player.FreeCam;
-import com.curseclient.client.module.modules.visual.ViewLock;
+import com.curseclient.client.module.impls.client.PerformancePlus;
+import com.curseclient.client.module.impls.movement.SafeWalk;
+import com.curseclient.client.module.impls.player.FreeCam;
+import com.curseclient.client.module.impls.player.ViewLock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;

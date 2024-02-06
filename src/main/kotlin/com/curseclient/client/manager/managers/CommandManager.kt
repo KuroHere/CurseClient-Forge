@@ -1,7 +1,7 @@
 package com.curseclient.client.manager.managers
 
 import com.curseclient.client.command.Command
-import com.curseclient.client.command.commands.*
+import com.curseclient.client.command.impl.*
 
 object CommandManager {
     fun getCommands(): ArrayList<Command>{

@@ -1,6 +1,6 @@
 package com.curseclient.mixin.misc;
 
-import com.curseclient.client.manager.managers.ModuleManager;
+import com.curseclient.client.module.impls.misc.SolidWeb;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockWeb;
 import net.minecraft.block.material.Material;
@@ -21,7 +21,7 @@ public class MixinBlockWeb extends Block {
 
     @Inject(method = {"getCollisionBoundingBox"}, at = {@At("HEAD")}, cancellable = true)
     public void getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos, CallbackInfoReturnable<AxisAlignedBB> cir) {
-        if (ModuleManager.INSTANCE.getModuleByName("SolidWeb").isEnabled()) {
+        if (SolidWeb.INSTANCE.isEnabled()) {
             cir.setReturnValue(FULL_BLOCK_AABB);
         }
     }

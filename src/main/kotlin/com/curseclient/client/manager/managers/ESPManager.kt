@@ -1,6 +1,6 @@
 package com.curseclient.client.manager.managers
 
-import com.curseclient.client.module.modules.client.PerformancePlus
+import com.curseclient.client.module.impls.client.PerformancePlus
 import com.curseclient.client.utility.render.graphic.GLUtils.renderGL
 import com.curseclient.client.utility.render.RenderTessellator
 import com.curseclient.client.utility.render.RenderUtils3D

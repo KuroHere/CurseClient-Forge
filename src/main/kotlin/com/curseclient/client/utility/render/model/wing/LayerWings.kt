@@ -1,7 +1,7 @@
 package com.curseclient.client.utility.render.model.wing
 
 import baritone.api.utils.Helper.mc
-import com.curseclient.client.module.modules.visual.CustomModel
+import com.curseclient.client.module.impls.visual.Cosmetic
 import com.curseclient.client.utility.extension.mixins.timer
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.AbstractClientPlayer
@@ -43,7 +43,7 @@ class LayerWings(private val renderPlayer: RenderPlayer) : LayerRenderer<Abstrac
             val bipedBody = renderPlayer.mainModel.bipedBody
             bipedBody.postRender(0.0625f)
 
-            val selectedWingTexture = wingTextures[CustomModel.wingLayer]
+            val selectedWingTexture = wingTextures[Cosmetic.wingLayer]
             if (selectedWingTexture != null) {
                 Minecraft.getMinecraft().textureManager.bindTexture(selectedWingTexture)
             }

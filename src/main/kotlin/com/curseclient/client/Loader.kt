@@ -14,8 +14,8 @@ import net.minecraftforge.common.MinecraftForge
 
 object Loader {
     fun onPreLoad() {
-        ModuleManager.load() // load modules
-        ModuleManager.load2() // load hud modules
+        ModuleManager.moduleLoad() // load impls
+        ModuleManager.hudModuleLoad() // load hud impls
 
         ManagerLoader.load() // subscribe managers
 

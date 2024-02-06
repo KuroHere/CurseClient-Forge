@@ -1,7 +1,5 @@
 package com.curseclient.client.utility.render.shader
 
-import com.curseclient.client.module.modules.client.ClickGui
-import com.curseclient.client.module.modules.client.HUD
 import com.curseclient.client.utility.math.Quad
 import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.vector.Vec2d
@@ -35,6 +33,7 @@ class RectBuilder(val pos1: Vec2d, val pos2: Vec2d) {
 
     fun colorH(left: Color, right: Color) =
         color(left, right, left, right)
+
     // endregion
 
     // region outlineColor

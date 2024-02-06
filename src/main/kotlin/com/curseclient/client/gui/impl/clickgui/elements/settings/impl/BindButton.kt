@@ -5,7 +5,7 @@ import com.curseclient.client.gui.api.other.MouseAction
 import com.curseclient.client.gui.impl.clickgui.elements.ModuleButton
 import com.curseclient.client.gui.impl.clickgui.elements.settings.SettingButton
 import com.curseclient.client.module.Module
-import com.curseclient.client.module.modules.client.ClickGui
+import com.curseclient.client.module.impls.client.ClickGui
 import com.curseclient.client.utility.player.ChatUtils
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getHeight
@@ -15,7 +15,6 @@ import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
 import org.lwjgl.input.Keyboard
 import java.awt.Color
-import java.awt.Font
 import java.util.*
 
 class BindButton(val module: Module, gui: AbstractGui, baseButton: ModuleButton) : SettingButton(gui, baseButton) {
@@ -68,7 +67,6 @@ class BindButton(val module: Module, gui: AbstractGui, baseButton: ModuleButton)
             binding = false
             return
         }
-
         if (key == Keyboard.KEY_BACK || key == Keyboard.KEY_DELETE) {
             module.key = Keyboard.KEY_NONE
             ChatUtils.sendMessage("New " + module.name + " bind: §a[§f NONE §a]§f")
@@ -76,7 +74,6 @@ class BindButton(val module: Module, gui: AbstractGui, baseButton: ModuleButton)
             binding = false
             return
         }
-
         module.key = key
         ChatUtils.sendMessage("New " + module.name + " bind: §a[§f " + Keyboard.getKeyName(module.key) + " §a]§f")
         binding = false

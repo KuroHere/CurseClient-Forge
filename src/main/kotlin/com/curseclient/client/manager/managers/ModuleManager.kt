@@ -1,34 +1,28 @@
 package com.curseclient.client.manager.managers
 
-import GlowESP
 import com.curseclient.client.event.listener.safeListener
 import com.curseclient.client.manager.Manager
-import com.curseclient.client.module.Module
-import com.curseclient.client.module.modules.client.*
-import com.curseclient.client.module.modules.combat.*
-import com.curseclient.client.module.modules.hud.*
-import com.curseclient.client.module.modules.hud.Status.Status
-import com.curseclient.client.module.modules.hud.compass.Compass
-import com.curseclient.client.module.modules.hud.targetHUD.FollowTargetHud
-import com.curseclient.client.module.modules.hud.targetHUD.TargetHUD
-import com.curseclient.client.module.modules.hud.graph.FpsGraph
-import com.curseclient.client.module.modules.hud.graph.MovementGraph
-import com.curseclient.client.module.modules.hud.modulelist.ModuleList
-import com.curseclient.client.module.modules.misc.*
-import com.curseclient.client.module.modules.movement.*
-import com.curseclient.client.module.modules.player.*
-import com.curseclient.client.module.modules.visual.*
-import com.curseclient.client.module.modules.visual.TwoDESP.TwoDESP
+import com.curseclient.client.module.impls.client.*
+import com.curseclient.client.module.impls.combat.*
+import com.curseclient.client.module.impls.hud.*
+import com.curseclient.client.module.impls.hud.Status.Status
+import com.curseclient.client.module.impls.hud.graph.FpsGraph
+import com.curseclient.client.module.impls.hud.graph.MovementGraph
+import com.curseclient.client.module.impls.hud.modulelist.ModuleList
+import com.curseclient.client.module.impls.misc.*
+import com.curseclient.client.module.impls.movement.*
+import com.curseclient.client.module.impls.player.*
+import com.curseclient.client.module.impls.visual.*
+import com.curseclient.client.module.modules.visual.StorageESP
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Keyboard
-
 
 object ModuleManager: Manager("ModuleManager") {
 
     fun getHudModules() = arrayListOf(
         Radar,
         Model,
-        NewOverlay,
+        GameOverlay,
         Status,
         Compass,
         MovementGraph,
@@ -39,13 +33,13 @@ object ModuleManager: Manager("ModuleManager") {
         FPS,
         Notifications,
         PlayerSpeed,
-        RenderTest,
         TargetHUD,
         Watermark
     )
 
     fun getModules() = arrayListOf(
         //client
+        SoundManager,
         GuiClickCircle,
         Animations,
         Cape,
@@ -55,7 +49,6 @@ object ModuleManager: Manager("ModuleManager") {
         HudEditor,
         MenuShader,
         PerformancePlus,
-        Welcome,
 
         //combat
         AntiBot,
@@ -70,10 +63,10 @@ object ModuleManager: Manager("ModuleManager") {
         Velocity,
 
         //misc
+        BetterScreenshot,
+        Radio,
         Panic,
-        KickSound,
         ChatMod,
-        HitSound,
         SolidWeb,
         MapBounds,
         AutoRespawn,
@@ -85,6 +78,7 @@ object ModuleManager: Manager("ModuleManager") {
         DeathSounds,
         Surround,
         HoleFiller,
+        SwingLimiter,
 
         //movement
         ElytraFlight,
@@ -93,7 +87,6 @@ object ModuleManager: Manager("ModuleManager") {
         GuiWalk,
         HighJump,
         Jesus,
-        KeepSprint,
         LongJump,
         NoFall,
         NoJumpDelay,
@@ -102,6 +95,7 @@ object ModuleManager: Manager("ModuleManager") {
         Phase,
         ReverseStep,
         SafeWalk,
+        Scaffold,
         Speed,
         Spider,
         Sprint,
@@ -120,83 +114,64 @@ object ModuleManager: Manager("ModuleManager") {
         PacketLogger,
         PacketMine,
         Reach,
-        SwingLimiter,
-        Scaffold,
+        SpeedMine,
         TickShift,
         Timer,
+        ViewLock,
 
         //visual
-        FollowTargetHud,
-        PenisESP,
-        TwoDESP,
-        CustomSky,
-        PerspectiveMod,
-        CustomModel,
         Ambience,
-        SimsESP,
-        DeadEffect,
-        HitColour,
-        PopChams,
-        BetterScreenshot,
-        WallHack,
-        SuperHeroFX,
-        CrossHair,
-        TNTESP,
-        HungerOverlay,
-        MotionBlur,
-        GlowESP,
-        ViewLock,
+        BlockHighlight,
         Chams,
-        StorageESP,
         ConicalHat,
+        Cosmetic,
+        CrossHair,
         CrystalRenderer,
-        FovModifier,
+        CustomSky,
         ESP,
         FancyHandshake,
-        FogColor,
+        FollowTargetHud,
+        FovModifier,
+        FreeLook,
         FullBright,
         GlintModifier,
+        GlowESP,
         HandShader,
         HealthParticles,
+        HitColour,
         HitParticles,
         HoleESP,
+        HungerOverlay,
+        Indicators,
         ItemPhysics,
         JumpCircles,
+        KillEffect,
+        MotionBlur,
         Nametags,
         NoRender,
-        BlockHighlight,
+        PenisESP,
+        PlayerModel,
+        PopChams,
+        Predict,
         SmoothCrouch,
+        StorageESP,
+        SuperHeroFX,
         TargetESP,
         ThirdPersonCamera,
+        TNTESP,
         Tracers,
         Trails,
         ViewModel,
-        VisualRotations
+        VisualRotations,
+        WallHack,
     )
 
-
-    fun getModuleByName(name: String): Module? {
-        for (module in this.getModules()) {
-            if (module.name != name) continue
-            return module
-        }
-        return null
-    }
-
-    fun <T : Module?> getModuleByClass(clazz: Class<T>): T? {
-        for (module in this.getModules()) {
-            if (!clazz.isInstance(module)) continue
-            return module as T
-        }
-        return null
-    }
-
-    fun load() = getModules().forEach {
+    fun moduleLoad() = getModules().forEach {
         it.onInit()
         if (it.enabledByDefault) it.setEnabled(true)
     }
 
-    fun load2() = getHudModules().forEach {
+    fun hudModuleLoad() = getHudModules().forEach {
         it.onInit()
         if (it.enabledByDefault) it.setEnabled(true)
     }

@@ -1,17 +1,15 @@
 package com.curseclient.client.utility.render.shader;
 
 import baritone.api.utils.Helper;
-import com.curseclient.client.utility.render.FileUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 
+// holy shit paster (〃￣︶￣)人(￣︶￣〃)
 public class ShaderUtils implements Helper {
     private final int programID;
 
@@ -195,7 +193,7 @@ public class ShaderUtils implements Helper {
 
     private int createShader(InputStream inputStream, int shaderType) {
         int shader = glCreateShader(shaderType);
-        glShaderSource(shader, FileUtils.readInputStream(inputStream));
+        glShaderSource(shader, readInputStream(inputStream));
         glCompileShader(shader);
 
 
@@ -205,6 +203,21 @@ public class ShaderUtils implements Helper {
         }
 
         return shader;
+    }
+
+    public static String readInputStream(InputStream inputStream) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = bufferedReader.readLine()) != null)
+                stringBuilder.append(line).append('\n');
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return stringBuilder.toString();
     }
 
     private String kawaseUpGlow = "#version 120\n" +

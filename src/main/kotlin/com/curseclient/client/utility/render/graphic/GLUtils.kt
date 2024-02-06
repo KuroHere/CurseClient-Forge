@@ -15,6 +15,9 @@ object GLUtils {
     fun deltaTimeFloat() =
         FPSCounter.deltaTime.toFloat()
 
+    fun deltaTimeInt() =
+        FPSCounter.deltaTime.toInt()
+
     fun matrix(block: () -> Unit) {
         glPushMatrix()
         block()

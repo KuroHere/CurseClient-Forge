@@ -1,6 +1,6 @@
 package com.curseclient.mixin.render;
 
-import com.curseclient.client.module.modules.visual.TNTESP;
+import com.curseclient.client.module.impls.visual.TNTESP;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -23,7 +23,7 @@ public class MixinRenderTNT {
 
     private static DecimalFormat timeFormatter = new DecimalFormat("0.00");
 
-    @Inject(method = "doRender", at = @At("HEAD"))
+    @Inject(method = "doRender*", at = @At("HEAD"))
     public void doRender(EntityTNTPrimed entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
         if(TNTESP.INSTANCE.isEnabled() && TNTESP.INSTANCE.getTimeCount()) {
             doTNTRender((RenderTNTPrimed) (Object) this, entity, x, y, z, partialTicks);

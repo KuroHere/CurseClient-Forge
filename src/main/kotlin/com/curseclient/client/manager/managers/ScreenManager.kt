@@ -1,13 +1,11 @@
 package com.curseclient.client.manager.managers
 
-import com.curseclient.client.gui.impl.clickgui.ClickGuiHud
 import com.curseclient.client.manager.Manager
 import com.curseclient.client.utility.render.ClickCircle
 import java.awt.Color
 import java.util.function.Consumer
 
 object ScreenManager: Manager("ScreenManager") {
-    val clickGuiHud: ClickGuiHud = ClickGuiHud()
     val clickCircles: MutableList<ClickCircle>
 
     init {

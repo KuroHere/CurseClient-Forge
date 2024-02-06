@@ -19,12 +19,7 @@ abstract class RenderEntityEvent(val entity: Entity) : Event, ICancellable by Ca
     }
 }
 
-class Render2DEvent : Event {
-    val partialTicks: Float = 0f
-}
-
-class Render3DEvent : Event {
-    val partialTicks: Float = 0f
-}
+class Render2DEvent(val partialTicks: Float) : Event
+class Render3DEvent(val partialTicks: Float) : Event
 
 class ResolutionUpdateEvent(val width: Int, val height: Int) : Event

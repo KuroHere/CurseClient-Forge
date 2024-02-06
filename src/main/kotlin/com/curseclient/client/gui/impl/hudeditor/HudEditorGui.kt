@@ -1,20 +1,19 @@
 package com.curseclient.client.gui.impl.hudeditor
 
-import baritone.api.utils.Helper
 import com.curseclient.client.gui.api.AbstractGui
 import com.curseclient.client.gui.api.other.MouseAction
 import com.curseclient.client.gui.impl.hudeditor.elements.HudPanel
+import com.curseclient.client.gui.impl.hudeditor.elements.settings.impl.HudStringButton
 import com.curseclient.client.manager.managers.ModuleManager
-import com.curseclient.client.module.DraggableHudModule
 import com.curseclient.client.module.HudCategory
 import com.curseclient.client.module.HudModule
-import com.curseclient.client.module.modules.client.ClickGui
+import com.curseclient.client.module.impls.client.ClickGui
 import com.curseclient.client.utility.render.Screen
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
-import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Mouse
 import java.awt.Color
+
 
 class HudEditorGui : AbstractGui() {
     var currentScale = 1.0; private set
@@ -37,14 +36,14 @@ class HudEditorGui : AbstractGui() {
                 panel.onMouseAction(action, button)
         }
 
-        ModuleManager.getHudModules().filterIsInstance<DraggableHudModule>().forEach {
+        ModuleManager.getHudModules().toList().forEach {
             it.handleMouseAction(mouse, action, button)
         }
     }
 
     override fun onRegister() =
         HudCategory.values().forEachIndexed { index, category ->
-            val panel = HudPanel(Vec2d(3.0 + index.toDouble() * (ClickGui.width + 3.0), 5.0), 0.0, 0.0, 0, this, category)
+            val panel = HudPanel(Vec2d(150 + index.toDouble() * (ClickGui.width + 3.0), 50.0), 0.0, 0.0, 0, this, category)
             panel.onRegister()
             panels.add(panel)
         }
@@ -66,6 +65,11 @@ class HudEditorGui : AbstractGui() {
         dWheel = Mouse.getDWheel().toDouble()
         panels.forEach { it.onRender() }
 
+    }
+
+    private val stringAction: HudStringButton? = null
+    override fun onKey(typedChar: Char, key: Int) {
+        stringAction?.onKey(typedChar, key)
     }
 
     fun isPanelFocused(panel: HudPanel): Boolean {

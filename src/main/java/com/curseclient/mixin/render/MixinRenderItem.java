@@ -1,6 +1,6 @@
 package com.curseclient.mixin.render;
 
-import com.curseclient.client.module.modules.visual.GlintModifier;
+import com.curseclient.client.module.impls.visual.GlintModifier;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import org.spongepowered.asm.mixin.Mixin;

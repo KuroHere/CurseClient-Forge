@@ -1,34 +1,30 @@
 package com.curseclient.client.gui.impl.hudeditor.elements
 
-import baritone.api.utils.Helper.mc
 import com.curseclient.client.gui.api.AbstractGui
 import com.curseclient.client.gui.api.elements.DraggableElement
 import com.curseclient.client.gui.api.other.MouseAction
-import com.curseclient.client.gui.impl.clickgui.elements.ModuleButton
 import com.curseclient.client.gui.impl.hudeditor.HudEditorGui
+import com.curseclient.client.gui.impl.hudeditor.elements.settings.impl.HudStringButton
 import com.curseclient.client.manager.managers.ModuleManager
 import com.curseclient.client.module.DraggableHudModule
 import com.curseclient.client.module.HudCategory
-import com.curseclient.client.module.modules.client.ClickGui
-import com.curseclient.client.module.modules.client.HUD
+import com.curseclient.client.module.impls.client.ClickGui
+import com.curseclient.client.module.impls.client.HUD
 import com.curseclient.client.utility.extension.transformIf
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.math.MathUtils.toInt
 import com.curseclient.client.utility.render.ColorUtils
-import com.curseclient.client.utility.render.ColorUtils.setAlphaD
 import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.HoverUtils
-import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.ScissorUtils.scissor
 import com.curseclient.client.utility.render.ScissorUtils.toggleScissor
-import com.curseclient.client.utility.render.font.BonIcon
+import com.curseclient.client.utility.render.font.impl.BonIcon
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
-import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.sign
@@ -128,7 +124,7 @@ class HudPanel(
         }
 
         val textPos = pos.plus(width / 2.0 - Fonts.DEFAULT_BOLD.getStringWidth(hudCategory.displayName, ClickGui.titleFontSize) / 2.0, height / 2.0)
-        Fonts.DEFAULT_BOLD.drawString(hudCategory.displayName, textPos, scale = ClickGui.titleFontSize, color = if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2)
+        Fonts.DEFAULT_BOLD.drawString(hudCategory.displayName, textPos, scale = ClickGui.titleFontSize, color = c2)
 
         val p1 = pos.plus(0.0, height)
         val p2 = pos.plus(width, height + windowHeight)
@@ -145,9 +141,7 @@ class HudPanel(
 
         val textWidth = Fonts.DEFAULT_BOLD.getStringWidth(icon) + 8
         val iconPos = pos.plus(width - textWidth, (height / 2.0) + 3)
-        RenderUtils2D.drawBlurredShadow((pos.x + width - textWidth).toFloat(), pos.y.toFloat() + 3, textWidth.toFloat(), ((height / 2.0) + 3).toFloat(), 20, if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2)
-        Fonts.BonIcon.drawString(icon, iconPos, scale = ClickGui.titleFontSize, color = if (ClickGui.colorMode == ClickGui.ColorMode.Shader) Color.WHITE else c2)
-
+        Fonts.BonIcon.drawString(icon, iconPos, scale = ClickGui.titleFontSize, color = c2)
 
         toggleScissor(true)
         scissor(p1, p2.minus(0.0, radius), gui.currentScale * 2.0) {
@@ -237,7 +231,12 @@ class HudPanel(
 
     }
 
-    override fun onKey(typedChar: Char, key: Int) = modules.filter { extended }.forEach { it.onKey(typedChar, key) }
+    private val stringAction: HudStringButton? = null
+    override fun onKey(typedChar: Char, key: Int) {
+        modules.filter { extended }.forEach { it.onKey(typedChar, key) }
+        stringAction?.onKey(typedChar, key)
+    }
+
 
     override fun equals(other: Any?): Boolean {
         return (other as? HudPanel)?.hudCategory == hudCategory

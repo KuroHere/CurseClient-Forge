@@ -1,10 +1,8 @@
 package com.curseclient.client.utility.render
 
-import com.curseclient.client.module.modules.client.GuiClickCircle
-import com.curseclient.client.module.modules.client.HUD
+import com.curseclient.client.module.impls.client.GuiClickCircle
 import com.curseclient.client.utility.render.ColorUtils.setAlpha
-import com.curseclient.client.utility.render.animation.EaseUtils
-import com.curseclient.client.utility.render.animation.SimpleAnimation
+import com.curseclient.client.utility.render.animation.ease.EaseUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager.color
 import net.minecraft.util.math.MathHelper
@@ -13,10 +11,14 @@ import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
-
-class ClickCircle(var x: Float, var y: Float, private var seconds: Int, var radius: Int, private val easing: String) {
+class ClickCircle(
+    var x: Float,
+    var y: Float,
+    private var seconds: Int,
+    var radius: Int,
+    private val easing: String
+) {
     var time: Long = System.currentTimeMillis()
-    private val oAnimation = SimpleAnimation(0.0f)
 
     fun draw(color: Int) {
         val value = MathHelper.clamp((System.currentTimeMillis() - time).toFloat() / (seconds * 1000f), 0f, 1f)
@@ -27,10 +29,9 @@ class ClickCircle(var x: Float, var y: Float, private var seconds: Int, var radi
             }
             "Fill" -> drawFillCircle(x, y, radius * animation.toFloat(), Color(color).setAlpha((255 * (1 - EaseUtils.easeInOutBack(value.toDouble()).toInt()))).rgb)
             "Outline2" -> {
-                oAnimation.setAnimation(100f, 12.0)
-                val radius: Double = (radius * oAnimation.value / 100).toDouble()
-                val alpha = (255 - 255 * oAnimation.value / 100).toInt()
-                val arc: Double = (360 * oAnimation.value / 100).toDouble()
+                val radius: Double = (radius * animation)
+                val alpha = (255 - 255 * animation).toInt()
+                val arc: Double = (360 * animation)
                 val arcColor: Color = Color(color).setAlpha((alpha))
 
                 if (GuiClickCircle.isEnabled()) {
@@ -40,11 +41,15 @@ class ClickCircle(var x: Float, var y: Float, private var seconds: Int, var radi
         }
     }
 
-    fun canRemove(): Boolean {
-        return oAnimation.value > 99
-    }
-
-    private fun drawArc(x1: Float, y1: Float, r: Double, color: Int, startPoint: Int, arc: Double, linewidth: Int) {
+    private fun drawArc(
+        x1: Float,
+        y1: Float,
+        r: Double,
+        color: Int,
+        startPoint: Int,
+        arc: Double,
+        linewidth: Int
+    ) {
         var x1 = x1
         var y1 = y1
         var r = r
@@ -88,7 +93,12 @@ class ClickCircle(var x: Float, var y: Float, private var seconds: Int, var radi
         GL11.glHint(3155, 4352)
     }
 
-    private fun drawFillCircle(centerX: Float, centerY: Float, radius: Float, color: Int) {
+    private fun drawFillCircle(
+        centerX: Float,
+        centerY: Float,
+        radius: Float,
+        color: Int
+    ) {
         color(1f, 1f, 1f, 1f)
         GlStateManager.disableAlpha()
         GlStateManager.enableBlend()
@@ -110,7 +120,13 @@ class ClickCircle(var x: Float, var y: Float, private var seconds: Int, var radi
         color(1.0f, 1.0f, 1.0f, 1.0f)
     }
 
-    private fun drawCircle(centerX: Float, centerY: Float, radius: Float, color: Int, step : Double = 1.0) {
+    private fun drawCircle(
+        centerX: Float,
+        centerY: Float,
+        radius: Float,
+        color: Int,
+        step : Double = 1.0
+    ) {
         val f = (color shr 24 and 0xFF) / 255.0f
         val f1 = (color shr 16 and 0xFF) / 255.0f
         val f2 = (color shr 8 and 0xFF) / 255.0f

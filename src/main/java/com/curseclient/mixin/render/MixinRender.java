@@ -1,6 +1,6 @@
 package com.curseclient.mixin.render;
 
-import com.curseclient.client.module.modules.client.PerformancePlus;
+import com.curseclient.client.module.impls.client.PerformancePlus;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;

@@ -26,7 +26,12 @@ object RenderUtils3D {
     val viewerPos get() =
         Vec3d(mc.renderManager.viewerPosX, mc.renderManager.viewerPosY, mc.renderManager.viewerPosZ)
 
-    fun SafeClientEvent.drawTrace(e: EntityLivingBase, partialTicks: Float, color: Color, width: Float) {
+    fun SafeClientEvent.drawTrace(
+        e: EntityLivingBase,
+        partialTicks: Float,
+        color: Color,
+        width: Float
+    ) {
         if (mc.renderViewEntity == null) return
         if (mc.renderManager.renderViewEntity == null) return
 
@@ -62,7 +67,11 @@ object RenderUtils3D {
         glPopMatrix()
     }
 
-    fun drawEntityBox(entity: Entity, color: Color, outline: Boolean) {
+    fun drawEntityBox(
+        entity: Entity,
+        color: Color,
+        outline: Boolean
+    ) {
         val renderManager = mc.renderManager
         val timer: net.minecraft.util.Timer = mc.timer
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -97,7 +106,16 @@ object RenderUtils3D {
         resetCaps()
     }
 
-    private fun drawLine3D(x: Double, y: Double, z: Double, x1: Double, y1: Double, z1: Double, thickness: Float, hex: Int) {
+    private fun drawLine3D(
+        x: Double,
+        y: Double,
+        z: Double,
+        x1: Double,
+        y1: Double,
+        z1: Double,
+        thickness: Float,
+        hex: Int
+    ) {
         val red = (hex shr 16 and 0xFF) / 255.0f
         val green = (hex shr 8 and 0xFF) / 255.0f
         val blue = (hex and 0xFF) / 255.0f
@@ -113,7 +131,14 @@ object RenderUtils3D {
         glDisable(GL32.GL_DEPTH_CLAMP)
     }
 
-    private fun drawBoundingBox(bb: AxisAlignedBB, width: Float, red: Float, green: Float, blue: Float, alpha: Float) {
+    private fun drawBoundingBox(
+        bb: AxisAlignedBB,
+        width: Float,
+        red: Float,
+        green: Float,
+        blue: Float,
+        alpha: Float
+    ) {
         glLineWidth(width)
         val tessellator = Tessellator.getInstance()
         val bufferbuilder = tessellator.buffer
@@ -139,7 +164,10 @@ object RenderUtils3D {
         tessellator.draw()
     }
 
-    fun drawBoundingBox(bb: AxisAlignedBB, width: Float) {
+    fun drawBoundingBox(
+        bb: AxisAlignedBB,
+        width: Float
+    ) {
         glLineWidth(width)
         val tessellator = Tessellator.getInstance()
         val bufferbuilder = tessellator.buffer
@@ -165,7 +193,11 @@ object RenderUtils3D {
         tessellator.draw()
     }
 
-    fun drawBoundingBox(bb: AxisAlignedBB, width: Float, color: Int) {
+    fun drawBoundingBox(
+        bb: AxisAlignedBB,
+        width: Float,
+        color: Int
+    ) {
         val alpha = (color shr 24 and 0xFF) / 255.0f
         val red = (color shr 16 and 0xFF) / 255.0f
         val green = (color shr 8 and 0xFF) / 255.0f
@@ -173,7 +205,13 @@ object RenderUtils3D {
         drawBoundingBox(bb, width, red, green, blue, alpha)
     }
 
-    fun renderFaceMesh(bb: AxisAlignedBB, face: EnumFacing, stepSize: Double, width: Float, hex: Int) {
+    fun renderFaceMesh(
+        bb: AxisAlignedBB,
+        face: EnumFacing,
+        stepSize: Double,
+        width: Float,
+        hex: Int
+    ) {
         when (face) {
             EnumFacing.NORTH -> {
                 run {
@@ -262,7 +300,12 @@ object RenderUtils3D {
         }
     }
 
-    fun glColor(red: Int, green: Int, blue: Int, alpha: Int) {
+    fun glColor(
+        red: Int,
+        green: Int,
+        blue: Int,
+        alpha: Int
+    ) {
         GlStateManager.color(red / 255f, green / 255f, blue / 255f, alpha / 255f)
     }
 
@@ -281,7 +324,6 @@ object RenderUtils3D {
         val blue = (hex and 0xFF) / 255f
         GlStateManager.color(red, green, blue, alpha)
     }
-
 
     private fun drawSelectionBoundingBox(boundingBox: AxisAlignedBB) {
         val tessellator = Tessellator.getInstance()

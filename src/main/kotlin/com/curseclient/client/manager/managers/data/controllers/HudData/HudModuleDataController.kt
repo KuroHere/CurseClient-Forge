@@ -5,10 +5,7 @@ import com.curseclient.client.Client
 import com.curseclient.client.manager.managers.ModuleManager
 import com.curseclient.client.manager.managers.data.DataController
 import com.curseclient.client.manager.managers.data.DataUtils.getHudModuleByName
-import com.curseclient.client.manager.managers.data.DataUtils.getModuleByName
 import com.curseclient.client.module.HudModule
-import com.curseclient.client.module.Module
-import org.lwjgl.input.Keyboard
 import java.io.File
 
 object HudModuleDataController : DataController(

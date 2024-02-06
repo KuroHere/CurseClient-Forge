@@ -66,7 +66,7 @@ minecraft {
 
 configurations {
     jarLibs
-    all {
+    configureEach {
         resolutionStrategy {
             force 'org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209'
         }
@@ -74,15 +74,21 @@ configurations {
 }
 
 dependencies {
-
-    implementation 'org.jetbrains:annotations:24.0.0'
-    implementation 'org.projectlombok:lombok:1.18.28'
     minecraft ("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
 
+    implementation 'org.jetbrains:annotations:24.0.0'
+    implementation 'com.googlecode.soundlibs:mp3spi:1.9.5.4'
+
+    testImplementation 'junit:junit:4.13.1'
+    jarLibs 'javazoom:jlayer:1.0.1'
+
+    jarLibs fileTree(include: ['*.jar'], dir: 'libs')
+
     jarLibs('org.spongepowered:mixin:0.8.5') {
-        exclude module: 'commons-io'
-        exclude module: 'gson'
+        exclude module: 'launchwrapper'
         exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
     }
 
     annotationProcessor('org.spongepowered:mixin:0.8.5:processor') {
@@ -185,6 +191,6 @@ tasks.register('refmapper', Exec) {
             "build/libs/${archivesBaseName}-${version}.jar",
             "build/libs/${archivesBaseName}-${version}-refmap.jar",
             "refmapper/tiny",
-            "/Users/bangb/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.12.2-14.23.5.2860_mapped_stable_39-1.12/forge-1.12.2-14.23.5.2860_mapped_stable_39-1.12.jar"
+            "/Users/.../.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.12.2-14.23.5.2860_mapped_stable_39-1.12/forge-1.12.2-14.23.5.2860_mapped_stable_39-1.12.jar"
     )
 }

@@ -6,11 +6,8 @@ import com.curseclient.client.event.listener.runTrying
 import com.curseclient.client.manager.managers.ModuleManager
 import com.curseclient.client.manager.managers.data.DataController
 import com.curseclient.client.manager.managers.data.DataUtils.getHudModuleByName
-import com.curseclient.client.manager.managers.data.DataUtils.getModuleByName
 import com.curseclient.client.module.HudModule
-import com.curseclient.client.module.Module
 import com.curseclient.client.setting.getHudSetting
-import com.curseclient.client.setting.getSetting
 import com.curseclient.client.setting.type.*
 import java.awt.Color
 import java.io.File

@@ -1,6 +1,6 @@
 package com.curseclient.client.utility.render.model.wing
 
-import com.curseclient.client.module.modules.visual.CustomModel
+import com.curseclient.client.module.impls.visual.Cosmetic
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
@@ -49,7 +49,7 @@ class DragonWing : ModelBase(), LayerRenderer<AbstractClientPlayer> {
     }
 
     fun renderWing(player: AbstractClientPlayer, scale: Double) {
-        if (CustomModel.isEnabled() && !player.isInvisible) {
+        if (Cosmetic.isEnabled() && !player.isInvisible) {
             GL11.glPushMatrix()
             GL11.glScaled(-scale, -scale, scale)
             GL11.glTranslated(0.0, -1.45, 0.0)
@@ -60,8 +60,8 @@ class DragonWing : ModelBase(), LayerRenderer<AbstractClientPlayer> {
             GL11.glRotated(180.0, 1.0, 0.0, 0.0)
             GL11.glRotated(180.0, 0.0, 1.0, 0.0)
 
-            GlStateManager.color(CustomModel.color.red / 255.0f, CustomModel.color.green / 255.0f, CustomModel.color.blue / 255.0f, 1.0f)
-            val selectedWingTexture = wingTextures[CustomModel.dragon]
+            GlStateManager.color(Cosmetic.color.red / 255.0f, Cosmetic.color.green / 255.0f, Cosmetic.color.blue / 255.0f, 1.0f)
+            val selectedWingTexture = wingTextures[Cosmetic.dragon]
             if (selectedWingTexture != null) {
                 Minecraft.getMinecraft().textureManager.bindTexture(selectedWingTexture)
             }

@@ -1,6 +1,6 @@
 package com.curseclient.client.utility.player
 
-import com.curseclient.client.module.modules.player.FreeCam
+import com.curseclient.client.module.impls.player.FreeCam
 import com.curseclient.client.utility.extension.entity.flooredPosition
 import com.curseclient.client.utility.extension.entity.isCentered
 import com.curseclient.client.utility.extension.entity.speed

@@ -4,16 +4,18 @@ import com.curseclient.client.gui.api.AbstractGui
 import com.curseclient.client.gui.api.other.MouseAction
 import com.curseclient.client.gui.impl.clickgui.elements.ModuleButton
 import com.curseclient.client.gui.impl.clickgui.elements.settings.SettingButton
-import com.curseclient.client.module.modules.client.ClickGui
+import com.curseclient.client.module.impls.client.ClickGui
+import com.curseclient.client.module.impls.client.HUD
 import com.curseclient.client.setting.type.DoubleSetting
 import com.curseclient.client.utility.extension.transformIf
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.decimalPlaces
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.math.MathUtils.roundToPlaces
+import com.curseclient.client.utility.render.ColorUtils
+import com.curseclient.client.utility.render.ColorUtils.setAlpha
 import com.curseclient.client.utility.render.vector.Vec2d
 import com.curseclient.client.utility.render.graphic.GLUtils
-import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.shader.RectBuilder
@@ -29,7 +31,7 @@ class DoubleSlider(val setting: DoubleSetting, gui: AbstractGui, baseButton: Mod
     override fun onTick() {}
 
     override fun onGuiOpen() = reset()
-    override fun onSettingsOpen() = reset()
+    override fun onSettingsOpen() { reset(); renderProgress = 0.0 }
     override fun onSettingsClose() = reset()
     override fun onInvisible() = reset()
     override fun isVisible() = setting.isVisible
@@ -56,6 +58,9 @@ class DoubleSlider(val setting: DoubleSetting, gui: AbstractGui, baseButton: Mod
 
         val mouseProgress = (gui.mouse.x - sliderStartX) / (sliderEndX - sliderStartX)
 
+        val c1 = if (ClickGui.colorMode == ClickGui.ColorMode.Client) HUD.getColor(index)
+        else if (ClickGui.pulse) ColorUtils.pulseColor(ClickGui.buttonColor1, 0, 1) else ClickGui.buttonColor1
+
         if (sliding) {
             val rawValue = lerp(setting.min, setting.max, mouseProgress)
             var valueRounded = round(rawValue / setting.step) * setting.step
@@ -68,7 +73,7 @@ class DoubleSlider(val setting: DoubleSetting, gui: AbstractGui, baseButton: Mod
         val centerY = pos.y + height / 2.0 - 4
 
         val renderProgressTo = clamp((setting.value - setting.min) / (setting.max - setting.min), 0.0, 1.0)
-        renderProgress = lerp(renderProgress, renderProgressTo, GLUtils.deltaTimeDouble() * 3.0)
+        renderProgress = lerp(renderProgress, renderProgressTo, GLUtils.deltaTimeDouble() * 3.0 * ClickGui.settingsSpeed)
 
         val sliderBegin = Vec2d(sliderStartX, centerY + 7)
         val sliderEnd = Vec2d(lerp(sliderStartX, sliderEndX, renderProgress), centerY + 9)
@@ -91,17 +96,20 @@ class DoubleSlider(val setting: DoubleSetting, gui: AbstractGui, baseButton: Mod
                 draw()
             }
             RectBuilder(sliderEnd.minus(3.0, 3.0), sliderEnd.plus(1.0, 1.0)).apply {
-                color(Color(210, 210, 210))
+                outlineColor(Color(210, 210, 210))
+                width(0.8)
+                color(Color(c1.rgb).setAlpha(180).darker())
                 radius(1.8)
                 draw()
             }
 
             val text1 = setting.name
             val text2 = formattedName
+            val text3 = setting.min.toString()
 
-            fr.drawString(text1, Vec2d(startX, centerY), scale = ClickGui.settingFontSize)
+            fr.drawString(text1, Vec2d(pos.x + ((width - fr.getStringWidth(text1, ClickGui.settingFontSize)) / 2), centerY), scale = ClickGui.settingFontSize)
             fr.drawString(text2, Vec2d(endX - fr.getStringWidth(text2, ClickGui.settingFontSize), centerY), scale = ClickGui.settingFontSize)
-
+            fr.drawString(text3, Vec2d(startX, centerY), scale = ClickGui.settingFontSize)
         }
     }
 
@@ -137,7 +145,7 @@ class DoubleSlider(val setting: DoubleSetting, gui: AbstractGui, baseButton: Mod
         }
     }
 
-    override fun getSettingHeight() = ClickGui.height + 2.5
+    override fun getSettingHeight() = ClickGui.height * 1.3
 
     private fun reset() {
         sliding = false

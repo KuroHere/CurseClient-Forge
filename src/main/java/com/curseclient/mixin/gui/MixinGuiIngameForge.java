@@ -1,8 +1,10 @@
 package com.curseclient.mixin.gui;
 
-import com.curseclient.client.module.modules.client.Animations;
-import com.curseclient.client.module.modules.visual.HungerOverlay;
-import com.curseclient.client.utility.render.animation.AnimationUtils;
+import com.curseclient.client.module.impls.misc.Animations;
+import com.curseclient.client.module.impls.visual.HungerOverlay;
+import com.curseclient.client.utility.DeltaTime;
+import com.curseclient.client.utility.math.FPSCounter;
+import com.curseclient.client.utility.render.animation.animaions.simple.SimpleUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -18,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.curseclient.client.utility.DeltaTime.deltaTime;
 import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.PLAYER_LIST;
 
 @Mixin(value = GuiIngameForge.class, remap = false)
@@ -61,10 +62,7 @@ public abstract class MixinGuiIngameForge extends MixinGuiIngame {
     @Shadow
     public abstract void renderFood(int width, int height);
 
-    /**
-     * @author
-     * @reason
-     */
+    /***/
     @Overwrite(remap = false)
     protected void renderPlayerList(int width, int height) {
         final Minecraft mc = Minecraft.getMinecraft();
@@ -74,7 +72,7 @@ public abstract class MixinGuiIngameForge extends MixinGuiIngame {
         if (!mc.isIntegratedServerRunning() || handler.getPlayerInfoMap().size() > 1 || scoreobjective != null)
         {
             Animations.INSTANCE.getTabAnimations();
-            xScale = AnimationUtils.INSTANCE.animate((mc.gameSettings.keyBindPlayerList.isKeyDown() ? 100F : 0F), xScale, 0.0125F * deltaTime);
+            xScale = SimpleUtil.INSTANCE.animate((mc.gameSettings.keyBindPlayerList.isKeyDown() ? 100F : 0F), xScale, 0.0125F * DeltaTime.deltaTime);
             float rescaled = xScale / 100F;
             boolean displayable = rescaled > 0F;
             this.overlayPlayerList.updatePlayerList(displayable);

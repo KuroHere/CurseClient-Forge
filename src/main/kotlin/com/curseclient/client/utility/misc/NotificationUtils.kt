@@ -2,7 +2,7 @@ package com.curseclient.client.utility.misc
 
 import com.curseclient.client.event.EventBus
 import com.curseclient.client.event.events.CurseClientEvent
-import com.curseclient.client.utility.render.font.BonIcon
+import com.curseclient.client.utility.render.font.impl.BonIcon
 import java.awt.Color
 
 object NotificationUtils {

@@ -1,6 +1,6 @@
 package com.curseclient.mixin.entity;
 
-import com.curseclient.client.module.modules.client.PerformancePlus;
+import com.curseclient.client.module.impls.client.PerformancePlus;
 import net.minecraft.tileentity.TileEntityEnchantmentTable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

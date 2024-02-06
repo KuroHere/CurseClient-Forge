@@ -1,27 +1,24 @@
 package com.curseclient.client.gui.impl.clickgui.elements.settings.impl
 
-import baritone.api.utils.Helper
 import baritone.api.utils.Helper.mc
 import com.curseclient.client.gui.api.AbstractGui
 import com.curseclient.client.gui.api.elements.InteractiveElement
 import com.curseclient.client.gui.api.other.MouseAction
 import com.curseclient.client.gui.impl.clickgui.elements.ModuleButton
 import com.curseclient.client.gui.impl.clickgui.elements.settings.SettingButton
-import com.curseclient.client.module.modules.client.ClickGui
-import com.curseclient.client.module.modules.client.HUD
+import com.curseclient.client.module.impls.client.ClickGui
+import com.curseclient.client.module.impls.client.HUD
 import com.curseclient.client.setting.type.EnumSetting
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.math.MathUtils.toInt
 import com.curseclient.client.utility.render.ColorUtils
 import com.curseclient.client.utility.render.ColorUtils.setAlpha
-import com.curseclient.client.utility.render.RenderUtils2D
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.FontUtils.getHeight
 import com.curseclient.client.utility.render.font.FontUtils.getStringWidth
 import com.curseclient.client.utility.render.graphic.GLUtils
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
-import com.sun.imageio.plugins.common.ImageUtil
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
@@ -29,7 +26,9 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 
-class EnumButton(val setting: EnumSetting<*>, gui: AbstractGui, baseButton: ModuleButton) : SettingButton(gui, baseButton) {
+class EnumButton(val setting: EnumSetting<*>, gui: AbstractGui, baseButton: ModuleButton
+) : SettingButton(gui, baseButton) {
+
     override fun onRegister() {
         modes.addAll(setting.names.map { ModeButton(it, this, gui) })
     }
@@ -85,8 +84,8 @@ class EnumButton(val setting: EnumSetting<*>, gui: AbstractGui, baseButton: Modu
             draw()
         }
 
-        fr.drawString(setting.name, Vec2d(lerp(x1, x2, progress), pos.y + h / 2.0), scale = ClickGui.settingFontSize)
-        arrow(pos, 6.0f, 6.0f, lerp(90.0, 180.0, progress).toFloat())
+        fr.drawString(setting.name, Vec2d(lerp(x1, x2, progress), pos.y + h / 2.0), color = if (!extended) Color(200, 200, 200) else Color.white, scale = ClickGui.settingFontSize)
+        arrow(pos, 6.0f, 6.0f, if (!extended) 0.5F else (0.9 * progress).toFloat(), lerp(90.0, 180.0, progress).toFloat())
 
         if (!extended) {
             val textPos = pos.plus(5 + ClickGui.space, h * 1.175)
@@ -103,9 +102,11 @@ class EnumButton(val setting: EnumSetting<*>, gui: AbstractGui, baseButton: Modu
         }
     }
 
-    private fun arrow(pos: Vec2d, width: Float, height: Float, rotateAngle: Float) {
+    private fun arrow(pos: Vec2d, width: Float, height: Float, opacity: Float, rotateAngle: Float) {
         GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
+        GlStateManager.color(1.0f, 1.0f, 1.0f, opacity)
+
         mc.textureManager.bindTexture(arrow)
         GL11.glTranslatef((pos.x + this.width / 1.15).toFloat(), (pos.y + ClickGui.height / 2.2).toFloat(), 0f)
         GL11.glRotatef(rotateAngle, 0f, 0f, 1f)
@@ -130,7 +131,9 @@ class EnumButton(val setting: EnumSetting<*>, gui: AbstractGui, baseButton: Modu
     override fun getSettingHeight() =
         ClickGui.height + 3 + modes.sumOf { it.height } * extended.toInt().toDouble() + fr.getHeight(ClickGui.fontSize)
 
-    private class ModeButton(val name: String, val baseButton: EnumButton, gui: AbstractGui) : InteractiveElement(Vec2d.ZERO, 0.0, 10.0, gui) {
+    private class ModeButton(val name: String, val baseButton: EnumButton, gui: AbstractGui
+    ) : InteractiveElement(Vec2d.ZERO, 0.0, 10.0, gui) {
+
         override fun onRegister() {}
         override fun onGuiOpen() {}
         override fun onGuiClose() {}

@@ -2,7 +2,9 @@ package com.curseclient.client.utility.player
 
 import com.curseclient.client.utility.math.MathUtils
 import net.minecraft.client.Minecraft
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.Entity
+import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
 import kotlin.math.abs
@@ -31,21 +33,15 @@ object RotationUtils {
         return rotationsToVec(hitVec)
     }
 
-    fun rotationsToVec(pos: Vec3d): Vec2f {
-        return rotationsToVec(getEyePosition(), pos)
-    }
+    fun rotationsToVec(pos: Vec3d) = rotationsToVec(getEyePosition(), pos)
 
-    fun rotationsToVec(posFrom: Vec3d, posTo: Vec3d): Vec2f {
-        return getRawRotationsTo(posTo.subtract(posFrom))
-    }
 
-    fun rotationsToCenter(entity: Entity): Vec2f {
-        return rotationsToVec(entity.entityBoundingBox.center)
-    }
+    fun rotationsToVec(posFrom: Vec3d, posTo: Vec3d) = getRawRotationsTo(posTo.subtract(posFrom))
 
-    fun getEyePosition(): Vec3d {
-        return mc.player.getPositionEyes(1f)
-    }
+
+    fun rotationsToCenter(entity: Entity) = rotationsToVec(entity.entityBoundingBox.center)
+
+    fun getEyePosition(): Vec3d = mc.player.getPositionEyes(1f)
 
     private fun getRawRotationsTo(pos: Vec3d): Vec2f {
         val xz = hypot(pos.x, pos.z)
@@ -53,7 +49,28 @@ object RotationUtils {
         val pitch = normalizeAngle(Math.toDegrees(-atan2(pos.y, xz)))
         return Vec2f(yaw.toFloat(), pitch.toFloat())
     }
-    
+
+    fun getOldYaw(entity: Entity): Float {
+        val player: EntityPlayerSP = mc.player
+        return getYawBetween(player.prevRotationYaw,
+            player.prevPosX, player.prevPosZ,
+            entity.prevPosX, entity.prevPosZ)
+    }
+
+    fun getYawToEntity(entity: Entity): Float {
+        val player: EntityPlayerSP = mc.player
+        return getYawBetween(player.rotationYaw,
+            player.posX, player.posZ,
+            entity.posX, entity.posZ)
+    }
+
+    fun getYawBetween(yaw: Float, srcX: Double, srcZ: Double, destX: Double, destZ: Double): Float {
+        val xDist = destX - srcX
+        val zDist = destZ - srcZ
+        val var1 = (StrictMath.atan2(zDist, xDist) * 180.0 / Math.PI).toFloat() - 90.0f
+        return yaw + MathHelper.wrapDegrees(var1 - yaw)
+    }
+
     fun lerpRotation(current: Vec2f, target: Vec2f, smoothFactorYaw: Float, smoothFactorPitch: Float): Vec2f {
         //yaw
         val yawFrom = current.x + 180

@@ -4,7 +4,7 @@ import com.curseclient.client.gui.api.AbstractGui
 import com.curseclient.client.gui.api.other.MouseAction
 import com.curseclient.client.gui.impl.clickgui.elements.ModuleButton
 import com.curseclient.client.gui.impl.clickgui.elements.settings.SettingButton
-import com.curseclient.client.module.modules.client.ClickGui
+import com.curseclient.client.module.impls.client.ClickGui
 import com.curseclient.client.setting.type.ColorSetting
 import com.curseclient.client.utility.math.MathUtils.clamp
 import com.curseclient.client.utility.math.MathUtils.lerp
@@ -100,7 +100,7 @@ class ColorPicker(val setting: ColorSetting, gui: AbstractGui, baseButton: Modul
         val rawColor = Color.getHSBColor(setting.hue, 1f, 1f).setAlphaD(progress)
         // Background
         RectBuilder(pos.plus(2.0), pos.plus(width, height).minus(2.0)).apply {
-            color(Color.BLACK.setAlphaD(progress * 0.2))
+            color(Color.BLACK.setAlphaD(progress * 0.5))
             radius(ClickGui.buttonRound * progress)
             draw()
         }

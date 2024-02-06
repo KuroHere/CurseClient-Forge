@@ -1,8 +1,8 @@
 package com.curseclient.mixin.render;
 
 import com.curseclient.client.event.EventBus;
-import com.curseclient.client.module.modules.visual.GlintModifier;
-import com.curseclient.client.events.ArmorRenderEvent;
+import com.curseclient.client.event.events.ArmorRenderEvent;
+import com.curseclient.client.module.impls.visual.GlintModifier;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,7 +18,7 @@ public class MixinLayerArmorBase {
 
     @Inject(method = "renderArmorLayer", at=@At("HEAD"), cancellable = true)
     public void onRenderArmorLayer(EntityLivingBase entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, EntityEquipmentSlot slotIn, CallbackInfo ci) {
-        ArmorRenderEvent event = ArmorRenderEvent.get(slotIn);
+        ArmorRenderEvent event = ArmorRenderEvent.Companion.get(slotIn);
         EventBus.INSTANCE.post(event);
         if(event.getCancelled()) {
             ci.cancel();

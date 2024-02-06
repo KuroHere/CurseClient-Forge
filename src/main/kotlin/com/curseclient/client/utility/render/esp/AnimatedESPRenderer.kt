@@ -1,6 +1,6 @@
 package com.curseclient.client.utility.render.esp
 
-import com.curseclient.client.utility.render.animation.EaseUtils
+import com.curseclient.client.utility.render.animation.ease.EaseUtils
 import com.curseclient.client.utility.math.MathUtils.lerp
 import com.curseclient.client.utility.render.vector.Conversion.toVec3dCenter
 import com.curseclient.client.utility.render.graphic.GLUtils

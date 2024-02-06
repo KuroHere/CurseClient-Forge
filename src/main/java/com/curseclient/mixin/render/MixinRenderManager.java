@@ -2,7 +2,7 @@ package com.curseclient.mixin.render;
 
 import com.curseclient.client.event.EventBus;
 import com.curseclient.client.event.events.render.RenderEntityEvent;
-import com.curseclient.client.module.modules.visual.PerspectiveMod;
+import com.curseclient.client.module.impls.visual.FreeLook;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -30,12 +30,12 @@ public abstract class MixinRenderManager {
 
     @Redirect(method = "cacheActiveRenderInfo", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/entity/RenderManager;playerViewX:F"))
     public void getPlayerViewX(RenderManager renderManager, float value) {
-        renderManager.playerViewX = PerspectiveMod.perspectiveToggled ? PerspectiveMod.cameraPitch : value;
+        renderManager.playerViewX = FreeLook.perspectiveToggled ? FreeLook.cameraPitch : value;
     }
 
     @Redirect(method = "cacheActiveRenderInfo", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/entity/RenderManager;playerViewY:F", ordinal = 0))
     public void getPlayerViewY(RenderManager renderManager, float value) {
-        renderManager.playerViewY = PerspectiveMod.perspectiveToggled ? PerspectiveMod.cameraYaw : value;
+        renderManager.playerViewY = FreeLook.perspectiveToggled ? FreeLook.cameraYaw : value;
     }
 
 

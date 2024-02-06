@@ -15,13 +15,10 @@ import java.util.Date;
 import java.util.Scanner;
 
 public class Checker {
-    //public static String link = "https://curseclient.site/hwids.txt";
     public static String link = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL0t1cm9IZXJlL0N1cnNlQ2xpZW50LUhXSURzL21haW4vaHdpZHMudHh0";
     public static boolean doCheck() {
         try {
             String temp = new Scanner(new URL(new String(Base64.getDecoder().decode(link.getBytes()))).openStream(), "UTF-8").useDelimiter("\\A").next();
-
-            //String temp = new Scanner(new URL(link).openStream()).useDelimiter("\\A").next();
             CurseClient.Companion.getLOG().info("Received data from the URL successfully.");
             return temp.contains(Generator.getHWID());
         }

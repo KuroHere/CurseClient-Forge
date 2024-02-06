@@ -1,6 +1,6 @@
 package com.curseclient.mixin.render;
 
-import com.curseclient.client.module.modules.visual.CrystalRenderer;
+import com.curseclient.client.module.impls.visual.CrystalRenderer;
 import net.minecraft.client.renderer.entity.RenderEnderCrystal;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import org.spongepowered.asm.mixin.Mixin;

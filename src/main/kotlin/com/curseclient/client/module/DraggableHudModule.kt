@@ -1,9 +1,8 @@
 package com.curseclient.client.module
 
-import baritone.api.utils.Helper.mc
 import com.curseclient.client.gui.GuiUtils
 import com.curseclient.client.gui.api.other.MouseAction
-import com.curseclient.client.module.modules.client.HudEditor
+import com.curseclient.client.module.impls.client.HudEditor
 import com.curseclient.client.setting.getHudSetting
 import com.curseclient.client.setting.getHudSettingNotNull
 import com.curseclient.client.setting.setting
@@ -12,16 +11,12 @@ import com.curseclient.client.setting.type.EnumSetting
 import com.curseclient.client.setting.type.UnitSetting
 import com.curseclient.client.utility.render.*
 import com.curseclient.client.utility.render.ColorUtils.setAlpha
-import com.curseclient.client.utility.render.ColorUtils.setAlphaD
-import com.curseclient.client.utility.render.ColorUtils.toColor
 import com.curseclient.client.utility.render.HoverUtils.isHovered
-import com.curseclient.client.utility.render.animation.SimpleAnimation
-import com.curseclient.client.utility.render.font.BonIcon
+import com.curseclient.client.utility.render.font.impl.BonIcon
 import com.curseclient.client.utility.render.font.FontUtils.drawString
 import com.curseclient.client.utility.render.font.Fonts
 import com.curseclient.client.utility.render.shader.RectBuilder
 import com.curseclient.client.utility.render.vector.Vec2d
-import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
 
 abstract class DraggableHudModule(
@@ -54,8 +49,8 @@ abstract class DraggableHudModule(
         v.listeners.add { updatePosByDocking() }
     }
 
-    private var x by getHudSettingNotNull<DoubleSetting>("X")
-    private var y by getHudSettingNotNull<DoubleSetting>("Y")
+    var x by getHudSettingNotNull<DoubleSetting>("X")
+    var y by getHudSettingNotNull<DoubleSetting>("Y")
 
     var dockingH by getHudSettingNotNull<EnumSetting<DockingH>>("DockingH")
     var dockingV by getHudSettingNotNull<EnumSetting<DockingV>>("DockingV")
