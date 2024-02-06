@@ -14,7 +14,7 @@ something new to do, like developing a Curse for Fabric? But ye it looks like I 
 <div align="center">
 
 > InfinityCircus Team for ideas, and active beta users.
-> Kiss_man for helping and be my friend.          
+> Kissman for helping and be my friend.          
 
 > Thank you anonymous friends for helping me gain more motivation
 > 
