@@ -1,5 +1,5 @@
 # CurseClient <img src="https://github.com/KuroHere/CurseClient-1.12.2/blob/master/src/main/resources/assets/minecraft/textures/icons/icon32x.png">
->Minecraft 1.12.2 forge utility mod.
+>Minecraft 1.12.2 forge pvp & utility mod.
 
 ### Reason 💁‍♂️
 >Personal project made by Kuro_Here, for learning purposes.
