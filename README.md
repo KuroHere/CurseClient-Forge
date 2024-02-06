@@ -8,7 +8,7 @@
 
 >At first, I had the intention to sell it, but who would buy this paste(though I cook it well :^)). 
 Currently, I'm quite bored and lazy to fixing bugs adding stuff all alone that why I'm looking for 
-something new to do, like developing a Curse for Fabric?
+something new to do, like developing a Curse for Fabric? But ye it looks like I found something more interesting to do, hmm I won't mention it here ᓚᘏᗢ.
 
 ### Big thanks to 🙏
 <div align="center">
