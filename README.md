@@ -4,7 +4,7 @@
 Minecraft 1.12.2 forge utility mod.
 
 ### Reason
-personal project made by Kuro_Here, for learning purposes.
+personal project made by Kuro_Here, for learning purposes. (This shit not done yet)
 
 ### Stories
 
