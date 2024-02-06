@@ -28,3 +28,5 @@ something new to do, like developing a Curse for Fabric? But ye it looks like I 
 > This project is not done too, it have many bug that I don't want and time to fix it so, ya!
 > 
 > I forgor remove my webhook and hwids 💀
+>
+> [Build src here for someone who don't know how to build or just lazy](https://github.com/KuroHere/CurseClient-1.12.2/releases)
