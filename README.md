@@ -4,12 +4,11 @@
 ### Reason 💁‍♂️
 >Personal project made by Kuro_Here, for learning purposes.
 
-
 ### Stories 💅
 
->At first, I had the intention to sell it (but who would buy this paste). Upon reflection, 
-I realized I'm no different from someone who grabs source code from various places (though I cook it well :^)). 
-Currently, I'm quite bored and looking for something new to do, like developing a Curse for Fabric?
+>At first, I had the intention to sell it, but who would buy this paste(though I cook it well :^)). 
+Currently, I'm quite bored and lazy to fixing bugs adding stuff all alone that why I'm looking for 
+something new to do, like developing a Curse for Fabric?
 
 ### Big thanks to 🙏
 <div align="center">
@@ -24,4 +23,3 @@ Currently, I'm quite bored and looking for something new to do, like developing 
 > Thanks for reading it all.
     
 </div>
-
